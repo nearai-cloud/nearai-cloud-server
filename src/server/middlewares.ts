@@ -1,72 +1,97 @@
 import { ErrorRequestHandler, RequestHandler } from 'express';
-import createHttpError, { HttpError } from 'http-errors';
+import createHttpError, { UnknownError, HttpError } from 'http-errors';
 import morgan from 'morgan';
 import chalk from 'chalk';
 import dayjs from 'dayjs';
-
-morgan.token('colored-timestamp', () => {
-  const timestamp = dayjs().format('YYYY-MM-DD HH:mm:ss.SSS');
-  return chalk.gray(timestamp);
-});
-
-morgan.token('colored-status', (req, res) => {
-  if (res.statusCode >= 200 && res.statusCode < 300) {
-    return chalk.green(res.statusCode);
-  } else if (res.statusCode >= 300 && res.statusCode < 400) {
-    return chalk.blue(res.statusCode);
-  } else if (res.statusCode >= 400 && res.statusCode < 500) {
-    return chalk.yellow(res.statusCode);
-  } else if (res.statusCode >= 500 && res.statusCode < 600) {
-    return chalk.red(res.statusCode);
-  } else {
-    return chalk.gray(res.statusCode);
-  }
-});
+import { getHttpStatusColor } from '../utils/color';
 
 export const logMiddlewares = {
   preLog: (): RequestHandler => {
-    const coloredMessages = [
-      '[',
-      ':colored-timestamp',
-      ']',
-      ' ',
-      chalk.gray('<--'),
-      ' ',
-      ':method',
-      ' ',
-      chalk.gray(':url'),
-    ];
+    return morgan(
+      (tokens, req, res) => {
+        const timestamp = dayjs().format('YYYY-MM-DD HH:mm:ss.SSS');
 
-    return morgan(coloredMessages.join(''), {
-      immediate: true,
-    });
+        const method = tokens['method']?.(req, res);
+
+        if (!method) {
+          throw createHttpError(`Pre log token 'method' not found`);
+        }
+
+        const url = tokens['url']?.(req, res);
+
+        if (!url) {
+          throw createHttpError(`Pre log token 'url' not found`);
+        }
+
+        return [
+          '[',
+          chalk.gray(timestamp),
+          ']',
+          ' ',
+          chalk.gray('<--'),
+          ' ',
+          method,
+          ' ',
+          chalk.gray(url),
+        ].join('');
+      },
+      {
+        immediate: true,
+      },
+    );
   },
   postLog: (): RequestHandler => {
-    const coloredMessages = [
-      '[',
-      ':colored-timestamp',
-      ']',
-      ' ',
-      chalk.gray('-->'),
-      ' ',
-      ':method',
-      ' ',
-      chalk.gray(':url'),
-      ' ',
-      ':colored-status',
-      ' ',
-      chalk.gray(':response-time ms'),
-    ];
+    return morgan((tokens, req, res) => {
+      const timestamp = dayjs().format('YYYY-MM-DD HH:mm:ss.SSS');
 
-    return morgan(coloredMessages.join(''), {
-      immediate: false,
+      const method = tokens['method']?.(req, res);
+
+      if (!method) {
+        throw createHttpError(`Post log token 'method' not found`);
+      }
+
+      const url = tokens['url']?.(req, res);
+
+      if (!url) {
+        throw createHttpError(`Post log token 'url' not found`);
+      }
+
+      const status = tokens['status']?.(req, res);
+
+      if (!status) {
+        throw createHttpError(`Post log token 'status' not found`);
+      }
+
+      const statusCode = Number(status);
+
+      const responseTime = tokens['response-time']?.(req, res);
+
+      if (!responseTime) {
+        throw createHttpError(`Post log token 'response-time' not found`);
+      }
+
+      return [
+        '[',
+        chalk.gray(timestamp),
+        ']',
+        ' ',
+        chalk.gray('-->'),
+        ' ',
+        method,
+        ' ',
+        chalk.gray(url),
+        ' ',
+        chalk[getHttpStatusColor(statusCode)](statusCode),
+        ' ',
+        chalk.gray(`${responseTime} ms`),
+      ].join('');
     });
   },
 };
 
 export const errorMiddlewares = {
   httpError: (): ErrorRequestHandler => {
-    return (e, req, res, next) => {
+    return (e: UnknownError, req, res, next) => {
       console.error(e);
       next(createHttpError(e));
     };
