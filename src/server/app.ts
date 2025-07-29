@@ -1,21 +1,25 @@
 import express from 'express';
 import cors from 'cors';
-import { config } from "../config";
-import { error, requestLogger } from "./middlewares";
-
-
+import { config } from '../config';
+import { loggerMiddlewares, errorMiddlewares } from './middlewares';
+import { ENV_IS_DEV } from '../utils/envs';
 
 export function runServer() {
   const app = express();
 
   app.use(cors());
-  app.use(requestLogger());
 
-  app.get('/user', async (req, res, next) => {
+  app.use(loggerMiddlewares.preLog(), loggerMiddlewares.postLog());
 
+  app.get('/user', async (req, res) => {
+    // throw Error('This is an error');
+    res.send();
   });
 
-  app.use(error());
+  app.use(
+    errorMiddlewares.createError(),
+    errorMiddlewares.formatError({ isDev: ENV_IS_DEV }),
+  );
 
   app.listen(config.server.port);
 }

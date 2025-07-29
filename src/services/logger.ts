@@ -10,8 +10,10 @@ export const loggerOptions: LoggerOptions = {
       format: 'YYYY-MM-DD HH:mm:ss.SSS',
     }),
     winston.format.align(),
-    winston.format.printf((info) => `[${info.timestamp}] ${info.level}: ${info.message}`),
+    winston.format.printf(
+      (info) => `[${info.timestamp}] ${info.level}: ${info.message}`,
+    ),
   ),
-}
+};
 
 export const logger = winston.createLogger(loggerOptions);

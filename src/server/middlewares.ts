@@ -1,27 +1,48 @@
-import { ErrorRequestHandler, RequestHandler } from "express";
-import { ENV_IS_DEV } from "../utils/envs";
-import { logger, loggerOptions } from "../services/logger";
-import winston from "winston";
-import expressWinston from "express-winston";
+import { ErrorRequestHandler, RequestHandler } from 'express';
+import createHttpError, { HttpError } from 'http-errors';
+import morgan from 'morgan';
 
-export function requestLogger(): RequestHandler {
-  const winstonInstance = winston.createLogger(loggerOptions);
-  return expressWinston.logger({
-    winstonInstance,
-  });
-}
+morgan.token('timestamp', () => {
+  const now = new Date();
+  const date = now.toISOString().split('T')[0];
+  const time = now.toISOString().split('T')[1].replace('Z', '');
+  return `${date} ${time}`;
+});
 
-export function error(): ErrorRequestHandler {
-  return (e, req, res, next) => {
-    logger.error(e.message);
-
-    const status = e.status ?? 500;
-    const message = ENV_IS_DEV || status === 500 ? e.message : 'Internal Server Error';
-    const stack = ENV_IS_DEV ? e.stack : undefined;
-
-    res.status(status).json({
-      message,
-      stack,
+export const loggerMiddlewares = {
+  preLog: (): RequestHandler => {
+    return morgan(`[:timestamp] <-- :method :url`, {
+      immediate: true,
     });
-  }
-}
+  },
+  postLog: (): RequestHandler => {
+    return morgan('[:timestamp] --> :method :url :status :response-time ms');
+  },
+};
+
+export const errorMiddlewares = {
+  createError: (): ErrorRequestHandler => {
+    return (e, req, res, next) => {
+      next(createHttpError(e));
+    };
+  },
+  formatError: ({ isDev }: { isDev: boolean }): ErrorRequestHandler => {
+    return (e: HttpError, req, res, next) => {
+      console.error(e);
+
+      const status = e.status;
+      const message =
+        isDev || status === 500 ? e.message : 'Internal Server Error';
+      const stack = isDev ? e.stack : undefined;
+
+      res.status(status).json({
+        error: {
+          message,
+          stack,
+        },
+      });
+
+      next();
+    };
+  },
+};

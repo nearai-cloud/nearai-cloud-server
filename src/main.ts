@@ -1,4 +1,4 @@
-import { runServer } from "./server/app";
+import { runServer } from './server/app';
 
 async function main() {
   runServer();
