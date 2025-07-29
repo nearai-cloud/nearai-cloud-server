@@ -64,14 +64,6 @@ export const logMiddlewares = {
   },
 };
 
-export const routeMiddlewares = {
-  notFound: (): RequestHandler => {
-    return () => {
-      throw createHttpError(404, 'Not Found');
-    };
-  },
-};
-
 export const errorMiddlewares = {
   httpError: (): ErrorRequestHandler => {
     return (e, req, res, next) => {
