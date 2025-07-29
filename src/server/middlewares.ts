@@ -67,6 +67,7 @@ export const logMiddlewares = {
 export const errorMiddlewares = {
   httpError: (): ErrorRequestHandler => {
     return (e, req, res, next) => {
+      console.error(e);
       next(createHttpError(e));
     };
   },
@@ -74,8 +75,6 @@ export const errorMiddlewares = {
     isDev = true,
   }: { isDev?: boolean } = {}): ErrorRequestHandler => {
     return (e: HttpError, req, res, next) => {
-      console.error(e);
-
       const status = e.status;
 
       res.status(status).json({
