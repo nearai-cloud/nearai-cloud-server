@@ -1,7 +1,7 @@
 export type Config = {
   supabase: {
     endpointUrl: string;
-    anonymousKey: string;
+    publishableKey: string;
   };
   logger: {
     level: 'debug' | 'info';

@@ -1,5 +1,5 @@
 import { Config } from '../types/config';
-import { ENV } from '../utils/env';
+import { ENV } from '../utils/envs';
 
 const module = await import(`./${ENV}.ts`);
 

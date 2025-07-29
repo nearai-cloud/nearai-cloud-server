@@ -9,7 +9,7 @@ import {
 const config: Config = {
   supabase: {
     endpointUrl: ENV_SUPABASE_URL,
-    anonymousKey: ENV_SUPABASE_KEY,
+    publishableKey: ENV_SUPABASE_KEY,
   },
   logger: {
     level: 'debug',
