@@ -23,7 +23,7 @@ morgan.token('colored-status', (req, res) => {
   }
 });
 
-export const loggerMiddlewares = {
+export const logMiddlewares = {
   preLog: (): RequestHandler => {
     const coloredMessages = [
       '[',
@@ -73,12 +73,14 @@ export const routeMiddlewares = {
 };
 
 export const errorMiddlewares = {
-  createError: (): ErrorRequestHandler => {
+  httpError: (): ErrorRequestHandler => {
     return (e, req, res, next) => {
       next(createHttpError(e));
     };
   },
-  formatError: ({ isDev }: { isDev: boolean }): ErrorRequestHandler => {
+  respondHttpError: ({
+    isDev = true,
+  }: { isDev?: boolean } = {}): ErrorRequestHandler => {
     return (e: HttpError, req, res, next) => {
       console.error(e);
 

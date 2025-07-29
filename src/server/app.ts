@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { config } from '../config';
 import {
-  loggerMiddlewares,
+  logMiddlewares,
   errorMiddlewares,
   routeMiddlewares,
 } from './middlewares';
@@ -13,8 +13,8 @@ export function runServer() {
 
   app.use(cors());
 
-  app.use(loggerMiddlewares.preLog());
-  app.use(loggerMiddlewares.postLog());
+  app.use(logMiddlewares.preLog());
+  app.use(logMiddlewares.postLog());
 
   app.get('/user', async (req, res) => {
     res.json({
@@ -24,8 +24,8 @@ export function runServer() {
 
   app.use(routeMiddlewares.notFound());
 
-  app.use(errorMiddlewares.createError());
-  app.use(errorMiddlewares.formatError({ isDev: ENV_IS_DEV }));
+  app.use(errorMiddlewares.httpError());
+  app.use(errorMiddlewares.respondHttpError({ isDev: ENV_IS_DEV }));
 
   app.listen(config.server.port);
 }
