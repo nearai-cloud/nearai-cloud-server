@@ -70,6 +70,12 @@ export const logMiddlewares = {
         throw createHttpError(`Post log token 'response-time' not found`);
       }
 
+      const responseLength = tokens['res']?.(req, res, 'content-length') ?? '-';
+
+      if (!responseLength) {
+        throw createHttpError(`Post log token 'res[content-length]' not found`);
+      }
+
       return [
         '[',
         chalk.gray(timestamp),
@@ -83,7 +89,9 @@ export const logMiddlewares = {
         ' ',
         chalk[getHttpStatusColor(statusCode)](statusCode),
         ' ',
-        chalk.gray(`${responseTime} ms`),
+        chalk.gray(`${responseTime}ms`),
+        ' ',
+        chalk.gray(`${responseLength}B`),
       ].join('');
     });
   },
