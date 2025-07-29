@@ -3,6 +3,7 @@ import createHttpError, { HttpError } from 'http-errors';
 import morgan from 'morgan';
 import chalk from 'chalk';
 import dayjs from 'dayjs';
+import { ErrorResponseBody } from '../types/response';
 
 morgan.token('colored-timestamp', () => {
   const timestamp = dayjs().format('YYYY-MM-DD HH:mm:ss.SSS');
@@ -64,6 +65,25 @@ export const loggerMiddlewares = {
   },
 };
 
+export const routeMiddlewares = {
+  notFound: (): RequestHandler => {
+    return (req, res, next) => {
+      const status = 404;
+
+      const body: ErrorResponseBody = {
+        error: {
+          status,
+          message: 'Not Found',
+        },
+      };
+
+      res.status(status).json(body);
+
+      next();
+    };
+  },
+};
+
 export const errorMiddlewares = {
   createError: (): ErrorRequestHandler => {
     return (e, req, res, next) => {
@@ -79,12 +99,15 @@ export const errorMiddlewares = {
         isDev || status === 500 ? e.message : 'Internal Server Error';
       const stack = isDev ? e.stack : undefined;
 
-      res.status(status).json({
+      const body: ErrorResponseBody = {
         error: {
+          status,
           message,
           stack,
         },
-      });
+      };
+
+      res.status(status).json(body);
 
       next();
     };
