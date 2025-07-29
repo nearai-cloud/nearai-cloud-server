@@ -1,0 +1,23 @@
+function requiredEnv(name: string): string {
+  return (
+    process.env[name] ||
+    console.error('Error missing:', name) ||
+    process.exit(1)
+  );
+}
+
+function optionalEnv(name: string): string | undefined {
+  return process.env[name];
+}
+
+export type Env = 'dev' | 'prd';
+
+export const ENV: Env = requiredEnv('ENV') as Env;
+export const ENV_IS_DEV = ENV === 'dev';
+
+export const ENV_SUPABASE_URL = requiredEnv('SUPABASE_URL');
+export const ENV_SUPABASE_KEY = requiredEnv('SUPABASE_KEY');
+
+export const ENV_SERVER_PORT = Number(requiredEnv('PORT'));
+
+export const ENV_SLACK_WEBHOOK_URL = optionalEnv('SLACK_WEBHOOK_URL');
