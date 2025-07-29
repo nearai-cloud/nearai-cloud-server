@@ -95,15 +95,13 @@ export const errorMiddlewares = {
       console.error(e);
 
       const status = e.status;
-      const message =
-        isDev || status === 500 ? e.message : 'Internal Server Error';
-      const stack = isDev ? e.stack : undefined;
 
       const body: ErrorResponseBody = {
         error: {
           status,
-          message,
-          stack,
+          message:
+            isDev || status === 500 ? e.message : 'Internal Server Error',
+          stack: isDev ? e.stack : undefined,
         },
       };
 
