@@ -1,22 +1,66 @@
 import { ErrorRequestHandler, RequestHandler } from 'express';
 import createHttpError, { HttpError } from 'http-errors';
 import morgan from 'morgan';
+import chalk from 'chalk';
+import dayjs from 'dayjs';
 
-morgan.token('timestamp', () => {
-  const now = new Date();
-  const date = now.toISOString().split('T')[0];
-  const time = now.toISOString().split('T')[1].replace('Z', '');
-  return `${date} ${time}`;
+morgan.token('colored-timestamp', () => {
+  const timestamp = dayjs().format('YYYY-MM-DD HH:mm:ss.SSS');
+  return chalk.gray(timestamp);
+});
+
+morgan.token('colored-status', (req, res) => {
+  if (res.statusCode >= 200 && res.statusCode < 300) {
+    return chalk.green(res.statusCode);
+  } else if (res.statusCode >= 300 && res.statusCode < 400) {
+    return chalk.blue(res.statusCode);
+  } else if (res.statusCode >= 400 && res.statusCode < 500) {
+    return chalk.yellow(res.statusCode);
+  } else if (res.statusCode >= 500 && res.statusCode < 600) {
+    return chalk.red(res.statusCode);
+  } else {
+    return chalk.gray(res.statusCode);
+  }
 });
 
 export const loggerMiddlewares = {
   preLog: (): RequestHandler => {
-    return morgan(`[:timestamp] <-- :method :url`, {
+    const coloredMessages = [
+      '[',
+      ':colored-timestamp',
+      ']',
+      ' ',
+      chalk.gray('<--'),
+      ' ',
+      ':method',
+      ' ',
+      chalk.gray(':url'),
+    ];
+
+    return morgan(coloredMessages.join(''), {
       immediate: true,
     });
   },
   postLog: (): RequestHandler => {
-    return morgan('[:timestamp] --> :method :url :status :response-time ms');
+    const coloredMessages = [
+      '[',
+      ':colored-timestamp',
+      ']',
+      ' ',
+      chalk.gray('-->'),
+      ' ',
+      ':method',
+      ' ',
+      chalk.gray(':url'),
+      ' ',
+      ':colored-status',
+      ' ',
+      chalk.gray(':response-time ms'),
+    ];
+
+    return morgan(coloredMessages.join(''), {
+      immediate: false,
+    });
   },
 };
 

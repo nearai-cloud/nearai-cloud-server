@@ -12,7 +12,6 @@ export function runServer() {
   app.use(loggerMiddlewares.preLog(), loggerMiddlewares.postLog());
 
   app.get('/user', async (req, res) => {
-    // throw Error('This is an error');
     res.send();
   });
 
