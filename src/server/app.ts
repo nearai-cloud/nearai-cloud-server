@@ -11,10 +11,11 @@ export function runServer() {
 
   app.use(cors());
 
+  app.use(ctx.middleware);
+
   app.use(preLog({ isDev: config.log.color }));
   app.use(postLog({ isDev: config.log.color }));
 
-  app.use(ctx.middleware);
   app.use(router);
 
   app.use(httpError());
