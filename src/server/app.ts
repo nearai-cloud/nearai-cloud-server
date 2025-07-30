@@ -10,8 +10,8 @@ export function runServer() {
 
   app.use(cors());
 
-  app.use(logMiddlewares.preLog());
-  app.use(logMiddlewares.postLog());
+  app.use(logMiddlewares.preLog({ isDev: ENV_IS_DEV }));
+  app.use(logMiddlewares.postLog({ isDev: ENV_IS_DEV }));
 
   app.use(router);
 

@@ -1,12 +1,11 @@
 import { ErrorRequestHandler, RequestHandler } from 'express';
 import createHttpError, { UnknownError, HttpError } from 'http-errors';
 import morgan from 'morgan';
-import chalk from 'chalk';
 import dayjs from 'dayjs';
-import { getHttpStatusColor } from '../utils/color';
+import { addColor, getHttpStatusColor } from '../utils/color';
 
 export const logMiddlewares = {
-  preLog: (): RequestHandler => {
+  preLog: ({ isDev = true }: { isDev?: boolean } = {}): RequestHandler => {
     return morgan(
       (tokens, req, res) => {
         const timestamp = dayjs().format('YYYY-MM-DD HH:mm:ss.SSS');
@@ -24,13 +23,13 @@ export const logMiddlewares = {
         }
 
         return [
-          chalk.gray(`[${timestamp}]`),
+          addColor(`[${timestamp}]`, 'gray', isDev),
           ' ',
-          chalk.gray('<--'),
+          addColor('-->', 'gray', isDev),
           ' ',
           method,
           ' ',
-          chalk.gray(url),
+          addColor(url, 'gray', isDev),
         ].join('');
       },
       {
@@ -38,7 +37,7 @@ export const logMiddlewares = {
       },
     );
   },
-  postLog: (): RequestHandler => {
+  postLog: ({ isDev = true }: { isDev?: boolean } = {}): RequestHandler => {
     return morgan((tokens, req, res) => {
       const timestamp = dayjs().format('YYYY-MM-DD HH:mm:ss.SSS');
 
@@ -69,17 +68,17 @@ export const logMiddlewares = {
       }
 
       return [
-        chalk.gray(`[${timestamp}]`),
+        addColor(`[${timestamp}]`, 'gray', isDev),
         ' ',
-        chalk.gray('-->'),
+        addColor('-->', 'gray', isDev),
         ' ',
         method,
         ' ',
-        chalk.gray(url),
+        addColor(url, 'gray', isDev),
         ' ',
-        chalk[statusColor](status),
+        addColor(status, statusColor, isDev),
         ' ',
-        chalk.gray(`${responseTime}ms`),
+        addColor(`${responseTime}ms`, 'gray', isDev),
       ].join('');
     });
   },
