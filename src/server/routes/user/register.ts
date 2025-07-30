@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import ctx from 'express-http-context';
 import { lightLLM } from '../../../services/light-llm';
 import { User } from '@supabase/supabase-js';
+import { STATUS_CODES } from '../../../utils/consts';
 
 export const register: RequestHandler = async (req, res) => {
   const user: User = ctx.get('user');
@@ -11,5 +12,5 @@ export const register: RequestHandler = async (req, res) => {
     email: user.email,
   });
 
-  res.sendStatus(200);
+  res.sendStatus(STATUS_CODES.SUCCESS);
 };

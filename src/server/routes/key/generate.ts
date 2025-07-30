@@ -5,6 +5,7 @@ import * as v from 'valibot';
 import { lightLLM } from '../../../services/light-llm';
 import { KEY_ALIAS_MAX_LENGTH } from '../../../utils/consts';
 import { throwHttpError } from '../../../utils/error';
+import { STATUS_CODES } from '../../../utils/consts';
 
 export const generate: RequestHandler = async (req, res) => {
   const user: User = ctx.get('user');
@@ -19,7 +20,7 @@ export const generate: RequestHandler = async (req, res) => {
     body = v.parse(bodySchema, req.body);
   } catch (e: unknown) {
     throwHttpError({
-      status: 400,
+      status: STATUS_CODES.BAD_REQUEST,
       cause: e,
     });
   }
@@ -29,5 +30,5 @@ export const generate: RequestHandler = async (req, res) => {
     alias: body.alias,
   });
 
-  res.sendStatus(200);
+  res.sendStatus(STATUS_CODES.SUCCESS);
 };

@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import ctx from 'express-http-context';
-import { AUTHORIZATION_BEARER } from '../../utils/consts';
+import { AUTHORIZATION_BEARER, STATUS_CODES } from '../../utils/consts';
 import { createSupabaseClient } from '../../services/supabase';
 import { throwHttpError } from '../../utils/error';
 
@@ -9,14 +9,14 @@ export const sessionAuth: RequestHandler = async (req, res, next) => {
 
   if (!authorization) {
     throw throwHttpError({
-      status: 401,
+      status: STATUS_CODES.UNAUTHORIZED,
     });
   }
 
   if (!authorization.startsWith(AUTHORIZATION_BEARER)) {
     throwHttpError({
-      status: 401,
-      message: `Invalid authorization token. Must start with '${AUTHORIZATION_BEARER}'`,
+      status: STATUS_CODES.UNAUTHORIZED,
+      message: `Authorization token must start with '${AUTHORIZATION_BEARER}'`,
     });
   }
 
@@ -29,9 +29,16 @@ export const sessionAuth: RequestHandler = async (req, res, next) => {
     error,
   } = await client.auth.getUser(token);
 
-  if (error || !user) {
+  if (error) {
     throwHttpError({
-      status: 401,
+      status: STATUS_CODES.UNAUTHORIZED,
+      cause: error,
+    });
+  }
+
+  if (!user) {
+    throwHttpError({
+      status: STATUS_CODES.UNAUTHORIZED,
       message: 'Invalid authorization token',
     });
   }
