@@ -14,8 +14,8 @@ export type Env = 'dev' | 'prd';
 
 export const ENV: Env = requiredEnv('ENV') as Env;
 
-export const ENV_SUPABASE_URL = requiredEnv('SUPABASE_URL');
-export const ENV_SUPABASE_KEY = requiredEnv('SUPABASE_KEY');
+export const ENV_SUPABASE_API_URL = requiredEnv('SUPABASE_API_URL');
+export const ENV_SUPABASE_ANON_KEY = requiredEnv('SUPABASE_ANON_KEY');
 
 export const ENV_LIGHT_LLM_API_URL = requiredEnv('LIGHT_LLM_API_URL');
 export const ENV_LIGHT_LLM_ADMIN_KEY = requiredEnv('LIGHT_LLM_ADMIN_KEY');

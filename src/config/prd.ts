@@ -1,8 +1,8 @@
 import { Config } from '../types/config';
 import {
   ENV_SERVER_PORT,
-  ENV_SUPABASE_URL,
-  ENV_SUPABASE_KEY,
+  ENV_SUPABASE_API_URL,
+  ENV_SUPABASE_ANON_KEY,
   ENV_SLACK_WEBHOOK_URL,
   ENV_LIGHT_LLM_API_URL,
   ENV_LIGHT_LLM_ADMIN_KEY,
@@ -10,8 +10,8 @@ import {
 
 const config: Config = {
   supabase: {
-    apiUrl: ENV_SUPABASE_URL,
-    publishableKey: ENV_SUPABASE_KEY,
+    apiUrl: ENV_SUPABASE_API_URL,
+    anonKey: ENV_SUPABASE_ANON_KEY,
   },
   lightLLM: {
     apiUrl: ENV_LIGHT_LLM_API_URL,

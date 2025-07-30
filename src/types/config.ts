@@ -1,7 +1,7 @@
 export type Config = {
   supabase: {
     apiUrl: string;
-    publishableKey: string;
+    anonKey: string;
   };
   lightLLM: {
     apiUrl: string;
