@@ -1,6 +1,8 @@
 import { RequestHandler } from 'express';
-import createHttpError from 'http-errors';
+import { throwHttpError } from '../../utils/error';
 
 export const notFound: RequestHandler = () => {
-  throw createHttpError(404);
+  throwHttpError({
+    status: 404,
+  });
 };

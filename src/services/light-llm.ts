@@ -3,6 +3,7 @@ import {
   CreateUserParams,
   PostOptions,
   GetOptions,
+  CreateKeyParams,
 } from '../types/light-llm';
 import { config } from '../config';
 import axios from 'axios';
@@ -33,7 +34,7 @@ export class LightLLM {
     });
   }
 
-  async createUser({ id, email }: CreateUserParams) {
+  async registerUser({ id, email }: CreateUserParams) {
     await this.POST({
       path: '/user/new',
       body: {
@@ -41,6 +42,17 @@ export class LightLLM {
         user_email: email,
         auto_create_key: true,
         user_role: 'internal_user_viewer',
+      },
+    });
+  }
+
+  async generateKey({ userId, alias }: CreateKeyParams) {
+    await this.POST({
+      path: '/key/generate',
+      body: {
+        user_id: userId,
+        key_alias: alias,
+        models: ['all-team-models'],
       },
     });
   }

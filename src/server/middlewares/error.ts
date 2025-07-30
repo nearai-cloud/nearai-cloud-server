@@ -1,9 +1,10 @@
 import { ErrorRequestHandler } from 'express';
-import createHttpError, { HttpError, UnknownError } from 'http-errors';
+import { HttpError } from 'http-errors';
+import { throwHttpError } from '../../utils/error';
 
 export function httpError(): ErrorRequestHandler {
   return (
-    e: UnknownError,
+    e: unknown,
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     req,
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
@@ -12,7 +13,9 @@ export function httpError(): ErrorRequestHandler {
     next,
   ) => {
     console.error(e);
-    throw createHttpError(e);
+    throwHttpError({
+      cause: e,
+    });
   };
 }
 

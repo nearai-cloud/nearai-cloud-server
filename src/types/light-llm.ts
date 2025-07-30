@@ -19,3 +19,8 @@ export type CreateUserParams = {
   id: string;
   email?: string;
 };
+
+export type CreateKeyParams = {
+  userId: string;
+  alias: string;
+};

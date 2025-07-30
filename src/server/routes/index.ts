@@ -1,12 +1,14 @@
 import express from 'express';
-import { userRouter } from './user';
 import { ping } from './ping';
 import { notFound } from './not-found';
+import { userRouter } from './user';
+import { keyRouter } from './key';
 
+// TODO: Need Fix: Currently 405 Method Not Allowed will be considered as 404 Not Found
 export const router = express.Router();
 
 router.get('/', ping);
-
 router.use('/user', userRouter);
+router.use('/key', keyRouter);
 
 router.use(notFound);

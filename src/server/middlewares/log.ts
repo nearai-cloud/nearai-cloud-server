@@ -1,8 +1,8 @@
 import { RequestHandler } from 'express';
 import morgan from 'morgan';
 import dayjs from 'dayjs';
-import createHttpError from 'http-errors';
 import { addColor, getHttpStatusColor } from '../../utils/color';
+import { throwHttpError } from '../../utils/error';
 
 export function preLog({
   isDev = true,
@@ -14,13 +14,17 @@ export function preLog({
       const method = tokens['method']?.(req, res);
 
       if (!method) {
-        throw createHttpError(`Pre log token 'method' not found`);
+        throwHttpError({
+          message: `Pre log token 'method' not found`,
+        });
       }
 
       const url = tokens['url']?.(req, res);
 
       if (!url) {
-        throw createHttpError(`Pre log token 'url' not found`);
+        throwHttpError({
+          message: `Pre log token 'url' not found`,
+        });
       }
 
       return [
@@ -48,19 +52,25 @@ export function postLog({
     const method = tokens['method']?.(req, res);
 
     if (!method) {
-      throw createHttpError(`Post log token 'method' not found`);
+      throwHttpError({
+        message: `Post log token 'method' not found`,
+      });
     }
 
     const url = tokens['url']?.(req, res);
 
     if (!url) {
-      throw createHttpError(`Post log token 'url' not found`);
+      throwHttpError({
+        message: `Post log token 'url' not found`,
+      });
     }
 
     const status = tokens['status']?.(req, res);
 
     if (!status) {
-      throw createHttpError(`Post log token 'status' not found`);
+      throwHttpError({
+        message: `Post log token 'status' not found`,
+      });
     }
 
     const statusColor = getHttpStatusColor(Number(status));
@@ -68,7 +78,9 @@ export function postLog({
     const responseTime = tokens['response-time']?.(req, res);
 
     if (!responseTime) {
-      throw createHttpError(`Post log token 'response-time' not found`);
+      throwHttpError({
+        message: `Post log token 'response-time' not found`,
+      });
     }
 
     return [

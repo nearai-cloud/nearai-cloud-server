@@ -1,7 +1,7 @@
 import express from 'express';
-import { registerUser } from './register-user';
-import { supabaseAuth } from '../auth';
+import { register } from './register';
+import { sessionAuth } from '../auth';
 
 export const userRouter = express.Router();
 
-userRouter.post('/', supabaseAuth, registerUser);
+userRouter.post('/register', sessionAuth, register);
