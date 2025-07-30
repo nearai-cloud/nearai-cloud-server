@@ -17,6 +17,9 @@ export const ENV: Env = requiredEnv('ENV') as Env;
 export const ENV_SUPABASE_URL = requiredEnv('SUPABASE_URL');
 export const ENV_SUPABASE_KEY = requiredEnv('SUPABASE_KEY');
 
+export const ENV_LIGHT_LLM_API_URL = requiredEnv('LIGHT_LLM_API_URL');
+export const ENV_LIGHT_LLM_ADMIN_KEY = requiredEnv('LIGHT_LLM_ADMIN_KEY');
+
 export const ENV_SERVER_PORT = Number(requiredEnv('PORT'));
 
 export const ENV_SLACK_WEBHOOK_URL = optionalEnv('SLACK_WEBHOOK_URL');

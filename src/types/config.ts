@@ -1,7 +1,11 @@
 export type Config = {
   supabase: {
-    endpointUrl: string;
+    apiUrl: string;
     publishableKey: string;
+  };
+  lightLLM: {
+    apiUrl: string;
+    adminKey: string;
   };
   log: {
     level: 'debug' | 'info';

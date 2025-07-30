@@ -1,7 +1,9 @@
 import express from 'express';
 import cors from 'cors';
+import ctx from 'express-http-context';
 import { config } from '../config';
-import { logMiddlewares, errorMiddlewares } from './middlewares';
+import { preLog, postLog } from './middlewares/log';
+import { httpError, respondHttpError } from './middlewares/error';
 import { router } from './routes';
 
 export function runServer() {
@@ -9,14 +11,15 @@ export function runServer() {
 
   app.use(cors());
 
-  app.use(logMiddlewares.preLog({ isDev: config.log.color }));
-  app.use(logMiddlewares.postLog({ isDev: config.log.color }));
+  app.use(preLog({ isDev: config.log.color }));
+  app.use(postLog({ isDev: config.log.color }));
 
+  app.use(ctx.middleware);
   app.use(router);
 
-  app.use(errorMiddlewares.httpError());
+  app.use(httpError());
   app.use(
-    errorMiddlewares.respondHttpError({
+    respondHttpError({
       isDev: config.server.respondErrorDetails,
     }),
   );

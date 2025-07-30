@@ -9,4 +9,4 @@ router.get('/', ping);
 
 router.use('/user', userRouter);
 
-router.use(notFound); // Keep this at the end of the routes
+router.use(notFound);

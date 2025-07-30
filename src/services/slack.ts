@@ -2,6 +2,7 @@ import { logger } from './logger';
 import { config } from '../config';
 import { ENV } from '../utils/envs';
 import { SLACK_ALERT_TAG } from '../utils/consts';
+import axios from 'axios';
 
 export async function sendSlackInfo(
   message: string,
@@ -18,7 +19,13 @@ export async function sendSlackInfo(
   }
 
   try {
-    await sendSlackAlert(SLACK_ALERT_TAG, ENV, message, '💡INFO', channel);
+    await sendSlackAlert({
+      message,
+      tag: SLACK_ALERT_TAG,
+      env: ENV,
+      level: '💡INFO',
+      channel,
+    });
   } catch (e: unknown) {
     logger.error(`Failed to send Slack info: ${e}`);
   }
@@ -39,7 +46,13 @@ export async function sendSlackWarning(
   }
 
   try {
-    await sendSlackAlert(SLACK_ALERT_TAG, ENV, message, '⚠️WARN', channel);
+    await sendSlackAlert({
+      message,
+      tag: SLACK_ALERT_TAG,
+      env: ENV,
+      level: '⚠️WARN',
+      channel,
+    });
   } catch (e: unknown) {
     logger.error(`Failed to send Slack warning: ${e}`);
   }
@@ -60,19 +73,31 @@ export async function sendSlackError(
   }
 
   try {
-    await sendSlackAlert(SLACK_ALERT_TAG, ENV, message, '❌ERROR', channel);
+    await sendSlackAlert({
+      message,
+      tag: SLACK_ALERT_TAG,
+      env: ENV,
+      level: '❌ERROR',
+      channel,
+    });
   } catch (e: unknown) {
     logger.error(`Failed to send Slack error: ${e}`);
   }
 }
 
-async function sendSlackAlert(
-  tag: string,
-  env: string,
-  message: string,
-  level: string,
-  channel: boolean,
-) {
+async function sendSlackAlert({
+  message,
+  tag,
+  env,
+  level,
+  channel,
+}: {
+  message: string;
+  tag: string;
+  env: string;
+  level: '💡INFO' | '⚠️WARN' | '❌ERROR';
+  channel: boolean;
+}) {
   await sendSlackMessage(
     `${channel ? '<!channel>' : ''} *${tag}@${env}:* *[${level}]* ${message}`,
   );
@@ -82,11 +107,5 @@ async function sendSlackMessage(message: string) {
   if (!config.slack.webhookUrl) {
     return;
   }
-  await fetch(config.slack.webhookUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ text: message }),
-  });
+  await axios.post(config.slack.webhookUrl, { text: message });
 }
