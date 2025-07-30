@@ -40,7 +40,7 @@ export class LightLLM {
       body: {
         user_id: id,
         user_email: email,
-        auto_create_key: true,
+        auto_create_key: false,
         user_role: 'internal_user_viewer',
       },
     });
@@ -53,6 +53,7 @@ export class LightLLM {
         user_id: userId,
         key_alias: alias,
         models: ['all-team-models'],
+        team_id: undefined, // TODO: Specify a team id
       },
     });
   }
