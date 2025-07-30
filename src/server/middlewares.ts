@@ -24,9 +24,7 @@ export const logMiddlewares = {
         }
 
         return [
-          '[',
-          chalk.gray(timestamp),
-          ']',
+          chalk.gray(`[${timestamp}]`),
           ' ',
           chalk.gray('<--'),
           ' ',
@@ -62,7 +60,7 @@ export const logMiddlewares = {
         throw createHttpError(`Post log token 'status' not found`);
       }
 
-      const statusCode = Number(status);
+      const statusColor = getHttpStatusColor(Number(status));
 
       const responseTime = tokens['response-time']?.(req, res);
 
@@ -70,16 +68,8 @@ export const logMiddlewares = {
         throw createHttpError(`Post log token 'response-time' not found`);
       }
 
-      const responseLength = tokens['res']?.(req, res, 'content-length') ?? '-';
-
-      if (!responseLength) {
-        throw createHttpError(`Post log token 'res[content-length]' not found`);
-      }
-
       return [
-        '[',
-        chalk.gray(timestamp),
-        ']',
+        chalk.gray(`[${timestamp}]`),
         ' ',
         chalk.gray('-->'),
         ' ',
@@ -87,11 +77,9 @@ export const logMiddlewares = {
         ' ',
         chalk.gray(url),
         ' ',
-        chalk[getHttpStatusColor(statusCode)](statusCode),
+        chalk[statusColor](status),
         ' ',
         chalk.gray(`${responseTime}ms`),
-        ' ',
-        chalk.gray(`${responseLength}B`),
       ].join('');
     });
   },
