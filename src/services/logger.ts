@@ -23,4 +23,4 @@ export function createLogger({ isDev = true }: { isDev?: boolean } = {}) {
 }
 
 // Global logger
-export const logger = createLogger({ isDev: config.log.color });
+export const logger = createLogger({ isDev: config.isDev });

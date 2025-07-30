@@ -1,4 +1,5 @@
 export type Config = {
+  isDev?: boolean;
   supabase: {
     apiUrl: string;
     anonKey: string;
@@ -9,11 +10,9 @@ export type Config = {
   };
   log: {
     level: 'debug' | 'info';
-    color: boolean;
   };
   server: {
     port: number;
-    respondErrorDetails: boolean;
   };
   slack: {
     webhookUrl?: string;

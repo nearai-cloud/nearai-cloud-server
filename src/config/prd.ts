@@ -19,11 +19,9 @@ const config: Config = {
   },
   log: {
     level: 'debug',
-    color: false,
   },
   server: {
     port: ENV_SERVER_PORT,
-    respondErrorDetails: false,
   },
   slack: {
     webhookUrl: ENV_SLACK_WEBHOOK_URL,

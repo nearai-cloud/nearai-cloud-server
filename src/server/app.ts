@@ -13,15 +13,19 @@ export function runServer() {
 
   app.use(ctx.middleware);
 
-  app.use(preLog({ isDev: config.log.color }));
-  app.use(postLog({ isDev: config.log.color }));
+  app.use(preLog({ isDev: config.isDev }));
+  app.use(postLog({ isDev: config.isDev }));
 
   app.use(router);
 
-  app.use(httpError());
+  app.use(
+    httpError({
+      isDev: config.isDev,
+    }),
+  );
   app.use(
     respondHttpError({
-      isDev: config.server.respondErrorDetails,
+      isDev: config.isDev,
     }),
   );
 

@@ -9,6 +9,7 @@ import {
 } from '../utils/envs';
 
 const config: Config = {
+  isDev: true,
   supabase: {
     apiUrl: ENV_SUPABASE_API_URL,
     anonKey: ENV_SUPABASE_ANON_KEY,
@@ -19,11 +20,9 @@ const config: Config = {
   },
   log: {
     level: 'debug',
-    color: true,
   },
   server: {
     port: ENV_SERVER_PORT,
-    respondErrorDetails: true,
   },
   slack: {
     webhookUrl: ENV_SLACK_WEBHOOK_URL,

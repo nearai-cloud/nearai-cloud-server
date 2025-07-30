@@ -2,7 +2,9 @@ import { ErrorRequestHandler } from 'express';
 import { HttpError } from 'http-errors';
 import { throwHttpError } from '../../utils/error';
 
-export function httpError(): ErrorRequestHandler {
+export function httpError({
+  isDev = true,
+}: { isDev?: boolean } = {}): ErrorRequestHandler {
   return (
     e: unknown,
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
@@ -12,7 +14,9 @@ export function httpError(): ErrorRequestHandler {
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     next,
   ) => {
-    console.error(e);
+    if (isDev) {
+      console.error(e);
+    }
     throwHttpError({
       cause: e,
     });
