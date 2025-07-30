@@ -1,10 +1,9 @@
 import winston, { LoggerOptions } from 'winston';
 import { config } from '../config';
-import { ENV_IS_DEV } from '../utils/envs';
 
 export function createLogger({ isDev = true }: { isDev?: boolean } = {}) {
   const loggerOptions: LoggerOptions = {
-    level: config.logger.level,
+    level: config.log.level,
     transports: [new winston.transports.Console()],
     format: winston.format.combine(
       ...[
@@ -24,4 +23,4 @@ export function createLogger({ isDev = true }: { isDev?: boolean } = {}) {
 }
 
 // Global logger
-export const logger = createLogger({ isDev: ENV_IS_DEV });
+export const logger = createLogger({ isDev: config.log.color });

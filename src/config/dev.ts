@@ -11,11 +11,13 @@ const config: Config = {
     endpointUrl: ENV_SUPABASE_URL,
     publishableKey: ENV_SUPABASE_KEY,
   },
-  logger: {
+  log: {
     level: 'debug',
+    color: true,
   },
   server: {
     port: ENV_SERVER_PORT,
+    respondErrorDetails: true,
   },
   slack: {
     webhookUrl: ENV_SLACK_WEBHOOK_URL,

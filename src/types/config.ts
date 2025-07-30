@@ -3,11 +3,13 @@ export type Config = {
     endpointUrl: string;
     publishableKey: string;
   };
-  logger: {
+  log: {
     level: 'debug' | 'info';
+    color: boolean;
   };
   server: {
     port: number;
+    respondErrorDetails: boolean;
   };
   slack: {
     webhookUrl?: string;

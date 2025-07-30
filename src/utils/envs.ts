@@ -13,7 +13,6 @@ function optionalEnv(name: string): string | undefined {
 export type Env = 'dev' | 'prd';
 
 export const ENV: Env = requiredEnv('ENV') as Env;
-export const ENV_IS_DEV = ENV === 'dev';
 
 export const ENV_SUPABASE_URL = requiredEnv('SUPABASE_URL');
 export const ENV_SUPABASE_KEY = requiredEnv('SUPABASE_KEY');
