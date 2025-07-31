@@ -25,7 +25,7 @@ export function inputParser({
     }
 
     if (bodyInputSchema) {
-      ctx.set(CTX_KEYS.BODY_INPUT, parseInput(bodyInputSchema, req.body));
+      ctx.set(CTX_KEYS.BODY_INPUT, parseInput(bodyInputSchema, req.body ?? {}));
     }
 
     next();
