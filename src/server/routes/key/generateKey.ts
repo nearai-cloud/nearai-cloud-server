@@ -2,10 +2,9 @@ import { RequestHandler } from 'express';
 import ctx from 'express-http-context';
 import * as v from 'valibot';
 import { lightLLM } from '../../../services/light-llm';
-import { CTX_KEYS, INPUT_LIMITS } from '../../../utils/consts';
-import { throwHttpError } from '../../../utils/error';
-import { HTTP_STATUS_CODES } from '../../../utils/consts';
+import { CONTEXT_KEYS, INPUT_LIMITS } from '../../../utils/consts';
 import { Auth, auth } from '../../middlewares/auth';
+import { parseInput, parseOutput } from '../../../utils/parsers';
 
 const inputSchema = v.object({
   keyAlias: v.optional(
@@ -13,29 +12,15 @@ const inputSchema = v.object({
   ),
 });
 
-type Input = v.InferOutput<typeof inputSchema>;
-
-const inputParser: RequestHandler = (req, res, next) => {
-  let input: Input;
-
-  try {
-    input = v.parse(inputSchema, req.body);
-  } catch (e: unknown) {
-    throwHttpError({
-      status: HTTP_STATUS_CODES.BAD_REQUEST,
-      cause: e,
-    });
-  }
-
-  ctx.set(CTX_KEYS.INPUT, input);
-
-  next();
-};
+const outputSchema = v.object({
+  key: v.string(),
+  expires: v.nullable(v.string()),
+});
 
 const resolver: RequestHandler = async (req, res) => {
-  const { user }: Auth = ctx.get(CTX_KEYS.AUTH);
+  const { user }: Auth = ctx.get(CONTEXT_KEYS.AUTH);
 
-  const { keyAlias }: Input = ctx.get(CTX_KEYS.INPUT);
+  const { keyAlias } = parseInput(inputSchema, req.body);
 
   const { key, expires } = await lightLLM.generateKey({
     userId: user.userId,
@@ -44,10 +29,12 @@ const resolver: RequestHandler = async (req, res) => {
     teamId: undefined, // TODO: Specify a team id
   });
 
-  res.json({
+  const output = parseOutput(outputSchema, {
     key,
     expires,
   });
+
+  res.json(output);
 };
 
-export const generateKey: RequestHandler[] = [auth, inputParser, resolver];
+export const generateKey: RequestHandler[] = [auth, resolver];

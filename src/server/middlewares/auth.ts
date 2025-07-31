@@ -2,9 +2,9 @@ import { RequestHandler, Request } from 'express';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import ctx from 'express-http-context';
 import {
-  AUTHORIZATION_BEARER,
-  CTX_KEYS,
-  HTTP_STATUS_CODES,
+  BEARER_TOKEN_PREFIX,
+  CONTEXT_KEYS,
+  STATUS_CODES,
 } from '../../utils/consts';
 import { createSupabaseClient } from '../../services/supabase';
 import { throwHttpError } from '../../utils/error';
@@ -29,7 +29,7 @@ export const weakAuth: RequestHandler = async (req, res, next) => {
     authUser,
   };
 
-  ctx.set(CTX_KEYS.WEAK_AUTH, weakAuth);
+  ctx.set(CONTEXT_KEYS.WEAK_AUTH, weakAuth);
 
   next();
 };
@@ -41,7 +41,7 @@ export const auth: RequestHandler = async (req, res, next) => {
 
   if (!user) {
     throwHttpError({
-      status: HTTP_STATUS_CODES.FORBIDDEN,
+      status: STATUS_CODES.FORBIDDEN,
       message: 'User not registered',
     });
   }
@@ -51,7 +51,7 @@ export const auth: RequestHandler = async (req, res, next) => {
     user,
   };
 
-  ctx.set(CTX_KEYS.AUTH, auth);
+  ctx.set(CONTEXT_KEYS.AUTH, auth);
 
   next();
 };
@@ -61,19 +61,19 @@ async function authorize(req: Request): Promise<AuthUser> {
 
   if (!authorization) {
     throw throwHttpError({
-      status: HTTP_STATUS_CODES.UNAUTHORIZED,
+      status: STATUS_CODES.UNAUTHORIZED,
       message: 'Missing authorization token',
     });
   }
 
-  if (!authorization.startsWith(AUTHORIZATION_BEARER)) {
+  if (!authorization.startsWith(BEARER_TOKEN_PREFIX)) {
     throwHttpError({
-      status: HTTP_STATUS_CODES.UNAUTHORIZED,
-      message: `Authorization token must start with '${AUTHORIZATION_BEARER}'`,
+      status: STATUS_CODES.UNAUTHORIZED,
+      message: `Authorization token must start with '${BEARER_TOKEN_PREFIX}'`,
     });
   }
 
-  const token = authorization.slice(AUTHORIZATION_BEARER.length);
+  const token = authorization.slice(BEARER_TOKEN_PREFIX.length);
 
   const client = createSupabaseClient();
 
@@ -90,7 +90,7 @@ async function authorize(req: Request): Promise<AuthUser> {
 
   if (!user) {
     throwHttpError({
-      status: HTTP_STATUS_CODES.UNAUTHORIZED,
+      status: STATUS_CODES.UNAUTHORIZED,
       message: 'Invalid authorization token',
     });
   }

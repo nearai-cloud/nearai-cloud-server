@@ -21,10 +21,6 @@ export type RegisterUserParams = {
   userEmail?: string;
 };
 
-export type GetUserParams = {
-  userId: string;
-};
-
 export type User = {
   userId: string;
   teamId: string | null;
@@ -60,7 +56,7 @@ export type Key = {
   spend: number;
   expires: string | null;
   models: string[];
-  userId: string;
+  userId: string | null;
   teamId: string | null;
   rpmLimit: number | null;
   tpmLimit: number | null;
