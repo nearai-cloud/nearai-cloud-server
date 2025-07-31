@@ -1,12 +1,8 @@
 import { RequestHandler } from 'express';
 import ctx from 'express-http-context';
-import * as v from 'valibot';
 import { lightLLM } from '../../../services/light-llm';
-import { CONTEXT_KEYS } from '../../../utils/consts';
+import { CONTEXT_KEYS, STATUS_CODES } from '../../../utils/consts';
 import { WeakAuth, weakAuth } from '../../middlewares/auth';
-import { parseOutput } from '../../../utils/parsers';
-
-const outputSchema = v.object({});
 
 const resolver: RequestHandler = async (req, res) => {
   const { authUser }: WeakAuth = ctx.get(CONTEXT_KEYS.WEAK_AUTH);
@@ -16,9 +12,7 @@ const resolver: RequestHandler = async (req, res) => {
     userEmail: authUser.email,
   });
 
-  const output = parseOutput(outputSchema, {});
-
-  res.json(output);
+  res.status(STATUS_CODES.NO_CONTENT).send();
 };
 
 export const registerUser: RequestHandler[] = [weakAuth, resolver];
