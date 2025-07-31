@@ -2,15 +2,17 @@ import { RequestHandler } from 'express';
 import ctx from 'express-http-context';
 import * as v from 'valibot';
 import { lightLLM } from '../../../services/light-llm';
-import { CONTEXT_KEYS, STATUS_CODES } from '../../../utils/consts';
+import { CTX_KEYS, STATUS_CODES } from '../../../utils/consts';
 import { Auth, auth } from '../../middlewares/auth';
-import { parseInput, parseOutput } from '../../../utils/parsers';
 import { throwHttpError } from '../../../utils/error';
 import { Key } from '../../../types/light-llm';
+import { inputParser, outputParser, sendOutput } from '../../middlewares/parse';
 
-const inputSchema = v.object({
+const queryInputSchema = v.object({
   keyOrKeyHash: v.string(),
 });
+
+type QueryInput = v.InferOutput<typeof queryInputSchema>;
 
 const outputSchema = v.nullable(
   v.object({
@@ -29,10 +31,11 @@ const outputSchema = v.nullable(
   }),
 );
 
-const additionalAuth: RequestHandler = async (req, res, next) => {
-  const { user }: Auth = ctx.get(CONTEXT_KEYS.AUTH);
+type Output = v.InferInput<typeof outputSchema>;
 
-  const { keyOrKeyHash } = parseInput(inputSchema, req.query);
+const additionalAuth: RequestHandler = async (req, res, next) => {
+  const { user }: Auth = ctx.get(CTX_KEYS.AUTH);
+  const { keyOrKeyHash }: QueryInput = ctx.get(CTX_KEYS.QUERY_INPUT);
 
   const key = await lightLLM.getKey(keyOrKeyHash);
 
@@ -48,30 +51,43 @@ const additionalAuth: RequestHandler = async (req, res, next) => {
   next();
 };
 
-const resolver: RequestHandler = async (req, res) => {
+const resolver: RequestHandler = async (req, res, next) => {
   const key: Key | null = ctx.get('key');
 
-  const output = parseOutput(
-    outputSchema,
-    key
-      ? {
-          keyOrKeyHash: key.keyOrKeyHash,
-          keyName: key.keyName,
-          keyAlias: key.keyAlias,
-          spend: key.spend,
-          expires: key.expires,
-          userId: key.userId,
-          rpmLimit: key.rpmLimit,
-          tpmLimit: key.tpmLimit,
-          budgetId: key.budgetId,
-          maxBudget: key.maxBudget,
-          budgetDuration: key.budgetDuration,
-          budgetResetAt: key.budgetResetAt,
-        }
-      : null,
-  );
-
-  res.json(output);
+  if (key) {
+    sendOutput<Output>({
+      output: {
+        keyOrKeyHash: key.keyOrKeyHash,
+        keyName: key.keyName,
+        keyAlias: key.keyAlias,
+        spend: key.spend,
+        expires: key.expires,
+        userId: key.userId,
+        rpmLimit: key.rpmLimit,
+        tpmLimit: key.tpmLimit,
+        budgetId: key.budgetId,
+        maxBudget: key.maxBudget,
+        budgetDuration: key.budgetDuration,
+        budgetResetAt: key.budgetResetAt,
+      },
+      next,
+    });
+  } else {
+    sendOutput<Output>({
+      output: null,
+      next,
+    });
+  }
 };
 
-export const getKey: RequestHandler[] = [auth, additionalAuth, resolver];
+export const getKey: RequestHandler[] = [
+  inputParser({
+    queryInputSchema,
+  }),
+  auth,
+  additionalAuth,
+  resolver,
+  outputParser({
+    outputSchema,
+  }),
+];

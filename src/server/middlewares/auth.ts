@@ -3,7 +3,7 @@ import { User as SupabaseUser } from '@supabase/supabase-js';
 import ctx from 'express-http-context';
 import {
   BEARER_TOKEN_PREFIX,
-  CONTEXT_KEYS,
+  CTX_KEYS,
   STATUS_CODES,
 } from '../../utils/consts';
 import { createSupabaseClient } from '../../services/supabase';
@@ -29,7 +29,7 @@ export const weakAuth: RequestHandler = async (req, res, next) => {
     authUser,
   };
 
-  ctx.set(CONTEXT_KEYS.WEAK_AUTH, weakAuth);
+  ctx.set(CTX_KEYS.WEAK_AUTH, weakAuth);
 
   next();
 };
@@ -51,7 +51,7 @@ export const auth: RequestHandler = async (req, res, next) => {
     user,
   };
 
-  ctx.set(CONTEXT_KEYS.AUTH, auth);
+  ctx.set(CTX_KEYS.AUTH, auth);
 
   next();
 };

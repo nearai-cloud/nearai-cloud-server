@@ -13,7 +13,11 @@ export const STATUS_CODES = {
   NOT_FOUND: 404,
 } as const;
 
-export const CONTEXT_KEYS = {
+export const CTX_KEYS = {
   WEAK_AUTH: 'weak-auth',
   AUTH: 'auth',
+  PARAMS_INPUT: 'input:params',
+  QUERY_INPUT: 'input:query',
+  BODY_INPUT: 'input:body',
+  OUTPUT: 'output',
 } as const;

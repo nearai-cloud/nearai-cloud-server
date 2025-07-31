@@ -2,9 +2,9 @@ import { RequestHandler } from 'express';
 import ctx from 'express-http-context';
 import * as v from 'valibot';
 import { lightLLM } from '../../../services/light-llm';
-import { CONTEXT_KEYS } from '../../../utils/consts';
+import { CTX_KEYS } from '../../../utils/consts';
 import { WeakAuth, weakAuth } from '../../middlewares/auth';
-import { parseOutput } from '../../../utils/parsers';
+import { outputParser, sendOutput } from '../../middlewares/parse';
 
 const outputSchema = v.nullable(
   v.object({
@@ -13,22 +13,31 @@ const outputSchema = v.nullable(
   }),
 );
 
-const resolver: RequestHandler = async (req, res) => {
-  const { authUser }: WeakAuth = ctx.get(CONTEXT_KEYS.WEAK_AUTH);
+type Output = v.InferInput<typeof outputSchema>;
+
+const resolver: RequestHandler = async (req, res, next) => {
+  const { authUser }: WeakAuth = ctx.get(CTX_KEYS.WEAK_AUTH);
 
   const user = await lightLLM.getUser(authUser.id);
 
-  const output = parseOutput(
-    outputSchema,
-    user
-      ? {
-          userId: user.userId,
-          userEmail: user.userEmail,
-        }
-      : null,
-  );
-
-  res.json(output);
+  if (user) {
+    sendOutput<Output>({
+      output: {
+        userId: user.userId,
+        userEmail: user.userEmail,
+      },
+      next,
+    });
+  } else {
+    sendOutput<Output>({
+      output: null,
+      next,
+    });
+  }
 };
 
-export const getUser: RequestHandler[] = [weakAuth, resolver];
+export const getUser: RequestHandler[] = [
+  weakAuth,
+  resolver,
+  outputParser({ outputSchema }),
+];
