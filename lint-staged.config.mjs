@@ -1,3 +1,3 @@
 export default {
-  '*.(ts|mjs)': () => ['pnpm lint', 'pnpm prettier'],
+  '*.(ts|mjs)': () => ['pnpm lint', 'pnpm prettier', 'pnpm check'],
 };

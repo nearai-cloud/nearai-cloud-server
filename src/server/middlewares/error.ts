@@ -1,6 +1,7 @@
 import { ErrorRequestHandler } from 'express';
-import { HttpError } from 'http-errors';
+import { HttpError, isHttpError } from 'http-errors';
 import { throwHttpError } from '../../utils/error';
+import { HTTP_STATUS_CODES } from '../../utils/consts';
 
 export function httpError({
   isDev = true,
@@ -17,7 +18,13 @@ export function httpError({
     if (isDev) {
       console.error(e);
     }
+
+    if (isHttpError(e)) {
+      throw e;
+    }
+
     throwHttpError({
+      status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
       cause: e,
     });
   };

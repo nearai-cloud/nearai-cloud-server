@@ -10,6 +10,7 @@
     "start": "node dist/main.js",
     "lint": "eslint 'src/**/*.ts' '*.mjs' --fix",
     "prettier": "prettier 'src/**/*.ts' '*.mjs' --write --list-different",
+    "check": "tsc",
     "prepare": "husky"
   },
   "dependencies": {
