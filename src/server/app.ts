@@ -22,6 +22,8 @@ export function runServer() {
   app.use(incomingLog({ isDev: config.isDev }));
   app.use(outgoingLog({ isDev: config.isDev }));
 
+  app.use(express.json());
+
   app.use(router);
 
   app.use(

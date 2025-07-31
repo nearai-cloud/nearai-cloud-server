@@ -1,18 +1,16 @@
 import * as v from 'valibot';
 import { NextFunction } from 'express';
 
-export type InputSchema = v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>;
+export type Schema = v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>;
 
 export type InputParserOptions = {
-  paramsInputSchema?: InputSchema;
-  queryInputSchema?: InputSchema;
-  bodyInputSchema?: InputSchema;
+  paramsInputSchema?: Schema;
+  queryInputSchema?: Schema;
+  bodyInputSchema?: Schema;
 };
 
-export type OutputSchema = v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>;
-
 export type OutputParserOptions = {
-  outputSchema: OutputSchema;
+  outputSchema: Schema;
 };
 
 export type SendOutputOptions<T> = {

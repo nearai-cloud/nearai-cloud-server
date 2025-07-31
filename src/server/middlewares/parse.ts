@@ -5,6 +5,7 @@ import { CTX_KEYS, STATUS_CODES } from '../../utils/consts';
 import { RequestHandler } from 'express';
 import {
   InputParserOptions,
+  Schema,
   OutputParserOptions,
   SendOutputOptions,
 } from '../../types/parsers';
@@ -15,66 +16,42 @@ export function inputParser({
   bodyInputSchema,
 }: InputParserOptions = {}): RequestHandler {
   return (req, res, next) => {
-    let params: unknown;
-    let query: unknown;
-    let body: unknown;
-
-    try {
-      if (paramsInputSchema) {
-        params = v.parse(paramsInputSchema, req.params);
-      }
-
-      if (queryInputSchema) {
-        query = v.parse(queryInputSchema, req.query);
-      }
-
-      if (bodyInputSchema) {
-        body = v.parse(bodyInputSchema, req.body);
-      }
-    } catch (e: unknown) {
-      if (e instanceof v.ValiError) {
-        throwHttpError({
-          status: STATUS_CODES.BAD_REQUEST,
-          cause: e,
-        });
-      }
-
-      throw e;
+    if (paramsInputSchema) {
+      ctx.set(CTX_KEYS.PARAMS_INPUT, parseInput(paramsInputSchema, req.params));
     }
 
-    if (params) {
-      ctx.set(CTX_KEYS.PARAMS_INPUT, params);
+    if (queryInputSchema) {
+      ctx.set(CTX_KEYS.QUERY_INPUT, parseInput(queryInputSchema, req.query));
     }
 
-    if (query) {
-      ctx.set(CTX_KEYS.QUERY_INPUT, query);
-    }
-
-    if (body) {
-      ctx.set(CTX_KEYS.BODY_INPUT, body);
+    if (bodyInputSchema) {
+      ctx.set(CTX_KEYS.BODY_INPUT, parseInput(bodyInputSchema, req.body));
     }
 
     next();
   };
 }
 
+function parseInput(schema: Schema, data: unknown): unknown {
+  try {
+    return v.parse(schema, data);
+  } catch (e: unknown) {
+    if (e instanceof v.ValiError) {
+      throwHttpError({
+        status: STATUS_CODES.BAD_REQUEST,
+        cause: e,
+      });
+    }
+
+    throw e;
+  }
+}
+
 export function outputParser({
   outputSchema,
 }: OutputParserOptions): RequestHandler {
   return (req, res) => {
-    let output: unknown = ctx.get(CTX_KEYS.OUTPUT);
-
-    try {
-      output = v.parse(outputSchema, output);
-    } catch (e: unknown) {
-      if (e instanceof v.ValiError) {
-        throwHttpError({
-          cause: e,
-        });
-      }
-
-      throw e;
-    }
+    const output = parseOutput(outputSchema, ctx.get(CTX_KEYS.OUTPUT));
 
     if (output === undefined) {
       res.send();
@@ -82,6 +59,20 @@ export function outputParser({
       res.json(output);
     }
   };
+}
+
+function parseOutput(schema: Schema, data: unknown): unknown {
+  try {
+    return v.parse(schema, data);
+  } catch (e: unknown) {
+    if (e instanceof v.ValiError) {
+      throwHttpError({
+        cause: e,
+      });
+    }
+
+    throw e;
+  }
 }
 
 export function sendOutput<T>({ output, next }: SendOutputOptions<T>) {
