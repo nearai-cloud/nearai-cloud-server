@@ -42,7 +42,7 @@ export const auth: RequestHandler = async (req, res, next) => {
   if (!user) {
     throwHttpError({
       status: STATUS_CODES.FORBIDDEN,
-      message: 'User not registered',
+      message: 'Incomplete user registration',
     });
   }
 
@@ -84,6 +84,7 @@ async function authorize(req: Request): Promise<AuthUser> {
 
   if (error) {
     throwHttpError({
+      status: STATUS_CODES.UNAUTHORIZED,
       cause: error,
     });
   }
