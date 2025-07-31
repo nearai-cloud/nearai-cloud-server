@@ -1,6 +1,6 @@
 import express from 'express';
 import { ping } from './ping';
-import { notFound } from './not-found';
+import { notFound } from '../middlewares/not-found';
 import { userRouter } from './user';
 import { keyRouter } from './key';
 

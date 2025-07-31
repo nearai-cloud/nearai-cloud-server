@@ -6,18 +6,19 @@ import { lightLLM } from '../../../services/light-llm';
 import { KEY_ALIAS_MAX_LENGTH } from '../../../utils/consts';
 import { throwHttpError } from '../../../utils/error';
 import { STATUS_CODES } from '../../../utils/consts';
+import { auth } from '../../middlewares/auth';
 
-export const generate: RequestHandler = async (req, res) => {
-  const user: User = ctx.get('user');
+const inputSchema = v.object({
+  keyAlias: v.optional(v.pipe(v.string(), v.maxLength(KEY_ALIAS_MAX_LENGTH))),
+});
 
-  const bodySchema = v.object({
-    keyAlias: v.pipe(v.string(), v.maxLength(KEY_ALIAS_MAX_LENGTH)),
-  });
+type Input = v.InferOutput<typeof inputSchema>;
 
-  let body;
+const input: RequestHandler = (req, res, next) => {
+  let input: Input;
 
   try {
-    body = v.parse(bodySchema, req.body);
+    input = v.parse(inputSchema, req.body);
   } catch (e: unknown) {
     throwHttpError({
       status: STATUS_CODES.BAD_REQUEST,
@@ -25,9 +26,18 @@ export const generate: RequestHandler = async (req, res) => {
     });
   }
 
+  ctx.set('input', input);
+
+  next();
+};
+
+const resolver: RequestHandler = async (req, res) => {
+  const user: User = ctx.get('user');
+  const input: Input = ctx.get('input');
+
   const { key, expires } = await lightLLM.generateKey({
     userId: user.id,
-    keyAlias: body.keyAlias,
+    keyAlias: input.keyAlias,
     models: ['all-team-models'],
     teamId: undefined, // TODO: Specify a team id
   });
@@ -37,3 +47,5 @@ export const generate: RequestHandler = async (req, res) => {
     expires,
   });
 };
+
+export const generate: RequestHandler[] = [auth, input, resolver];

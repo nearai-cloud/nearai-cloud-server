@@ -4,7 +4,7 @@ import { AUTHORIZATION_BEARER, STATUS_CODES } from '../../utils/consts';
 import { createSupabaseClient } from '../../services/supabase';
 import { throwHttpError } from '../../utils/error';
 
-export const sessionAuth: RequestHandler = async (req, res, next) => {
+export const auth: RequestHandler = async (req, res, next) => {
   const authorization = req.headers['authorization'];
 
   if (!authorization) {
