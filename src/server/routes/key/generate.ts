@@ -11,7 +11,7 @@ export const generate: RequestHandler = async (req, res) => {
   const user: User = ctx.get('user');
 
   const bodySchema = v.object({
-    alias: v.pipe(v.string(), v.maxLength(KEY_ALIAS_MAX_LENGTH)),
+    keyAlias: v.pipe(v.string(), v.maxLength(KEY_ALIAS_MAX_LENGTH)),
   });
 
   let body;
@@ -27,7 +27,7 @@ export const generate: RequestHandler = async (req, res) => {
 
   const { key, expires } = await lightLLM.generateKey({
     userId: user.id,
-    keyAlias: body.alias,
+    keyAlias: body.keyAlias,
     models: ['all-team-models'],
     teamId: undefined, // TODO: Specify a team id
   });
