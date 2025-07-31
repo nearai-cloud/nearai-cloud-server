@@ -16,8 +16,21 @@ export type PostOptions<T> = {
 export type Path = `/${string}`;
 
 export type RegisterUserParams = {
-  id: string;
-  email?: string;
+  userId: string;
+  teamId?: string;
+  userEmail?: string;
+};
+
+export type GetUserInfoParams = {
+  userId: string;
+};
+
+export type GetUserInfoResponse = {
+  userInfo: {
+    userId: string;
+    teamId: string | null;
+    userEmail: string | null;
+  } | null;
 };
 
 export type GenerateKeyParams = {
@@ -47,20 +60,22 @@ export type GetKeyInfoParams = {
 };
 
 export type GetKeyInfoResponse = {
-  keyOrKeyHash: string;
-  keyName: string; // Simplified key string. e.g. sk-...ABcd
-  keyAlias: string | null;
-  spend: number;
-  expires: string | null;
-  models: string[];
-  userId: string;
-  teamId: string | null;
-  rpmLimit: number | null;
-  tpmLimit: number | null;
-  budgetId: string | null;
-  maxBudget: number | null;
-  budgetDuration: string | null;
-  budgetResetAt: string | null;
+  keyInfo: {
+    keyOrKeyHash: string;
+    keyName: string; // Simplified key string. e.g. sk-...ABcd
+    keyAlias: string | null;
+    spend: number;
+    expires: string | null;
+    models: string[];
+    userId: string;
+    teamId: string | null;
+    rpmLimit: number | null;
+    tpmLimit: number | null;
+    budgetId: string | null;
+    maxBudget: number | null;
+    budgetDuration: string | null;
+    budgetResetAt: string | null;
+  } | null;
 };
 
 export type ListKeysParams = {

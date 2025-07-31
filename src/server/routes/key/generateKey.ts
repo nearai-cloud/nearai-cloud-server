@@ -1,20 +1,21 @@
 import { RequestHandler } from 'express';
 import ctx from 'express-http-context';
-import { User } from '@supabase/supabase-js';
 import * as v from 'valibot';
 import { lightLLM } from '../../../services/light-llm';
-import { KEY_ALIAS_MAX_LENGTH } from '../../../utils/consts';
+import { CTX_KEYS, INPUT_LIMITS } from '../../../utils/consts';
 import { throwHttpError } from '../../../utils/error';
 import { STATUS_CODES } from '../../../utils/consts';
-import { auth } from '../../middlewares/auth';
+import { Auth, auth } from '../../middlewares/auth';
 
 const inputSchema = v.object({
-  keyAlias: v.optional(v.pipe(v.string(), v.maxLength(KEY_ALIAS_MAX_LENGTH))),
+  keyAlias: v.optional(
+    v.pipe(v.string(), v.maxLength(INPUT_LIMITS.KEY_ALIAS_MAX_LENGTH)),
+  ),
 });
 
 type Input = v.InferOutput<typeof inputSchema>;
 
-const input: RequestHandler = (req, res, next) => {
+const inputParser: RequestHandler = (req, res, next) => {
   let input: Input;
 
   try {
@@ -26,18 +27,18 @@ const input: RequestHandler = (req, res, next) => {
     });
   }
 
-  ctx.set('input', input);
+  ctx.set(CTX_KEYS.INPUT, input);
 
   next();
 };
 
 const resolver: RequestHandler = async (req, res) => {
-  const user: User = ctx.get('user');
-  const input: Input = ctx.get('input');
+  const { user }: Auth = ctx.get(CTX_KEYS.AUTH);
+  const { keyAlias }: Input = ctx.get(CTX_KEYS.INPUT);
 
   const { key, expires } = await lightLLM.generateKey({
     userId: user.id,
-    keyAlias: input.keyAlias,
+    keyAlias: keyAlias,
     models: ['all-team-models'],
     teamId: undefined, // TODO: Specify a team id
   });
@@ -48,4 +49,4 @@ const resolver: RequestHandler = async (req, res) => {
   });
 };
 
-export const generate: RequestHandler[] = [auth, input, resolver];
+export const generateKey: RequestHandler[] = [auth, inputParser, resolver];

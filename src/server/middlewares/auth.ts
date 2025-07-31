@@ -1,8 +1,17 @@
 import { RequestHandler } from 'express';
 import ctx from 'express-http-context';
-import { AUTHORIZATION_BEARER, STATUS_CODES } from '../../utils/consts';
+import {
+  AUTHORIZATION_BEARER,
+  CTX_KEYS,
+  STATUS_CODES,
+} from '../../utils/consts';
 import { createSupabaseClient } from '../../services/supabase';
 import { throwHttpError } from '../../utils/error';
+import { User } from '@supabase/supabase-js';
+
+export type Auth = {
+  user: User;
+};
 
 export const auth: RequestHandler = async (req, res, next) => {
   const authorization = req.headers['authorization'];
@@ -43,7 +52,9 @@ export const auth: RequestHandler = async (req, res, next) => {
     });
   }
 
-  ctx.set('user', user);
+  ctx.set(CTX_KEYS.AUTH, {
+    user,
+  });
 
   next();
 };
