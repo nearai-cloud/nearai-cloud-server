@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import { addColor, getHttpStatusColor } from '../../utils/color';
 import { throwHttpError } from '../../utils/error';
 
-export function preLog({
+export function incomingLog({
   isDev = true,
 }: { isDev?: boolean } = {}): RequestHandler {
   return morgan(
@@ -43,7 +43,7 @@ export function preLog({
   );
 }
 
-export function postLog({
+export function outgoingLog({
   isDev = true,
 }: { isDev?: boolean } = {}): RequestHandler {
   return morgan((tokens, req, res) => {
