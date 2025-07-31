@@ -1,18 +1,22 @@
 import { RequestHandler } from 'express';
 import ctx from 'express-http-context';
 import { lightLLM } from '../../../services/light-llm';
-import { CTX_KEYS, HTTP_STATUS_CODES } from '../../../utils/consts';
+import { CTX_KEYS } from '../../../utils/consts';
 import { WeakAuth, weakAuth } from '../../middlewares/auth';
 
 const resolver: RequestHandler = async (req, res) => {
   const { authUser }: WeakAuth = ctx.get(CTX_KEYS.WEAK_AUTH);
 
-  await lightLLM.registerUser({
-    userId: authUser.id,
-    userEmail: authUser.email,
-  });
+  const user = await lightLLM.getUserInfo(authUser.id);
 
-  res.sendStatus(HTTP_STATUS_CODES.SUCCESS);
+  if (user) {
+    res.json({
+      userId: user.userId,
+      userEmail: user.userEmail,
+    });
+  } else {
+    res.json(null);
+  }
 };
 
-export const registerUser: RequestHandler[] = [weakAuth, resolver];
+export const getUser: RequestHandler[] = [weakAuth, resolver];

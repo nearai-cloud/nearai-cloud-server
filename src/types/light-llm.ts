@@ -21,16 +21,14 @@ export type RegisterUserParams = {
   userEmail?: string;
 };
 
-export type GetUserInfoParams = {
+export type GetUserParams = {
   userId: string;
 };
 
-export type GetUserInfoResponse = {
-  userInfo: {
-    userId: string;
-    teamId: string | null;
-    userEmail: string | null;
-  } | null;
+export type User = {
+  userId: string;
+  teamId: string | null;
+  userEmail: string | null;
 };
 
 export type GenerateKeyParams = {
@@ -55,27 +53,21 @@ export type DeleteKeyParams = {
   keyAliases?: string[];
 };
 
-export type GetKeyInfoParams = {
+export type Key = {
   keyOrKeyHash: string;
-};
-
-export type GetKeyInfoResponse = {
-  keyInfo: {
-    keyOrKeyHash: string;
-    keyName: string; // Simplified key string. e.g. sk-...ABcd
-    keyAlias: string | null;
-    spend: number;
-    expires: string | null;
-    models: string[];
-    userId: string;
-    teamId: string | null;
-    rpmLimit: number | null;
-    tpmLimit: number | null;
-    budgetId: string | null;
-    maxBudget: number | null;
-    budgetDuration: string | null;
-    budgetResetAt: string | null;
-  } | null;
+  keyName: string; // Simplified key string. e.g. sk-...ABcd
+  keyAlias: string | null;
+  spend: number;
+  expires: string | null;
+  models: string[];
+  userId: string;
+  teamId: string | null;
+  rpmLimit: number | null;
+  tpmLimit: number | null;
+  budgetId: string | null;
+  maxBudget: number | null;
+  budgetDuration: string | null;
+  budgetResetAt: string | null;
 };
 
 export type ListKeysParams = {

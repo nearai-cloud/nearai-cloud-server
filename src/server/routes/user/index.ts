@@ -1,8 +1,8 @@
 import express from 'express';
 import { registerUser } from './registerUser';
-import { getUserInfo } from './getUserInfo';
+import { getUser } from './getUser';
 
 export const userRouter = express.Router();
 
 userRouter.post('/register', registerUser);
-userRouter.get('/info', getUserInfo);
+userRouter.get('/info', getUser);

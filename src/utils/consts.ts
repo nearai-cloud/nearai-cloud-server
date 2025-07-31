@@ -6,7 +6,7 @@ export const INPUT_LIMITS = {
   KEY_ALIAS_MAX_LENGTH: 256,
 } as const;
 
-export const STATUS_CODES = {
+export const HTTP_STATUS_CODES = {
   SUCCESS: 200,
   BAD_REQUEST: 400,
   UNAUTHORIZED: 401,
@@ -16,6 +16,7 @@ export const STATUS_CODES = {
 } as const;
 
 export const CTX_KEYS = {
+  WEAK_AUTH: 'ctx:weak-auth',
   AUTH: 'ctx:auth',
   INPUT: 'ctx:input',
 } as const;

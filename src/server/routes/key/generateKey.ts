@@ -4,7 +4,7 @@ import * as v from 'valibot';
 import { lightLLM } from '../../../services/light-llm';
 import { CTX_KEYS, INPUT_LIMITS } from '../../../utils/consts';
 import { throwHttpError } from '../../../utils/error';
-import { STATUS_CODES } from '../../../utils/consts';
+import { HTTP_STATUS_CODES } from '../../../utils/consts';
 import { Auth, auth } from '../../middlewares/auth';
 
 const inputSchema = v.object({
@@ -22,7 +22,7 @@ const inputParser: RequestHandler = (req, res, next) => {
     input = v.parse(inputSchema, req.body);
   } catch (e: unknown) {
     throwHttpError({
-      status: STATUS_CODES.BAD_REQUEST,
+      status: HTTP_STATUS_CODES.BAD_REQUEST,
       cause: e,
     });
   }
@@ -34,10 +34,11 @@ const inputParser: RequestHandler = (req, res, next) => {
 
 const resolver: RequestHandler = async (req, res) => {
   const { user }: Auth = ctx.get(CTX_KEYS.AUTH);
+
   const { keyAlias }: Input = ctx.get(CTX_KEYS.INPUT);
 
   const { key, expires } = await lightLLM.generateKey({
-    userId: user.id,
+    userId: user.userId,
     keyAlias: keyAlias,
     models: ['all-team-models'],
     teamId: undefined, // TODO: Specify a team id

@@ -8,10 +8,8 @@ import {
   GenerateKeyResponse,
   ListKeysParams,
   ListKeysResponse,
-  GetKeyInfoParams,
-  GetKeyInfoResponse,
-  GetUserInfoParams,
-  GetUserInfoResponse,
+  User,
+  Key,
 } from '../types/light-llm';
 import { config } from '../config';
 import axios, { AxiosError, AxiosResponse } from 'axios';
@@ -61,9 +59,7 @@ export class LightLLM {
     });
   }
 
-  async getUserInfo({
-    userId,
-  }: GetUserInfoParams): Promise<GetUserInfoResponse> {
+  async getUserInfo(userId: string): Promise<User | null> {
     const res = await this.GET<{
       user_info: {
         user_id?: string;
@@ -78,17 +74,13 @@ export class LightLLM {
     });
 
     if (!res.data.user_info.user_id) {
-      return {
-        userInfo: null,
-      };
+      return null;
     }
 
     return {
-      userInfo: {
-        userId: res.data.user_info.user_id,
-        teamId: res.data.user_info.team_id,
-        userEmail: res.data.user_info.user_email,
-      },
+      userId: res.data.user_info.user_id,
+      teamId: res.data.user_info.team_id,
+      userEmail: res.data.user_info.user_email,
     };
   }
 
@@ -155,9 +147,7 @@ export class LightLLM {
     });
   }
 
-  async getKeyInfo({
-    keyOrKeyHash,
-  }: GetKeyInfoParams): Promise<GetKeyInfoResponse> {
+  async getKey(keyOrKeyHash: string): Promise<Key | null> {
     let res: AxiosResponse<{
       key: string;
       info: {
@@ -186,31 +176,27 @@ export class LightLLM {
       });
     } catch (e: unknown) {
       if (e instanceof AxiosError && e.status === 404) {
-        return {
-          keyInfo: null,
-        };
+        return null;
       }
 
       throw e;
     }
 
     return {
-      keyInfo: {
-        keyOrKeyHash: res.data.key,
-        keyName: res.data.info.key_name,
-        keyAlias: res.data.info.key_alias,
-        spend: res.data.info.spend,
-        expires: res.data.info.expires,
-        models: res.data.info.models,
-        userId: res.data.info.user_id,
-        teamId: res.data.info.team_id,
-        rpmLimit: res.data.info.rpm_limit,
-        tpmLimit: res.data.info.tpm_limit,
-        budgetId: res.data.info.budget_id,
-        maxBudget: res.data.info.max_budget,
-        budgetDuration: res.data.info.budget_duration,
-        budgetResetAt: res.data.info.budget_reset_at,
-      },
+      keyOrKeyHash: res.data.key,
+      keyName: res.data.info.key_name,
+      keyAlias: res.data.info.key_alias,
+      spend: res.data.info.spend,
+      expires: res.data.info.expires,
+      models: res.data.info.models,
+      userId: res.data.info.user_id,
+      teamId: res.data.info.team_id,
+      rpmLimit: res.data.info.rpm_limit,
+      tpmLimit: res.data.info.tpm_limit,
+      budgetId: res.data.info.budget_id,
+      maxBudget: res.data.info.max_budget,
+      budgetDuration: res.data.info.budget_duration,
+      budgetResetAt: res.data.info.budget_reset_at,
     };
   }
 
