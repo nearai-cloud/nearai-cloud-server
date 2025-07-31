@@ -25,10 +25,15 @@ export const generate: RequestHandler = async (req, res) => {
     });
   }
 
-  await lightLLM.generateKey({
+  const { key, expires } = await lightLLM.generateKey({
     userId: user.id,
-    alias: body.alias,
+    keyAlias: body.alias,
+    models: ['all-team-models'],
+    teamId: undefined, // TODO: Specify a team id
   });
 
-  res.sendStatus(STATUS_CODES.SUCCESS);
+  res.json({
+    key,
+    expires,
+  });
 };

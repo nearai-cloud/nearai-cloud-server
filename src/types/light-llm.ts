@@ -3,24 +3,78 @@ export type LightLLMOptions = {
   adminKey: string;
 };
 
-export type GetOptions = {
+export type GetOptions<T> = {
   path: Path;
-  params: Record<string, unknown>;
+  params: T;
 };
 
-export type PostOptions = {
+export type PostOptions<T> = {
   path: Path;
-  body: Record<string, unknown>;
+  body: T;
 };
 
 export type Path = `/${string}`;
 
-export type CreateUserParams = {
+export type RegisterUserParams = {
   id: string;
   email?: string;
 };
 
-export type CreateKeyParams = {
+export type GenerateKeyParams = {
   userId: string;
-  alias: string;
+  teamId?: string;
+  keyAlias?: string;
+  keyDuration?: string; // e.g. 30s 30m 30h 30d
+  models?: string[];
+  maxBudget?: number;
+  budgetDuration?: string; // e.g. 30s 30m 30h 30d
+  rpmLimit?: number;
+  tpmLimit?: number;
+};
+
+export type GenerateKeyResponse = {
+  key: string;
+  expires: string | null; // ISO string
+};
+
+export type DeleteKeyParams = {
+  keyOrKeyHashes?: string[];
+  keyAliases?: string[];
+};
+
+export type GetKeyInfoParams = {
+  keyOrKeyHash: string;
+};
+
+export type GetKeyInfoResponse = {
+  keyOrKeyHash: string;
+  keyName: string; // Simplified key string. e.g. sk-...ABcd
+  keyAlias: string | null;
+  spend: number;
+  expires: string | null;
+  models: string[];
+  userId: string;
+  teamId: string | null;
+  rpmLimit: number | null;
+  tpmLimit: number | null;
+  budgetId: string | null;
+  maxBudget: number | null;
+  budgetDuration: string | null;
+  budgetResetAt: string | null;
+};
+
+export type ListKeysParams = {
+  page?: number; // Min: 1
+  pageSize?: number; // Min: 1 Max: 100
+  userId?: string;
+  teamId?: string;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+};
+
+export type ListKeysResponse = {
+  keyHashes: string[];
+  totalKeys: number;
+  page: number;
+  totalPages: number;
 };
