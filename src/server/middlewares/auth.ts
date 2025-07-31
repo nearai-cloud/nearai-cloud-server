@@ -62,6 +62,7 @@ async function authorize(req: Request): Promise<AuthUser> {
   if (!authorization) {
     throw throwHttpError({
       status: HTTP_STATUS_CODES.UNAUTHORIZED,
+      message: 'Missing authorization token',
     });
   }
 
