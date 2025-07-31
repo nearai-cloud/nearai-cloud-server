@@ -27,7 +27,6 @@ export function parseOutput<
   } catch (e: unknown) {
     if (e instanceof v.ValiError) {
       throwHttpError({
-        status: STATUS_CODES.INTERNAL_SERVER_ERROR,
         cause: e,
       });
     }
