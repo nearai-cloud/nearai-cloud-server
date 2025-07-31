@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import ctx from 'express-http-context';
 import { lightLLM } from '../../../services/light-llm';
-import { CTX_KEYS, HTTP_STATUS_CODES } from '../../../utils/consts';
+import { CTX_KEYS } from '../../../utils/consts';
 import { WeakAuth, weakAuth } from '../../middlewares/auth';
 
 const resolver: RequestHandler = async (req, res) => {
@@ -12,7 +12,7 @@ const resolver: RequestHandler = async (req, res) => {
     userEmail: authUser.email,
   });
 
-  res.sendStatus(HTTP_STATUS_CODES.SUCCESS);
+  res.json({});
 };
 
 export const registerUser: RequestHandler[] = [weakAuth, resolver];

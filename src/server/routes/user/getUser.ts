@@ -7,7 +7,7 @@ import { WeakAuth, weakAuth } from '../../middlewares/auth';
 const resolver: RequestHandler = async (req, res) => {
   const { authUser }: WeakAuth = ctx.get(CTX_KEYS.WEAK_AUTH);
 
-  const user = await lightLLM.getUserInfo(authUser.id);
+  const user = await lightLLM.getUser(authUser.id);
 
   if (user) {
     res.json({

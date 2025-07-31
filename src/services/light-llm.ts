@@ -23,27 +23,43 @@ export class LightLLM {
     this.adminKey = adminKey;
   }
 
-  private GET<T, P extends Record<string, unknown> = Record<string, unknown>>({
-    path,
-    params,
-  }: GetOptions<P>): Promise<AxiosResponse<T>> {
-    return axios.get(`${this.apiUrl}${path}`, {
-      headers: {
-        authorization: `Bearer ${this.adminKey}`,
-      },
-      params,
-    });
+  private async GET<
+    T,
+    P extends Record<string, unknown> = Record<string, unknown>,
+  >({ path, params }: GetOptions<P>): Promise<AxiosResponse<T>> {
+    try {
+      return await axios.get(`${this.apiUrl}${path}`, {
+        headers: {
+          authorization: `Bearer ${this.adminKey}`,
+        },
+        params,
+      });
+    } catch (e: unknown) {
+      if (e instanceof AxiosError && e.response?.data) {
+        throw new LightLLMError(e.response.data, e);
+      }
+
+      throw e;
+    }
   }
 
-  private POST<T, B extends Record<string, unknown> = Record<string, unknown>>({
-    path,
-    body,
-  }: PostOptions<B>): Promise<AxiosResponse<T>> {
-    return axios.post(`${this.apiUrl}${path}`, body, {
-      headers: {
-        authorization: `Bearer ${this.adminKey}`,
-      },
-    });
+  private async POST<
+    T,
+    B extends Record<string, unknown> = Record<string, unknown>,
+  >({ path, body }: PostOptions<B>): Promise<AxiosResponse<T>> {
+    try {
+      return await axios.post(`${this.apiUrl}${path}`, body, {
+        headers: {
+          authorization: `Bearer ${this.adminKey}`,
+        },
+      });
+    } catch (e: unknown) {
+      if (e instanceof AxiosError && e.response?.data) {
+        throw new LightLLMError(e.response.data, e);
+      }
+
+      throw e;
+    }
   }
 
   async registerUser({ userId, teamId, userEmail }: RegisterUserParams) {
@@ -59,7 +75,7 @@ export class LightLLM {
     });
   }
 
-  async getUserInfo(userId: string): Promise<User | null> {
+  async getUser(userId: string): Promise<User | null> {
     const res = await this.GET<{
       user_info: {
         user_id?: string;
@@ -243,6 +259,37 @@ export class LightLLM {
     };
   }
 }
+
+export class LightLLMError extends Error {
+  type: string;
+  param: string;
+  code: string;
+
+  status: number;
+
+  constructor(data: LightLLMErrorData, cause?: unknown) {
+    super(data.error.message, {
+      cause,
+    });
+
+    this.type = data.error.type;
+    this.param = data.error.param;
+    this.code = data.error.code;
+
+    this.status = Number(this.code);
+
+    this.name = LightLLMError.name;
+  }
+}
+
+export type LightLLMErrorData = {
+  error: {
+    message: string;
+    type: string;
+    param: string;
+    code: string;
+  };
+};
 
 export const lightLLM = new LightLLM({
   apiUrl: config.lightLLM.apiUrl,

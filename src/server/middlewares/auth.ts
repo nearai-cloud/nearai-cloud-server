@@ -37,7 +37,7 @@ export const weakAuth: RequestHandler = async (req, res, next) => {
 export const auth: RequestHandler = async (req, res, next) => {
   const authUser = await authorize(req);
 
-  const user = await lightLLM.getUserInfo(authUser.id);
+  const user = await lightLLM.getUser(authUser.id);
 
   if (!user) {
     throwHttpError({
