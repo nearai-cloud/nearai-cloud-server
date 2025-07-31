@@ -84,7 +84,6 @@ async function authorize(req: Request): Promise<AuthUser> {
 
   if (error) {
     throwHttpError({
-      status: HTTP_STATUS_CODES.UNAUTHORIZED,
       cause: error,
     });
   }
