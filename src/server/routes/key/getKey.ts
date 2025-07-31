@@ -29,7 +29,7 @@ const outputSchema = v.nullable(
   }),
 );
 
-const extraAuth: RequestHandler = async (req, res, next) => {
+const permission: RequestHandler = async (req, res, next) => {
   const { user }: Auth = ctx.get(CONTEXT_KEYS.AUTH);
 
   const { keyOrKeyHash } = parseInput(inputSchema, req.query);
@@ -74,4 +74,4 @@ const resolver: RequestHandler = async (req, res) => {
   res.json(output);
 };
 
-export const getKey: RequestHandler[] = [auth, extraAuth, resolver];
+export const getKey: RequestHandler[] = [auth, permission, resolver];
