@@ -24,7 +24,7 @@ export function createHttpErrorMiddleware({
     }
 
     throwHttpError({
-      status: STATUS_CODES.INTERNAL_SERVER_ERROR,
+      status: STATUS_CODES.INTERNAL_SERVER_ERROR, // TODO: Need Fix: Http like error will use it's own status code
       cause: e,
     });
   };
