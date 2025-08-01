@@ -3,7 +3,7 @@ import * as v from 'valibot';
 import { Auth, authMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 import { lightLLM } from '../../../services/light-llm';
-import { CTX_GLOBAL_KEYS } from '../../../utils/consts';
+import { CTX_GLOBAL_KEYS, INPUT_LIMITS } from '../../../utils/consts';
 
 // Note: Query input in is always a string
 const inputSchema = v.object({
@@ -12,6 +12,7 @@ const inputSchema = v.object({
       v.string(),
       v.transform((page) => Number(page)),
       v.integer(),
+      v.minValue(INPUT_LIMITS.MIN_PAGE),
     ),
   ),
   pageSize: v.optional(
@@ -19,6 +20,8 @@ const inputSchema = v.object({
       v.string(),
       v.transform((page) => Number(page)),
       v.integer(),
+      v.minValue(INPUT_LIMITS.MIN_PAGE_SIZE),
+      v.maxValue(INPUT_LIMITS.MAX_PAGE_SIZE),
     ),
   ),
 });

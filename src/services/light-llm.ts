@@ -218,7 +218,7 @@ export class LightLLM {
 
   async listKeys({
     page,
-    pageSize = 100,
+    pageSize = 10,
     userId,
     teamId,
     sortBy,

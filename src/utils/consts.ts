@@ -4,6 +4,9 @@ export const BEARER_TOKEN_PREFIX = 'Bearer ';
 
 export const INPUT_LIMITS = {
   KEY_ALIAS_MAX_LENGTH: 256,
+  MIN_PAGE: 1,
+  MIN_PAGE_SIZE: 1,
+  MAX_PAGE_SIZE: 100,
 } as const;
 
 export const STATUS_CODES = {
