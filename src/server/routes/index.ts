@@ -1,6 +1,6 @@
 import express from 'express';
 import { ping } from './ping';
-import { notFound } from '../middlewares/not-found';
+import { notFoundMiddleware } from '../middlewares/not-found';
 import { userRouter } from './user';
 import { keyRouter } from './key';
 
@@ -11,4 +11,4 @@ router.get('/', ping);
 router.use('/user', userRouter);
 router.use('/key', keyRouter);
 
-router.use(notFound);
+router.use(notFoundMiddleware);

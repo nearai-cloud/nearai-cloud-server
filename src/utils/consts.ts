@@ -19,5 +19,4 @@ export const CTX_GLOBAL_KEYS = {
   PARAMS_INPUT: 'global:params-input',
   QUERY_INPUT: 'global:query-input',
   BODY_INPUT: 'global:body-input',
-  OUTPUT: 'global:output',
 } as const;

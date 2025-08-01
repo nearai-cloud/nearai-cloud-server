@@ -2,9 +2,9 @@ import ctx from 'express-http-context';
 import * as v from 'valibot';
 import { lightLLM } from '../../../services/light-llm';
 import { CTX_GLOBAL_KEYS } from '../../../utils/consts';
-import { WeakAuth, weakAuth } from '../../middlewares/auth';
-import { createRouteHandler } from '../../middlewares/parse';
-import { RouteHandler } from '../../../types/parsers';
+import { WeakAuth, weakAuthMiddleware } from '../../middlewares/auth';
+import { createRouteHandlers } from '../../middlewares/route-handler';
+import { RouteHandlers } from '../../../types/route-handler';
 
 const outputSchema = v.nullable(
   v.object({
@@ -13,9 +13,9 @@ const outputSchema = v.nullable(
   }),
 );
 
-export const getUser: RouteHandler = createRouteHandler({
+export const getUser: RouteHandlers = createRouteHandlers({
   outputSchema,
-  preHandle: [weakAuth],
+  middlewares: [weakAuthMiddleware],
   handle: async () => {
     const { authUser }: WeakAuth = ctx.get(CTX_GLOBAL_KEYS.WEAK_AUTH);
 

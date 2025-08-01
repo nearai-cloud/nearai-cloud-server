@@ -1,10 +1,10 @@
 import ctx from 'express-http-context';
 import * as v from 'valibot';
-import { Auth, auth } from '../../middlewares/auth';
-import { createRouteHandler } from '../../middlewares/parse';
+import { Auth, authMiddleware } from '../../middlewares/auth';
+import { createRouteHandlers } from '../../middlewares/route-handler';
 import { lightLLM } from '../../../services/light-llm';
 import { CTX_GLOBAL_KEYS } from '../../../utils/consts';
-import { RouteHandler } from '../../../types/parsers';
+import { RouteHandlers } from '../../../types/route-handler';
 
 // Note: raw query input is always a string
 const queryInputSchema = v.object({
@@ -34,10 +34,10 @@ const outputSchema = v.nullable(
   }),
 );
 
-export const getKeys: RouteHandler = createRouteHandler({
+export const getKeys: RouteHandlers = createRouteHandlers({
   queryInputSchema,
   outputSchema,
-  preHandle: [auth],
+  middlewares: [authMiddleware],
   handle: async ({ query }) => {
     const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
 

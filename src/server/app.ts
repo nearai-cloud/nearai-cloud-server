@@ -2,8 +2,14 @@ import express from 'express';
 import cors from 'cors';
 import ctx from 'express-http-context';
 import { config } from '../config';
-import { incomingLog, outgoingLog } from './middlewares/log';
-import { httpError, respondHttpError } from './middlewares/error';
+import {
+  createIncomingLogMiddleware,
+  createOutgoingLogMiddleware,
+} from './middlewares/log';
+import {
+  createHttpErrorMiddleware,
+  createRespondHttpErrorMiddleware,
+} from './middlewares/error';
 import { router } from './routes';
 
 export function runServer() {
@@ -19,20 +25,20 @@ export function runServer() {
 
   app.use(ctx.middleware);
 
-  app.use(incomingLog({ isDev: config.isDev }));
-  app.use(outgoingLog({ isDev: config.isDev }));
+  app.use(createIncomingLogMiddleware({ isDev: config.isDev }));
+  app.use(createOutgoingLogMiddleware({ isDev: config.isDev }));
 
   app.use(express.json());
 
   app.use(router);
 
   app.use(
-    httpError({
+    createHttpErrorMiddleware({
       isDev: config.isDev,
     }),
   );
   app.use(
-    respondHttpError({
+    createRespondHttpErrorMiddleware({
       isDev: config.isDev,
     }),
   );

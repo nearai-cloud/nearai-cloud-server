@@ -2,9 +2,9 @@ import ctx from 'express-http-context';
 import * as v from 'valibot';
 import { lightLLM } from '../../../services/light-llm';
 import { CTX_GLOBAL_KEYS, INPUT_LIMITS } from '../../../utils/consts';
-import { Auth, auth } from '../../middlewares/auth';
-import { createRouteHandler } from '../../middlewares/parse';
-import { RouteHandler } from '../../../types/parsers';
+import { Auth, authMiddleware } from '../../middlewares/auth';
+import { createRouteHandlers } from '../../middlewares/route-handler';
+import { RouteHandlers } from '../../../types/route-handler';
 
 const bodyInputSchema = v.object({
   keyAlias: v.optional(
@@ -17,10 +17,10 @@ const outputSchema = v.object({
   expires: v.nullable(v.string()),
 });
 
-export const generateKey: RouteHandler = createRouteHandler({
+export const generateKey: RouteHandlers = createRouteHandlers({
   bodyInputSchema,
   outputSchema,
-  preHandle: [auth],
+  middlewares: [authMiddleware],
   handle: async ({ body }) => {
     const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
 

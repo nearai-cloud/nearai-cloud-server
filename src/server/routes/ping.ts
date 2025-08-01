@@ -1,6 +1,6 @@
-import { RequestHandler } from 'express';
-import { createRouteHandler } from '../middlewares/parse';
+import { createRouteHandlers } from '../middlewares/route-handler';
+import { RouteHandlers } from '../../types/route-handler';
 
-export const ping: RequestHandler[] = createRouteHandler({
+export const ping: RouteHandlers = createRouteHandlers({
   handle: () => 'NEAR AI Cloud Server',
 });

@@ -22,7 +22,7 @@ export type Auth = {
   user: User;
 };
 
-export const weakAuth: RequestHandler = async (req, res, next) => {
+export const weakAuthMiddleware: RequestHandler = async (req, res, next) => {
   const authUser = await authorize(req);
 
   const weakAuth: WeakAuth = {
@@ -34,7 +34,7 @@ export const weakAuth: RequestHandler = async (req, res, next) => {
   next();
 };
 
-export const auth: RequestHandler = async (req, res, next) => {
+export const authMiddleware: RequestHandler = async (req, res, next) => {
   const authUser = await authorize(req);
 
   const user = await lightLLM.getUser(authUser.id);

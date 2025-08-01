@@ -2,7 +2,7 @@ import { ErrorRequestHandler } from 'express';
 import { HttpError, isHttpError } from 'http-errors';
 import { throwHttpError } from '../../utils/error';
 
-export function httpError({
+export function createHttpErrorMiddleware({
   isDev = true,
 }: { isDev?: boolean } = {}): ErrorRequestHandler {
   return (
@@ -28,7 +28,7 @@ export function httpError({
   };
 }
 
-export function respondHttpError({
+export function createRespondHttpErrorMiddleware({
   isDev = true,
 }: { isDev?: boolean } = {}): ErrorRequestHandler {
   return (
