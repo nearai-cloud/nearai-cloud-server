@@ -47,7 +47,7 @@ export type RouteMiddleware<TParamsInput, TQueryInput, TBodyInput> = (
   res: Response,
   next: NextFunction,
   options: RouteMiddlewareOptions<TParamsInput, TQueryInput, TBodyInput>,
-) => void;
+) => unknown;
 
 export type RouteMiddlewareOptions<TParamsInput, TQueryInput, TBodyInput> = {
   params: TParamsInput;

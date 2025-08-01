@@ -49,8 +49,8 @@ export function createRouteHandlers<
   };
 
   const middlewares: RequestHandler[] = routeMiddlewares.map((middleware) => {
-    return (req, res, next) => {
-      middleware(req, res, next, {
+    return async (req, res, next) => {
+      await middleware(req, res, next, {
         params: ctx.get(CTX_GLOBAL_KEYS.PARAMS_INPUT),
         query: ctx.get(CTX_GLOBAL_KEYS.QUERY_INPUT),
         body: ctx.get(CTX_GLOBAL_KEYS.BODY_INPUT),
