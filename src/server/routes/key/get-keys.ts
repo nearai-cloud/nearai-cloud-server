@@ -5,7 +5,7 @@ import { createRouteResolver } from '../../middlewares/route-resolver';
 import { lightLLM } from '../../../services/light-llm';
 import { CTX_GLOBAL_KEYS } from '../../../utils/consts';
 
-// Note: raw query input is always a string
+// Note: Query input in is always a string
 const inputSchema = v.object({
   page: v.optional(
     v.pipe(

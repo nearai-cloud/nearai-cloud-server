@@ -7,7 +7,7 @@ import { throwHttpError } from '../../../utils/error';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 import { Key } from '../../../types/light-llm';
 
-// Note: raw query input is always a string
+// Note: Query input in is always a string
 const inputSchema = v.object({
   keyOrKeyHash: v.string(),
 });
