@@ -7,20 +7,10 @@ export type UndefinedSchema = v.UndefinedSchema<undefined>;
 
 export type RouteResolver = RequestHandler[];
 
-export type InputSchemas<
-  TParamsInputSchema,
-  TQueryInputSchema,
-  TBodyInputSchema,
-> = {
-  params?: TParamsInputSchema;
-  query?: TQueryInputSchema;
-  body?: TBodyInputSchema;
-};
-
-export type Inputs<TParamsInput, TQueryInput, TBodyInput> = {
-  params: TParamsInput;
-  query: TQueryInput;
-  body: TBodyInput;
+export type Inputs<P, Q, B> = {
+  params: P;
+  query: Q;
+  body: B;
 };
 
 export type CreateRouteResolverOptions<
@@ -29,10 +19,8 @@ export type CreateRouteResolverOptions<
   TBodyInputSchema extends BaseSchema,
   TOutputSchema extends BaseSchema,
 > = {
-  inputs?: InputSchemas<
-    TParamsInputSchema,
-    TQueryInputSchema,
-    TBodyInputSchema
+  inputs?: Partial<
+    Inputs<TParamsInputSchema, TQueryInputSchema, TBodyInputSchema>
   >;
   output?: TOutputSchema;
   middlewares?: RouteResolverMiddleware<
