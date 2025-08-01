@@ -10,10 +10,10 @@ export type InputParserOptions = {
 };
 
 export type OutputParserOptions = {
-  outputSchema: Schema;
+  outputSchema?: Schema;
 };
 
 export type SendOutputOptions<T> = {
-  output: T;
+  output?: T;
   next: NextFunction;
 };

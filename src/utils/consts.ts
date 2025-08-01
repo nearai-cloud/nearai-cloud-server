@@ -14,10 +14,10 @@ export const STATUS_CODES = {
 } as const;
 
 export const CTX_KEYS = {
-  WEAK_AUTH: 'weak-auth',
-  AUTH: 'auth',
-  PARAMS_INPUT: 'input:params',
-  QUERY_INPUT: 'input:query',
-  BODY_INPUT: 'input:body',
-  OUTPUT: 'output',
+  WEAK_AUTH: 'ctx:weak-auth',
+  AUTH: 'ctx:auth',
+  PARAMS_INPUT: 'ctx:params-input',
+  QUERY_INPUT: 'ctx:query-input',
+  BODY_INPUT: 'ctx:body-input',
+  _OUTPUT: 'ctx:internal:output',
 } as const;

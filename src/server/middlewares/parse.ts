@@ -2,12 +2,11 @@ import * as v from 'valibot';
 import ctx from 'express-http-context';
 import { throwHttpError } from '../../utils/error';
 import { CTX_KEYS, STATUS_CODES } from '../../utils/consts';
-import { RequestHandler } from 'express';
+import { Request, RequestHandler, Response } from 'express';
 import {
   InputParserOptions,
   Schema,
   OutputParserOptions,
-  SendOutputOptions,
 } from '../../types/parsers';
 
 export function inputParser({
@@ -49,9 +48,13 @@ function parseInput(schema: Schema, data: unknown): unknown {
 
 export function outputParser({
   outputSchema,
-}: OutputParserOptions): RequestHandler {
+}: OutputParserOptions = {}): RequestHandler {
   return (req, res) => {
-    const output = parseOutput(outputSchema, ctx.get(CTX_KEYS.OUTPUT));
+    let output: unknown;
+
+    if (outputSchema) {
+      output = parseOutput(outputSchema, ctx.get(CTX_KEYS._OUTPUT));
+    }
 
     if (output === undefined) {
       res.send();
@@ -75,7 +78,16 @@ function parseOutput(schema: Schema, data: unknown): unknown {
   }
 }
 
-export function sendOutput<T>({ output, next }: SendOutputOptions<T>) {
-  ctx.set(CTX_KEYS.OUTPUT, output);
-  next();
+export function createResolver<T>(
+  resolver: (req: Request, res: Response) => T | PromiseLike<T>,
+): RequestHandler {
+  return async (req, res, next) => {
+    const output = await resolver(req, res);
+
+    if (output !== undefined) {
+      ctx.set(CTX_KEYS._OUTPUT, output);
+    }
+
+    next();
+  };
 }

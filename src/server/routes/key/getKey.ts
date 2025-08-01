@@ -6,7 +6,11 @@ import { CTX_KEYS, STATUS_CODES } from '../../../utils/consts';
 import { Auth, auth } from '../../middlewares/auth';
 import { throwHttpError } from '../../../utils/error';
 import { Key } from '../../../types/light-llm';
-import { inputParser, outputParser, sendOutput } from '../../middlewares/parse';
+import {
+  createResolver,
+  inputParser,
+  outputParser,
+} from '../../middlewares/parse';
 
 const queryInputSchema = v.object({
   keyOrKeyHash: v.string(),
@@ -51,34 +55,28 @@ const additionalAuth: RequestHandler = async (req, res, next) => {
   next();
 };
 
-const resolver: RequestHandler = async (req, res, next) => {
+const resolver: RequestHandler = createResolver<Output>(async () => {
   const key: Key | null = ctx.get('key');
 
-  if (key) {
-    sendOutput<Output>({
-      output: {
-        keyOrKeyHash: key.keyOrKeyHash,
-        keyName: key.keyName,
-        keyAlias: key.keyAlias,
-        spend: key.spend,
-        expires: key.expires,
-        userId: key.userId,
-        rpmLimit: key.rpmLimit,
-        tpmLimit: key.tpmLimit,
-        budgetId: key.budgetId,
-        maxBudget: key.maxBudget,
-        budgetDuration: key.budgetDuration,
-        budgetResetAt: key.budgetResetAt,
-      },
-      next,
-    });
+  if (!key) {
+    return null;
   } else {
-    sendOutput<Output>({
-      output: null,
-      next,
-    });
+    return {
+      keyOrKeyHash: key.keyOrKeyHash,
+      keyName: key.keyName,
+      keyAlias: key.keyAlias,
+      spend: key.spend,
+      expires: key.expires,
+      userId: key.userId,
+      rpmLimit: key.rpmLimit,
+      tpmLimit: key.tpmLimit,
+      budgetId: key.budgetId,
+      maxBudget: key.maxBudget,
+      budgetDuration: key.budgetDuration,
+      budgetResetAt: key.budgetResetAt,
+    };
   }
-};
+});
 
 export const getKey: RequestHandler[] = [
   inputParser({

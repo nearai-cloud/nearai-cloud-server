@@ -4,7 +4,7 @@ import * as v from 'valibot';
 import { lightLLM } from '../../../services/light-llm';
 import { CTX_KEYS } from '../../../utils/consts';
 import { WeakAuth, weakAuth } from '../../middlewares/auth';
-import { outputParser, sendOutput } from '../../middlewares/parse';
+import { createResolver, outputParser } from '../../middlewares/parse';
 
 const outputSchema = v.nullable(
   v.object({
@@ -15,26 +15,20 @@ const outputSchema = v.nullable(
 
 type Output = v.InferInput<typeof outputSchema>;
 
-const resolver: RequestHandler = async (req, res, next) => {
+const resolver: RequestHandler = createResolver<Output>(async () => {
   const { authUser }: WeakAuth = ctx.get(CTX_KEYS.WEAK_AUTH);
 
   const user = await lightLLM.getUser(authUser.id);
 
-  if (user) {
-    sendOutput<Output>({
-      output: {
-        userId: user.userId,
-        userEmail: user.userEmail,
-      },
-      next,
-    });
-  } else {
-    sendOutput<Output>({
-      output: null,
-      next,
-    });
+  if (!user) {
+    return null;
   }
-};
+
+  return {
+    userId: user.userId,
+    userEmail: user.userEmail,
+  };
+});
 
 export const getUser: RequestHandler[] = [
   weakAuth,
