@@ -47,7 +47,7 @@ export type RouteMiddleware<TParamsInput, TQueryInput, TBodyInput> = (
   res: Response,
   next: NextFunction,
   options: RouteMiddlewareOptions<TParamsInput, TQueryInput, TBodyInput>,
-) => unknown;
+) => unknown; // Use `unknown` instead of `void | PromiseLike<void>` for Express `RequestHandler` compatibility
 
 export type RouteMiddlewareOptions<TParamsInput, TQueryInput, TBodyInput> = {
   params: TParamsInput;
