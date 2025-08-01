@@ -3,6 +3,7 @@ import morgan from 'morgan';
 import dayjs from 'dayjs';
 import { addColor, getHttpStatusColor } from '../../utils/color';
 import { throwHttpError } from '../../utils/error';
+import { STATUS_CODES } from '../../utils/consts';
 
 export function createIncomingLogMiddleware({
   isDev = true,
@@ -53,6 +54,7 @@ export function createOutgoingLogMiddleware({
 
     if (!method) {
       throwHttpError({
+        status: STATUS_CODES.INTERNAL_SERVER_ERROR,
         message: `Post log token 'method' not found`,
       });
     }
@@ -61,6 +63,7 @@ export function createOutgoingLogMiddleware({
 
     if (!url) {
       throwHttpError({
+        status: STATUS_CODES.INTERNAL_SERVER_ERROR,
         message: `Post log token 'url' not found`,
       });
     }
@@ -69,6 +72,7 @@ export function createOutgoingLogMiddleware({
 
     if (!status) {
       throwHttpError({
+        status: STATUS_CODES.INTERNAL_SERVER_ERROR,
         message: `Post log token 'status' not found`,
       });
     }
@@ -79,6 +83,7 @@ export function createOutgoingLogMiddleware({
 
     if (!responseTime) {
       throwHttpError({
+        status: STATUS_CODES.INTERNAL_SERVER_ERROR,
         message: `Post log token 'response-time' not found`,
       });
     }
