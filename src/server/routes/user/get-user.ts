@@ -4,7 +4,6 @@ import { lightLLM } from '../../../services/light-llm';
 import { CTX_GLOBAL_KEYS } from '../../../utils/consts';
 import { WeakAuth, weakAuthMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
-import { RouteResolver } from '../../../types/route-resolver';
 
 const outputSchema = v.nullable(
   v.object({
@@ -13,7 +12,7 @@ const outputSchema = v.nullable(
   }),
 );
 
-export const getUser: RouteResolver = createRouteResolver({
+export const getUser = createRouteResolver({
   outputSchema,
   middlewares: [weakAuthMiddleware],
   resolve: async () => {

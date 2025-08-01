@@ -4,7 +4,6 @@ import { Auth, authMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 import { lightLLM } from '../../../services/light-llm';
 import { CTX_GLOBAL_KEYS } from '../../../utils/consts';
-import { RouteResolver } from '../../../types/route-resolver';
 
 // Note: raw query input is always a string
 const queryInputSchema = v.object({
@@ -34,7 +33,7 @@ const outputSchema = v.nullable(
   }),
 );
 
-export const getKeys: RouteResolver = createRouteResolver({
+export const getKeys = createRouteResolver({
   queryInputSchema,
   outputSchema,
   middlewares: [authMiddleware],
