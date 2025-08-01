@@ -1,6 +1,6 @@
-import { createRouteHandlers } from '../middlewares/route-handler';
-import { RouteHandlers } from '../../types/route-handler';
+import { createRouteResolver } from '../middlewares/route-resolver';
+import { RouteResolver } from '../../types/route-resolver';
 
-export const ping: RouteHandlers = createRouteHandlers({
-  handle: () => 'NEAR AI Cloud Server',
+export const ping: RouteResolver = createRouteResolver({
+  resolve: () => 'NEAR AI Cloud Server',
 });

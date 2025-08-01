@@ -4,9 +4,9 @@ import { lightLLM } from '../../../services/light-llm';
 import { CTX_GLOBAL_KEYS, STATUS_CODES } from '../../../utils/consts';
 import { Auth, authMiddleware } from '../../middlewares/auth';
 import { throwHttpError } from '../../../utils/error';
-import { createRouteHandlers } from '../../middlewares/route-handler';
+import { createRouteResolver } from '../../middlewares/route-resolver';
 import { Key } from '../../../types/light-llm';
-import { RouteHandlers } from '../../../types/route-handler';
+import { RouteResolver } from '../../../types/route-resolver';
 
 // Note: raw query input is always a string
 const queryInputSchema = v.object({
@@ -30,7 +30,7 @@ const outputSchema = v.nullable(
   }),
 );
 
-export const getKey: RouteHandlers = createRouteHandlers({
+export const getKey: RouteResolver = createRouteResolver({
   queryInputSchema,
   outputSchema,
   middlewares: [
@@ -52,7 +52,7 @@ export const getKey: RouteHandlers = createRouteHandlers({
       next();
     },
   ],
-  handle: async () => {
+  resolve: async () => {
     const key: Key | null = ctx.get('key');
 
     if (!key) {

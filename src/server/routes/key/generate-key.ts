@@ -3,8 +3,8 @@ import * as v from 'valibot';
 import { lightLLM } from '../../../services/light-llm';
 import { CTX_GLOBAL_KEYS, INPUT_LIMITS } from '../../../utils/consts';
 import { Auth, authMiddleware } from '../../middlewares/auth';
-import { createRouteHandlers } from '../../middlewares/route-handler';
-import { RouteHandlers } from '../../../types/route-handler';
+import { createRouteResolver } from '../../middlewares/route-resolver';
+import { RouteResolver } from '../../../types/route-resolver';
 
 const bodyInputSchema = v.object({
   keyAlias: v.optional(
@@ -17,11 +17,11 @@ const outputSchema = v.object({
   expires: v.nullable(v.string()),
 });
 
-export const generateKey: RouteHandlers = createRouteHandlers({
+export const generateKey: RouteResolver = createRouteResolver({
   bodyInputSchema,
   outputSchema,
   middlewares: [authMiddleware],
-  handle: async ({ body }) => {
+  resolve: async ({ body }) => {
     const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
 
     const { key, expires } = await lightLLM.generateKey({
