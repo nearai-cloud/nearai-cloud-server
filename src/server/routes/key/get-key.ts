@@ -1,23 +1,17 @@
-import { RequestHandler } from 'express';
 import ctx from 'express-http-context';
 import * as v from 'valibot';
 import { lightLLM } from '../../../services/light-llm';
 import { CTX_GLOBAL_KEYS, STATUS_CODES } from '../../../utils/consts';
 import { Auth, auth } from '../../middlewares/auth';
 import { throwHttpError } from '../../../utils/error';
+import { createRouteHandler } from '../../middlewares/parse';
 import { Key } from '../../../types/light-llm';
-import {
-  createResolver,
-  inputParser,
-  outputParser,
-} from '../../middlewares/parse';
+import { PreHandle, RouteHandler } from '../../../types/parsers';
 
 // Note: raw query input is always a string
 const queryInputSchema = v.object({
   keyOrKeyHash: v.string(),
 });
-
-type QueryInput = v.InferOutput<typeof queryInputSchema>;
 
 const outputSchema = v.nullable(
   v.object({
@@ -36,13 +30,14 @@ const outputSchema = v.nullable(
   }),
 );
 
-type Output = v.InferInput<typeof outputSchema>;
-
-const additionalAuth: RequestHandler = async (req, res, next) => {
+const additionalAuth: PreHandle<
+  unknown,
+  v.InferOutput<typeof queryInputSchema>,
+  unknown
+> = async (req, res, next, { query }) => {
   const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
-  const { keyOrKeyHash }: QueryInput = ctx.get(CTX_GLOBAL_KEYS.QUERY_INPUT);
 
-  const key = await lightLLM.getKey(keyOrKeyHash);
+  const key = await lightLLM.getKey(query.keyOrKeyHash);
 
   if (key && key.userId !== user.userId) {
     throwHttpError({
@@ -56,37 +51,30 @@ const additionalAuth: RequestHandler = async (req, res, next) => {
   next();
 };
 
-const resolver: RequestHandler = createResolver<Output>(async () => {
-  const key: Key | null = ctx.get('key');
+export const getKey: RouteHandler = createRouteHandler({
+  queryInputSchema,
+  outputSchema,
+  preHandle: [auth, additionalAuth],
+  handle: async () => {
+    const key: Key | null = ctx.get('key');
 
-  if (!key) {
-    return null;
-  } else {
-    return {
-      keyOrKeyHash: key.keyOrKeyHash,
-      keyName: key.keyName,
-      keyAlias: key.keyAlias,
-      spend: key.spend,
-      expires: key.expires,
-      userId: key.userId,
-      rpmLimit: key.rpmLimit,
-      tpmLimit: key.tpmLimit,
-      budgetId: key.budgetId,
-      maxBudget: key.maxBudget,
-      budgetDuration: key.budgetDuration,
-      budgetResetAt: key.budgetResetAt,
-    };
-  }
+    if (!key) {
+      return null;
+    } else {
+      return {
+        keyOrKeyHash: key.keyOrKeyHash,
+        keyName: key.keyName,
+        keyAlias: key.keyAlias,
+        spend: key.spend,
+        expires: key.expires,
+        userId: key.userId,
+        rpmLimit: key.rpmLimit,
+        tpmLimit: key.tpmLimit,
+        budgetId: key.budgetId,
+        maxBudget: key.maxBudget,
+        budgetDuration: key.budgetDuration,
+        budgetResetAt: key.budgetResetAt,
+      };
+    }
+  },
 });
-
-export const getKey: RequestHandler[] = [
-  inputParser({
-    queryInputSchema,
-  }),
-  auth,
-  additionalAuth,
-  resolver,
-  outputParser({
-    outputSchema,
-  }),
-];

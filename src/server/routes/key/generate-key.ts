@@ -1,14 +1,10 @@
-import { RequestHandler } from 'express';
 import ctx from 'express-http-context';
 import * as v from 'valibot';
 import { lightLLM } from '../../../services/light-llm';
 import { CTX_GLOBAL_KEYS, INPUT_LIMITS } from '../../../utils/consts';
 import { Auth, auth } from '../../middlewares/auth';
-import {
-  inputParser,
-  outputParser,
-  createResolver,
-} from '../../middlewares/parse';
+import { createRouteHandler } from '../../middlewares/parse';
+import { RouteHandler } from '../../../types/parsers';
 
 const bodyInputSchema = v.object({
   keyAlias: v.optional(
@@ -16,39 +12,28 @@ const bodyInputSchema = v.object({
   ),
 });
 
-type BodyInput = v.InferOutput<typeof bodyInputSchema>;
-
 const outputSchema = v.object({
   key: v.string(),
   expires: v.nullable(v.string()),
 });
 
-type Output = v.InferInput<typeof outputSchema>;
+export const generateKey: RouteHandler = createRouteHandler({
+  bodyInputSchema,
+  outputSchema,
+  preHandle: [auth],
+  handle: async ({ body }) => {
+    const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
 
-const resolver: RequestHandler = createResolver<Output>(async () => {
-  const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
-  const { keyAlias }: BodyInput = ctx.get(CTX_GLOBAL_KEYS.BODY_INPUT);
+    const { key, expires } = await lightLLM.generateKey({
+      userId: user.userId,
+      keyAlias: body.keyAlias,
+      models: ['all-team-models'],
+      teamId: undefined, // TODO: Specify a team id
+    });
 
-  const { key, expires } = await lightLLM.generateKey({
-    userId: user.userId,
-    keyAlias: keyAlias,
-    models: ['all-team-models'],
-    teamId: undefined, // TODO: Specify a team id
-  });
-
-  return {
-    key,
-    expires,
-  };
+    return {
+      key,
+      expires,
+    };
+  },
 });
-
-export const generateKey: RequestHandler[] = [
-  inputParser({
-    bodyInputSchema,
-  }),
-  auth,
-  resolver,
-  outputParser({
-    outputSchema,
-  }),
-];

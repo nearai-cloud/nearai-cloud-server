@@ -2,52 +2,73 @@ import * as v from 'valibot';
 import ctx from 'express-http-context';
 import { throwHttpError } from '../../utils/error';
 import { CTX_GLOBAL_KEYS, STATUS_CODES } from '../../utils/consts';
-import { Request, RequestHandler, Response } from 'express';
+import { RequestHandler } from 'express';
 import {
-  InputParserOptions,
-  Schema,
-  OutputParserOptions,
+  CreateRouteHandlerOptions,
+  BaseSchema,
+  UndefinedSchema,
+  UnknownSchema,
+  RouteHandler,
 } from '../../types/parsers';
 
-export function inputParser({
+export function createRouteHandler<
+  TParamsInputSchema extends BaseSchema = UndefinedSchema,
+  TQueryInputSchema extends BaseSchema = UndefinedSchema,
+  TBodyInputSchema extends BaseSchema = UndefinedSchema,
+  TOutputSchema extends BaseSchema = UnknownSchema,
+>({
   paramsInputSchema,
   queryInputSchema,
   bodyInputSchema,
-}: InputParserOptions = {}): RequestHandler {
-  return (req, res, next) => {
-    if (paramsInputSchema) {
-      ctx.set(
-        CTX_GLOBAL_KEYS.PARAMS_INPUT,
-        parseInput(paramsInputSchema, req.params),
-      );
-    }
+  outputSchema,
+  preHandle = [],
+  handle,
+}: CreateRouteHandlerOptions<
+  TParamsInputSchema,
+  TQueryInputSchema,
+  TBodyInputSchema,
+  TOutputSchema
+>): RouteHandler {
+  const inputParser: RequestHandler = (req, res, next) => {
+    ctx.set(
+      CTX_GLOBAL_KEYS.PARAMS_INPUT,
+      paramsInputSchema ? parseInput(paramsInputSchema, req.params) : undefined,
+    );
 
-    if (queryInputSchema) {
-      ctx.set(
-        CTX_GLOBAL_KEYS.QUERY_INPUT,
-        parseInput(queryInputSchema, req.query),
-      );
-    }
+    ctx.set(
+      CTX_GLOBAL_KEYS.QUERY_INPUT,
+      queryInputSchema ? parseInput(queryInputSchema, req.query) : undefined,
+    );
 
-    if (bodyInputSchema) {
-      ctx.set(
-        CTX_GLOBAL_KEYS.BODY_INPUT,
-        parseInput(bodyInputSchema, req.body ?? {}),
-      );
-    }
+    ctx.set(
+      CTX_GLOBAL_KEYS.BODY_INPUT,
+      bodyInputSchema ? parseInput(bodyInputSchema, req.body) : undefined,
+    );
 
     next();
   };
-}
 
-export function outputParser({
-  outputSchema,
-}: OutputParserOptions = {}): RequestHandler {
-  return (req, res) => {
-    let output: unknown;
+  const handlers: RequestHandler[] = preHandle.map((pre) => {
+    return (req, res, next) => {
+      pre(req, res, next, {
+        params: ctx.get(CTX_GLOBAL_KEYS.PARAMS_INPUT),
+        query: ctx.get(CTX_GLOBAL_KEYS.QUERY_INPUT),
+        body: ctx.get(CTX_GLOBAL_KEYS.BODY_INPUT),
+      });
+    };
+  });
+
+  const handler: RequestHandler = async (req, res) => {
+    let output: unknown = await handle({
+      params: ctx.get(CTX_GLOBAL_KEYS.PARAMS_INPUT),
+      query: ctx.get(CTX_GLOBAL_KEYS.QUERY_INPUT),
+      body: ctx.get(CTX_GLOBAL_KEYS.BODY_INPUT),
+      req,
+      res,
+    });
 
     if (outputSchema) {
-      output = parseOutput(outputSchema, ctx.get(CTX_GLOBAL_KEYS.OUTPUT));
+      output = parseOutput(outputSchema, output);
     }
 
     if (output === undefined) {
@@ -56,23 +77,11 @@ export function outputParser({
       res.json(output);
     }
   };
+
+  return [inputParser, ...handlers, handler];
 }
 
-export function createResolver<T>(
-  resolver: (req: Request, res: Response) => T | PromiseLike<T>,
-): RequestHandler {
-  return async (req, res, next) => {
-    const output = await resolver(req, res);
-
-    if (output !== undefined) {
-      ctx.set(CTX_GLOBAL_KEYS.OUTPUT, output);
-    }
-
-    next();
-  };
-}
-
-function parseInput(schema: Schema, data: unknown): unknown {
+function parseInput(schema: BaseSchema, data: unknown): unknown {
   try {
     return v.parse(schema, data);
   } catch (e: unknown) {
@@ -87,7 +96,7 @@ function parseInput(schema: Schema, data: unknown): unknown {
   }
 }
 
-function parseOutput(schema: Schema, data: unknown): unknown {
+function parseOutput(schema: BaseSchema, data: unknown): unknown {
   try {
     return v.parse(schema, data);
   } catch (e: unknown) {
