@@ -131,7 +131,7 @@ export class LightLLM {
         blocked?: boolean;
       }
     >({
-      path: '/key/generateKey',
+      path: '/key/generate',
       body: {
         user_id: userId,
         team_id: teamId,
