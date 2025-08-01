@@ -16,6 +16,7 @@ export function createIncomingLogMiddleware({
 
       if (!method) {
         throwHttpError({
+          status: STATUS_CODES.INTERNAL_SERVER_ERROR,
           message: `Pre log token 'method' not found`,
         });
       }
@@ -24,6 +25,7 @@ export function createIncomingLogMiddleware({
 
       if (!url) {
         throwHttpError({
+          status: STATUS_CODES.INTERNAL_SERVER_ERROR,
           message: `Pre log token 'url' not found`,
         });
       }
