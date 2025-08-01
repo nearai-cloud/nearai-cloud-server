@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import ctx from 'express-http-context';
 import * as v from 'valibot';
 import { lightLLM } from '../../../services/light-llm';
-import { CTX_KEYS, STATUS_CODES } from '../../../utils/consts';
+import { CTX_GLOBAL_KEYS, STATUS_CODES } from '../../../utils/consts';
 import { Auth, auth } from '../../middlewares/auth';
 import { throwHttpError } from '../../../utils/error';
 import { Key } from '../../../types/light-llm';
@@ -39,8 +39,8 @@ const outputSchema = v.nullable(
 type Output = v.InferInput<typeof outputSchema>;
 
 const additionalAuth: RequestHandler = async (req, res, next) => {
-  const { user }: Auth = ctx.get(CTX_KEYS.AUTH);
-  const { keyOrKeyHash }: QueryInput = ctx.get(CTX_KEYS.QUERY_INPUT);
+  const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
+  const { keyOrKeyHash }: QueryInput = ctx.get(CTX_GLOBAL_KEYS.QUERY_INPUT);
 
   const key = await lightLLM.getKey(keyOrKeyHash);
 

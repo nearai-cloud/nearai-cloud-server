@@ -8,7 +8,7 @@ import {
   outputParser,
 } from '../../middlewares/parse';
 import { lightLLM } from '../../../services/light-llm';
-import { CTX_KEYS } from '../../../utils/consts';
+import { CTX_GLOBAL_KEYS } from '../../../utils/consts';
 
 // Note: raw query input is always a string
 const queryInputSchema = v.object({
@@ -43,8 +43,10 @@ const outputSchema = v.nullable(
 type Output = v.InferInput<typeof outputSchema>;
 
 const resolver: RequestHandler = createResolver<Output>(async () => {
-  const { user }: Auth = ctx.get(CTX_KEYS.AUTH);
-  const { page, pageSize }: QueryInputSchema = ctx.get(CTX_KEYS.QUERY_INPUT);
+  const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
+  const { page, pageSize }: QueryInputSchema = ctx.get(
+    CTX_GLOBAL_KEYS.QUERY_INPUT,
+  );
 
   const keys = await lightLLM.listKeys({
     page,

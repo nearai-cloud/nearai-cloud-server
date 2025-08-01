@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import ctx from 'express-http-context';
 import * as v from 'valibot';
 import { lightLLM } from '../../../services/light-llm';
-import { CTX_KEYS, INPUT_LIMITS } from '../../../utils/consts';
+import { CTX_GLOBAL_KEYS, INPUT_LIMITS } from '../../../utils/consts';
 import { Auth, auth } from '../../middlewares/auth';
 import {
   inputParser,
@@ -26,8 +26,8 @@ const outputSchema = v.object({
 type Output = v.InferInput<typeof outputSchema>;
 
 const resolver: RequestHandler = createResolver<Output>(async () => {
-  const { user }: Auth = ctx.get(CTX_KEYS.AUTH);
-  const { keyAlias }: BodyInput = ctx.get(CTX_KEYS.BODY_INPUT);
+  const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
+  const { keyAlias }: BodyInput = ctx.get(CTX_GLOBAL_KEYS.BODY_INPUT);
 
   const { key, expires } = await lightLLM.generateKey({
     userId: user.userId,
