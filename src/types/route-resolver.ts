@@ -7,10 +7,10 @@ export type UndefinedSchema = v.UndefinedSchema<undefined>;
 
 export type RouteResolver = RequestHandler[];
 
-export type Inputs<P, Q, B> = {
-  params: P;
-  query: Q;
-  body: B;
+export type Inputs<TParams, TQuery, TBody> = {
+  params: TParams;
+  query: TQuery;
+  body: TBody;
 };
 
 export type CreateRouteResolverOptions<
