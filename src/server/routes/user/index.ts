@@ -1,6 +1,6 @@
 import express from 'express';
-import { registerUser } from './registerUser';
-import { getUser } from './getUser';
+import { registerUser } from './register-user';
+import { getUser } from './get-user';
 
 export const userRouter = express.Router();
 

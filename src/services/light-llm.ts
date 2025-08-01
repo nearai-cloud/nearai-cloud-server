@@ -218,12 +218,12 @@ export class LightLLM {
 
   async listKeys({
     page,
-    pageSize,
+    pageSize = 100,
     userId,
     teamId,
     sortBy,
     sortOrder,
-  }: ListKeysParams): Promise<ListKeysResponse> {
+  }: ListKeysParams = {}): Promise<ListKeysResponse> {
     const res = await this.GET<
       {
         keys: string[];
@@ -255,6 +255,7 @@ export class LightLLM {
       keyHashes: res.data.keys,
       totalKeys: res.data.total_count,
       page: res.data.current_page,
+      pageSize,
       totalPages: res.data.total_pages,
     };
   }

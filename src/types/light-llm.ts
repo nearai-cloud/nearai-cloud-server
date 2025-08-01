@@ -79,5 +79,6 @@ export type ListKeysResponse = {
   keyHashes: string[];
   totalKeys: number;
   page: number;
+  pageSize: number;
   totalPages: number;
 };
