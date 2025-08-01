@@ -8,7 +8,7 @@ import { createRouteResolver } from '../../middlewares/route-resolver';
 import { Key } from '../../../types/light-llm';
 
 // Note: raw query input is always a string
-const queryInputSchema = v.object({
+const inputSchema = v.object({
   keyOrKeyHash: v.string(),
 });
 
@@ -30,8 +30,10 @@ const outputSchema = v.nullable(
 );
 
 export const getKey = createRouteResolver({
-  queryInputSchema,
-  outputSchema,
+  inputs: {
+    query: inputSchema,
+  },
+  output: outputSchema,
   middlewares: [
     authMiddleware,
     async (req, res, next, { query }) => {

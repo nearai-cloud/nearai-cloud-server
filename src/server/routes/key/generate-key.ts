@@ -5,7 +5,7 @@ import { CTX_GLOBAL_KEYS, INPUT_LIMITS } from '../../../utils/consts';
 import { Auth, authMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 
-const bodyInputSchema = v.object({
+const inputSchema = v.object({
   keyAlias: v.optional(
     v.pipe(v.string(), v.maxLength(INPUT_LIMITS.KEY_ALIAS_MAX_LENGTH)),
   ),
@@ -17,10 +17,12 @@ const outputSchema = v.object({
 });
 
 export const generateKey = createRouteResolver({
-  bodyInputSchema,
-  outputSchema,
+  inputs: {
+    body: inputSchema,
+  },
+  output: outputSchema,
   middlewares: [authMiddleware],
-  resolve: async ({ body }) => {
+  resolve: async ({ inputs: { body } }) => {
     const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
 
     const { key, expires } = await lightLLM.generateKey({

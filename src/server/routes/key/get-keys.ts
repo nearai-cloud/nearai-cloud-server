@@ -6,7 +6,7 @@ import { lightLLM } from '../../../services/light-llm';
 import { CTX_GLOBAL_KEYS } from '../../../utils/consts';
 
 // Note: raw query input is always a string
-const queryInputSchema = v.object({
+const inputSchema = v.object({
   page: v.optional(
     v.pipe(
       v.string(),
@@ -34,10 +34,12 @@ const outputSchema = v.nullable(
 );
 
 export const getKeys = createRouteResolver({
-  queryInputSchema,
-  outputSchema,
+  inputs: {
+    query: inputSchema,
+  },
+  output: outputSchema,
   middlewares: [authMiddleware],
-  resolve: async ({ query }) => {
+  resolve: async ({ inputs: { query } }) => {
     const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
 
     const keys = await lightLLM.listKeys({

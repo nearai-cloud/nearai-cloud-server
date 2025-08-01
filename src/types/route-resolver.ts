@@ -7,16 +7,34 @@ export type UndefinedSchema = v.UndefinedSchema<undefined>;
 
 export type RouteResolver = RequestHandler[];
 
+export type InputSchemas<
+  TParamsInputSchema,
+  TQueryInputSchema,
+  TBodyInputSchema,
+> = {
+  params?: TParamsInputSchema;
+  query?: TQueryInputSchema;
+  body?: TBodyInputSchema;
+};
+
+export type Inputs<TParamsInput, TQueryInput, TBodyInput> = {
+  params: TParamsInput;
+  query: TQueryInput;
+  body: TBodyInput;
+};
+
 export type CreateRouteResolverOptions<
   TParamsInputSchema extends BaseSchema,
   TQueryInputSchema extends BaseSchema,
   TBodyInputSchema extends BaseSchema,
   TOutputSchema extends BaseSchema,
 > = {
-  paramsInputSchema?: TParamsInputSchema;
-  queryInputSchema?: TQueryInputSchema;
-  bodyInputSchema?: TBodyInputSchema;
-  outputSchema?: TOutputSchema;
+  inputs?: InputSchemas<
+    TParamsInputSchema,
+    TQueryInputSchema,
+    TBodyInputSchema
+  >;
+  output?: TOutputSchema;
   middlewares?: RouteResolverMiddleware<
     v.InferOutput<TParamsInputSchema>,
     v.InferOutput<TQueryInputSchema>,
@@ -35,30 +53,14 @@ export type RouteResolve<TParamsInput, TQueryInput, TBodyInput, TOutput> = (
 ) => TOutput | PromiseLike<TOutput>;
 
 export type RouteResolveOptions<TParamsInput, TQueryInput, TBodyInput> = {
-  params: TParamsInput;
-  query: TQueryInput;
-  body: TBodyInput;
   req: Request;
   res: Response;
+  inputs: Inputs<TParamsInput, TQueryInput, TBodyInput>;
 };
 
 export type RouteResolverMiddleware<TParamsInput, TQueryInput, TBodyInput> = (
   req: Request,
   res: Response,
   next: NextFunction,
-  options: RouteResolverMiddlewareOptions<
-    TParamsInput,
-    TQueryInput,
-    TBodyInput
-  >,
+  inputs: Inputs<TParamsInput, TQueryInput, TBodyInput>,
 ) => unknown; // Use `unknown` instead of `void | PromiseLike<void>` for Express `RequestHandler` compatibility
-
-export type RouteResolverMiddlewareOptions<
-  TParamsInput,
-  TQueryInput,
-  TBodyInput,
-> = {
-  params: TParamsInput;
-  query: TQueryInput;
-  body: TBodyInput;
-};

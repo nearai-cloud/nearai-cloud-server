@@ -13,7 +13,7 @@ const outputSchema = v.nullable(
 );
 
 export const getUser = createRouteResolver({
-  outputSchema,
+  output: outputSchema,
   middlewares: [weakAuthMiddleware],
   resolve: async () => {
     const { authUser }: WeakAuth = ctx.get(CTX_GLOBAL_KEYS.WEAK_AUTH);

@@ -17,10 +17,8 @@ export function createRouteResolver<
   TBodyInputSchema extends BaseSchema = UndefinedSchema,
   TOutputSchema extends BaseSchema = UnknownSchema,
 >({
-  paramsInputSchema,
-  queryInputSchema,
-  bodyInputSchema,
-  outputSchema,
+  inputs: inputSchema,
+  output: outputSchema,
   middlewares: routeResolverMiddlewares = [],
   resolve,
 }: CreateRouteResolverOptions<
@@ -32,17 +30,19 @@ export function createRouteResolver<
   const parseInputMiddleware: RequestHandler = (req, res, next) => {
     ctx.set(
       CTX_GLOBAL_KEYS.PARAMS_INPUT,
-      paramsInputSchema ? parseInput(paramsInputSchema, req.params) : undefined,
+      inputSchema?.params
+        ? parseInput(inputSchema.params, req.params)
+        : undefined,
     );
 
     ctx.set(
       CTX_GLOBAL_KEYS.QUERY_INPUT,
-      queryInputSchema ? parseInput(queryInputSchema, req.query) : undefined,
+      inputSchema?.query ? parseInput(inputSchema.query, req.query) : undefined,
     );
 
     ctx.set(
       CTX_GLOBAL_KEYS.BODY_INPUT,
-      bodyInputSchema ? parseInput(bodyInputSchema, req.body) : undefined,
+      inputSchema?.body ? parseInput(inputSchema.body, req.body) : undefined,
     );
 
     next();
@@ -62,9 +62,11 @@ export function createRouteResolver<
 
   const parseOutputMiddleware: RequestHandler = async (req, res) => {
     let output: unknown = await resolve({
-      params: ctx.get(CTX_GLOBAL_KEYS.PARAMS_INPUT),
-      query: ctx.get(CTX_GLOBAL_KEYS.QUERY_INPUT),
-      body: ctx.get(CTX_GLOBAL_KEYS.BODY_INPUT),
+      inputs: {
+        params: ctx.get(CTX_GLOBAL_KEYS.PARAMS_INPUT),
+        query: ctx.get(CTX_GLOBAL_KEYS.QUERY_INPUT),
+        body: ctx.get(CTX_GLOBAL_KEYS.BODY_INPUT),
+      },
       req,
       res,
     });
