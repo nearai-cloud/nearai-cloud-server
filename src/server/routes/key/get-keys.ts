@@ -10,9 +10,22 @@ import {
 import { lightLLM } from '../../../services/light-llm';
 import { CTX_KEYS } from '../../../utils/consts';
 
+// Note: raw query input is always a string
 const queryInputSchema = v.object({
-  page: v.optional(v.number()),
-  pageSize: v.optional(v.number()),
+  page: v.optional(
+    v.pipe(
+      v.string(),
+      v.transform((page) => Number(page)),
+      v.integer(),
+    ),
+  ),
+  pageSize: v.optional(
+    v.pipe(
+      v.string(),
+      v.transform((page) => Number(page)),
+      v.integer(),
+    ),
+  ),
 });
 
 type QueryInputSchema = v.InferOutput<typeof queryInputSchema>;
