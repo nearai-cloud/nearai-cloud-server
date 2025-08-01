@@ -17,7 +17,7 @@ export function createRouteResolver<
   TBodyInputSchema extends BaseSchema = UndefinedSchema,
   TOutputSchema extends BaseSchema = UnknownSchema,
 >({
-  inputs: inputSchema,
+  inputs: inputSchemas,
   output: outputSchema,
   middlewares: routeResolverMiddlewares = [],
   resolve,
@@ -30,19 +30,21 @@ export function createRouteResolver<
   const parseInputMiddleware: RequestHandler = (req, res, next) => {
     ctx.set(
       CTX_GLOBAL_KEYS.PARAMS_INPUT,
-      inputSchema?.params
-        ? parseInput(inputSchema.params, req.params)
+      inputSchemas?.params
+        ? parseInput(inputSchemas.params, req.params)
         : undefined,
     );
 
     ctx.set(
       CTX_GLOBAL_KEYS.QUERY_INPUT,
-      inputSchema?.query ? parseInput(inputSchema.query, req.query) : undefined,
+      inputSchemas?.query
+        ? parseInput(inputSchemas.query, req.query)
+        : undefined,
     );
 
     ctx.set(
       CTX_GLOBAL_KEYS.BODY_INPUT,
-      inputSchema?.body ? parseInput(inputSchema.body, req.body) : undefined,
+      inputSchemas?.body ? parseInput(inputSchemas.body, req.body) : undefined,
     );
 
     next();
