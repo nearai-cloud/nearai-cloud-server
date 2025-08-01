@@ -12,6 +12,7 @@ import {
   outputParser,
 } from '../../middlewares/parse';
 
+// Note: raw query input is always a string
 const queryInputSchema = v.object({
   keyOrKeyHash: v.string(),
 });
