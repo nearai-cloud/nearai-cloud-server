@@ -83,7 +83,6 @@ async function authorize(req: Request): Promise<AuthUser> {
   } = await client.auth.getUser(token);
 
   if (error) {
-    // TODO: Need Fix: Http like error will use it's own status code
     throwHttpError({
       status: STATUS_CODES.UNAUTHORIZED,
       cause: error,

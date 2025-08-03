@@ -30,17 +30,17 @@ export function createRouteResolver<
 >): RouteResolver {
   const parseInputMiddleware: RequestHandler = (req, res, next) => {
     ctx.set(
-      CTX_GLOBAL_KEYS.PARAMS_INPUT,
+      CTX_GLOBAL_KEYS.INPUT.PARAMS,
       parseInput(inputSchemas?.params ?? toUndefinedSchema, req.params),
     );
 
     ctx.set(
-      CTX_GLOBAL_KEYS.QUERY_INPUT,
+      CTX_GLOBAL_KEYS.INPUT.QUERY,
       parseInput(inputSchemas?.query ?? toUndefinedSchema, req.query),
     );
 
     ctx.set(
-      CTX_GLOBAL_KEYS.BODY_INPUT,
+      CTX_GLOBAL_KEYS.INPUT.BODY,
       parseInput(inputSchemas?.body ?? toUndefinedSchema, req.body),
     );
 
@@ -49,11 +49,11 @@ export function createRouteResolver<
 
   const middlewares: RequestHandler[] = routeResolverMiddlewares.map(
     (middleware) => {
-      return async (req, res, next) => {
-        await middleware(req, res, next, {
-          params: ctx.get(CTX_GLOBAL_KEYS.PARAMS_INPUT),
-          query: ctx.get(CTX_GLOBAL_KEYS.QUERY_INPUT),
-          body: ctx.get(CTX_GLOBAL_KEYS.BODY_INPUT),
+      return (req, res, next) => {
+        return middleware(req, res, next, {
+          params: ctx.get(CTX_GLOBAL_KEYS.INPUT.PARAMS),
+          query: ctx.get(CTX_GLOBAL_KEYS.INPUT.QUERY),
+          body: ctx.get(CTX_GLOBAL_KEYS.INPUT.BODY),
         });
       };
     },
@@ -62,9 +62,9 @@ export function createRouteResolver<
   const parseOutputMiddleware: RequestHandler = async (req, res) => {
     let output: unknown = await resolve({
       inputs: {
-        params: ctx.get(CTX_GLOBAL_KEYS.PARAMS_INPUT),
-        query: ctx.get(CTX_GLOBAL_KEYS.QUERY_INPUT),
-        body: ctx.get(CTX_GLOBAL_KEYS.BODY_INPUT),
+        params: ctx.get(CTX_GLOBAL_KEYS.INPUT.PARAMS),
+        query: ctx.get(CTX_GLOBAL_KEYS.INPUT.QUERY),
+        body: ctx.get(CTX_GLOBAL_KEYS.INPUT.BODY),
       },
       req,
       res,

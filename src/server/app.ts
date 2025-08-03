@@ -15,6 +15,8 @@ import { router } from './routes';
 export function runServer() {
   const app = express();
 
+  app.set('query parser', 'extended');
+
   if (config.isDev) {
     app.enable('x-powered-by');
   } else {
