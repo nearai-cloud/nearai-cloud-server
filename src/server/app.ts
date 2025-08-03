@@ -8,7 +8,7 @@ import {
 } from './middlewares/log';
 import {
   createHttpErrorMiddleware,
-  createRespondHttpErrorMiddleware,
+  createExposeHttpErrorMiddleware,
 } from './middlewares/error';
 import { router } from './routes';
 
@@ -16,17 +16,16 @@ export function runServer() {
   const app = express();
 
   app.disable('x-powered-by');
+
   app.set('query parser', 'extended');
 
   app.use(cors());
-
-  app.use(ctx.middleware);
 
   app.use(createIncomingLogMiddleware({ isDev: config.isDev }));
   app.use(createOutgoingLogMiddleware({ isDev: config.isDev }));
 
   app.use(express.json());
-
+  app.use(ctx.middleware);
   app.use(router);
 
   app.use(
@@ -35,7 +34,7 @@ export function runServer() {
     }),
   );
   app.use(
-    createRespondHttpErrorMiddleware({
+    createExposeHttpErrorMiddleware({
       isDev: config.isDev,
     }),
   );

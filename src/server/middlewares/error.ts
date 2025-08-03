@@ -30,7 +30,7 @@ export function createHttpErrorMiddleware({
   };
 }
 
-export function createRespondHttpErrorMiddleware({
+export function createExposeHttpErrorMiddleware({
   isDev = true,
 }: { isDev?: boolean } = {}): ErrorRequestHandler {
   return (
