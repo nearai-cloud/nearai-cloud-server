@@ -8,7 +8,7 @@ import {
 } from './middlewares/log';
 import {
   createHttpErrorMiddleware,
-  createExposeHttpErrorMiddleware,
+  createExposeErrorMiddleware,
 } from './middlewares/error';
 import { router } from './routes';
 
@@ -34,7 +34,7 @@ export function runServer() {
     }),
   );
   app.use(
-    createExposeHttpErrorMiddleware({
+    createExposeErrorMiddleware({
       isDev: config.isDev,
     }),
   );

@@ -1,5 +1,5 @@
 import { ErrorRequestHandler } from 'express';
-import { HttpError, isHttpError } from 'http-errors';
+import { isHttpError } from 'http-errors';
 import { throwHttpError } from '../../utils/error';
 import { STATUS_CODES } from '../../utils/consts';
 
@@ -30,23 +30,38 @@ export function createHttpErrorMiddleware({
   };
 }
 
-export function createExposeHttpErrorMiddleware({
+export function createExposeErrorMiddleware({
   isDev = true,
 }: { isDev?: boolean } = {}): ErrorRequestHandler {
   return (
-    e: HttpError,
+    e: unknown,
     req,
     res,
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     next,
   ) => {
-    const status = e.status;
+    let status;
+    let message: string;
+    let stack: string | undefined;
+
+    if (isHttpError(e)) {
+      status = e.status;
+      message = isDev || status !== 500 ? e.message : 'Internal Server Error';
+      stack = isDev ? e.stack : undefined;
+    } else if (e instanceof Error) {
+      status = 500;
+      message = isDev ? e.message : 'Internal Server Error';
+      stack = isDev ? e.stack : undefined;
+    } else {
+      status = 500;
+      message = 'Internal Server Error';
+    }
 
     res.status(status).json({
       error: {
         status,
-        message: isDev || status === 500 ? e.message : 'Internal Server Error',
-        stack: isDev ? e.stack : undefined,
+        message,
+        stack,
       },
     });
   };
