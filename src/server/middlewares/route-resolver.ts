@@ -6,15 +6,16 @@ import { RequestHandler } from 'express';
 import {
   CreateRouteResolverOptions,
   BaseSchema,
-  UndefinedSchema,
   UnknownSchema,
   RouteResolver,
+  ToUndefinedSchema,
+  toUndefinedSchema,
 } from '../../types/route-resolver';
 
 export function createRouteResolver<
-  TParamsInputSchema extends BaseSchema = UndefinedSchema,
-  TQueryInputSchema extends BaseSchema = UndefinedSchema,
-  TBodyInputSchema extends BaseSchema = UndefinedSchema,
+  TParamsInputSchema extends BaseSchema = ToUndefinedSchema,
+  TQueryInputSchema extends BaseSchema = ToUndefinedSchema,
+  TBodyInputSchema extends BaseSchema = ToUndefinedSchema,
   TOutputSchema extends BaseSchema = UnknownSchema,
 >({
   inputs: inputSchemas,
@@ -30,21 +31,17 @@ export function createRouteResolver<
   const parseInputMiddleware: RequestHandler = (req, res, next) => {
     ctx.set(
       CTX_GLOBAL_KEYS.PARAMS_INPUT,
-      inputSchemas?.params
-        ? parseInput(inputSchemas.params, req.params)
-        : undefined,
+      parseInput(inputSchemas?.params ?? toUndefinedSchema, req.params),
     );
 
     ctx.set(
       CTX_GLOBAL_KEYS.QUERY_INPUT,
-      inputSchemas?.query
-        ? parseInput(inputSchemas.query, req.query)
-        : undefined,
+      parseInput(inputSchemas?.query ?? toUndefinedSchema, req.query),
     );
 
     ctx.set(
       CTX_GLOBAL_KEYS.BODY_INPUT,
-      inputSchemas?.body ? parseInput(inputSchemas.body, req.body) : undefined,
+      parseInput(inputSchemas?.body ?? toUndefinedSchema, req.body),
     );
 
     next();

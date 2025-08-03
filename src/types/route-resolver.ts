@@ -3,7 +3,12 @@ import { NextFunction, Request, RequestHandler, Response } from 'express';
 
 export type BaseSchema = v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>;
 export type UnknownSchema = v.UnknownSchema;
-export type UndefinedSchema = v.UndefinedSchema<undefined>;
+
+export const toUndefinedSchema = v.pipe(
+  v.unknown(),
+  v.transform(() => undefined),
+);
+export type ToUndefinedSchema = typeof toUndefinedSchema;
 
 export type RouteResolver = RequestHandler[];
 
