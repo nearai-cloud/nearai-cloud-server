@@ -15,13 +15,8 @@ import { router } from './routes';
 export function runServer() {
   const app = express();
 
+  app.disable('x-powered-by');
   app.set('query parser', 'extended');
-
-  if (config.isDev) {
-    app.enable('x-powered-by');
-  } else {
-    app.disable('x-powered-by');
-  }
 
   app.use(cors());
 
