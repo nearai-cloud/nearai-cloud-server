@@ -285,8 +285,8 @@ export class Litellm {
     userId,
     page,
     pageSize = 10,
-    sortBy,
-    sortOrder,
+    sortBy = 'created_at',
+    sortOrder = 'desc',
   }: ListKeysParams): Promise<ListKeysResponse> {
     const { keys, total_count, current_page, total_pages } = await this.get<
       {
@@ -309,8 +309,8 @@ export class Litellm {
         user_id: userId,
         page: page,
         size: pageSize,
-        sort_by: sortBy ?? 'created_at',
-        sort_order: sortOrder ?? 'desc',
+        sort_by: sortBy,
+        sort_order: sortOrder,
       },
     });
 
@@ -324,7 +324,6 @@ export class Litellm {
   }
 
   async getSpendLogs({
-    requestId,
     userId,
     keyOrKeyHash,
     startDate,
@@ -345,7 +344,6 @@ export class Litellm {
         model_id: string;
       }[],
       {
-        request_id?: string;
         user_id?: string;
         api_key?: string;
         start_date?: string;
@@ -355,12 +353,11 @@ export class Litellm {
     >({
       path: '/spend/logs',
       params: {
-        request_id: requestId,
         user_id: userId,
         api_key: keyOrKeyHash,
         start_date: startDate,
         end_date: endDate,
-        summarize: false, // Use filtered individual logs
+        summarize: false,
       },
     });
 

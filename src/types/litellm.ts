@@ -37,6 +37,7 @@ export type Path = `/${string}`;
 export type RegisterUserParams = {
   userId: string;
   userEmail?: string;
+  autoCreateKey?: boolean;
 };
 
 export type GetUserParams = {
@@ -114,7 +115,6 @@ export type ListKeysResponse = {
 };
 
 export type GetSpendLogsParams = {
-  requestId?: string;
   userId: string;
   keyOrKeyHash?: string;
   startDate?: string;

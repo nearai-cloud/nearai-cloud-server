@@ -14,7 +14,6 @@ const inputSchema = v.object({
 
 const outputSchema = v.array(
   v.object({
-    requestId: v.string(),
     userId: v.string(),
     keyHash: v.string(),
     status: v.string(),
@@ -40,7 +39,6 @@ export const getSpendLogs = createRouteResolver({
     const logs = await litellm.getSpendLogs({
       userId: user.userId,
       keyOrKeyHash: query.keyOrKeyHash,
-      requestId: query.requestId,
       startDate: query.startDate,
       endDate: query.endDate,
     });
