@@ -20,7 +20,7 @@ export const STATUS_CODES = {
 } as const;
 
 export const CTX_GLOBAL_KEYS = {
-  PRE_AUTH: 'global:weak-auth',
+  SUPABASE_AUTH: 'global:supabase-auth',
   AUTH: 'global:auth',
   INPUT: {
     PARAMS: 'global:params-input',

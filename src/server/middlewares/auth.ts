@@ -27,11 +27,11 @@ export const supabaseAuthMiddleware: RequestHandler = async (
 ) => {
   const authUser = await authorizeSupabase(req.headers.authorization);
 
-  const preAuth: SupabaseAuth = {
+  const supabaseAuth: SupabaseAuth = {
     supabaseUser: authUser,
   };
 
-  ctx.set(CTX_GLOBAL_KEYS.PRE_AUTH, preAuth);
+  ctx.set(CTX_GLOBAL_KEYS.SUPABASE_AUTH, supabaseAuth);
 
   next();
 };

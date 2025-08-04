@@ -16,7 +16,9 @@ export const getUser = createRouteResolver({
   output: outputSchema,
   middlewares: [supabaseAuthMiddleware],
   resolve: async () => {
-    const { supabaseUser }: SupabaseAuth = ctx.get(CTX_GLOBAL_KEYS.PRE_AUTH);
+    const { supabaseUser }: SupabaseAuth = ctx.get(
+      CTX_GLOBAL_KEYS.SUPABASE_AUTH,
+    );
 
     const user = await litellm.getUser({
       userId: supabaseUser.id,

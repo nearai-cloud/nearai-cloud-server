@@ -7,7 +7,9 @@ import { createRouteResolver } from '../../middlewares/route-resolver';
 export const registerUser = createRouteResolver({
   middlewares: [supabaseAuthMiddleware],
   resolve: async () => {
-    const { supabaseUser }: SupabaseAuth = ctx.get(CTX_GLOBAL_KEYS.PRE_AUTH);
+    const { supabaseUser }: SupabaseAuth = ctx.get(
+      CTX_GLOBAL_KEYS.SUPABASE_AUTH,
+    );
 
     await litellm.registerUser({
       userId: supabaseUser.id,
