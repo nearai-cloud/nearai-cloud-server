@@ -75,7 +75,7 @@ export function createRouteResolver<
     }
 
     if (output === undefined) {
-      res.send();
+      res.status(STATUS_CODES.NO_CONTENT).send();
     } else {
       res.json(output);
     }
