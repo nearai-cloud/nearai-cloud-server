@@ -2,7 +2,7 @@ import ctx from 'express-http-context';
 import * as v from 'valibot';
 import { litellm } from '../../../services/litellm';
 import { CTX_GLOBAL_KEYS, STATUS_CODES } from '../../../utils/consts';
-import { Auth, authMiddleware } from '../../middlewares/auth';
+import { CompleteAuth, completeAuthMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 import { throwHttpError } from '../../../utils/error';
 import { Key } from '../../../types/litellm';
@@ -16,9 +16,9 @@ export const deleteKey = createRouteResolver({
     body: inputSchema,
   },
   middlewares: [
-    authMiddleware,
+    completeAuthMiddleware,
     async (req, res, next, { body }) => {
-      const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
+      const { user }: CompleteAuth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
 
       const key = await litellm.getKey({
         keyOrKeyHash: body.keyOrKeyHash,

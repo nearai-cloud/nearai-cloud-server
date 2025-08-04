@@ -1,6 +1,6 @@
 import ctx from 'express-http-context';
 import * as v from 'valibot';
-import { Auth, authMiddleware } from '../../middlewares/auth';
+import { CompleteAuth, completeAuthMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 import { litellm } from '../../../services/litellm';
 import { CTX_GLOBAL_KEYS, INPUT_LIMITS } from '../../../utils/consts';
@@ -40,9 +40,9 @@ export const getKeys = createRouteResolver({
     query: inputSchema,
   },
   output: outputSchema,
-  middlewares: [authMiddleware],
+  middlewares: [completeAuthMiddleware],
   resolve: async ({ inputs: { query } }) => {
-    const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
+    const { user }: CompleteAuth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
 
     const keys = await litellm.listKeys({
       userId: user.userId,

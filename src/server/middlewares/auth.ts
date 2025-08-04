@@ -13,19 +13,19 @@ import { User } from '../../types/litellm';
 
 export type AuthUser = SupabaseUser;
 
-export type PreAuth = {
+export type TokenAuth = {
   authUser: AuthUser;
 };
 
-export type Auth = {
+export type CompleteAuth = {
   authUser: AuthUser;
   user: User;
 };
 
-export const preAuthMiddleware: RequestHandler = async (req, res, next) => {
+export const tokenAuthMiddleware: RequestHandler = async (req, res, next) => {
   const authUser = await authorizeSupabase(req.headers.authorization);
 
-  const preAuth: PreAuth = {
+  const preAuth: TokenAuth = {
     authUser,
   };
 
@@ -34,7 +34,11 @@ export const preAuthMiddleware: RequestHandler = async (req, res, next) => {
   next();
 };
 
-export const authMiddleware: RequestHandler = async (req, res, next) => {
+export const completeAuthMiddleware: RequestHandler = async (
+  req,
+  res,
+  next,
+) => {
   const authUser = await authorizeSupabase(req.headers.authorization);
 
   const user = await litellm.getUser({
@@ -48,7 +52,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
     });
   }
 
-  const auth: Auth = {
+  const auth: CompleteAuth = {
     authUser,
     user,
   };
