@@ -12,7 +12,7 @@ const inputSchema = v.object({
   keyHash: v.string(),
 });
 
-export const generateKey = createRouteResolver({
+export const deleteKey = createRouteResolver({
   inputs: {
     body: inputSchema,
   },
