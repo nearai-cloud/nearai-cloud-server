@@ -2,7 +2,7 @@ import ctx from 'express-http-context';
 import * as v from 'valibot';
 import { Auth, authMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
-import { liteLLM } from '../../../services/lite-llm';
+import { litellm } from '../../../services/litellm';
 import { CTX_GLOBAL_KEYS, INPUT_LIMITS } from '../../../utils/consts';
 
 // Note: Query input in is always a string
@@ -45,7 +45,7 @@ export const getKeys = createRouteResolver({
   resolve: async ({ inputs: { query } }) => {
     const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
 
-    const keys = await liteLLM.listKeys({
+    const keys = await litellm.listKeys({
       page: query.page,
       pageSize: query.pageSize,
       userId: user.userId,

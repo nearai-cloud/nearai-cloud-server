@@ -8,8 +8,8 @@ import {
 } from '../../utils/consts';
 import { createSupabaseClient } from '../../services/supabase';
 import { throwHttpError } from '../../utils/error';
-import { liteLLM } from '../../services/lite-llm';
-import { User } from '../../types/lite-llm';
+import { litellm } from '../../services/litellm';
+import { User } from '../../types/litellm';
 
 export type AuthUser = SupabaseUser;
 
@@ -37,7 +37,7 @@ export const weakAuthMiddleware: RequestHandler = async (req, res, next) => {
 export const authMiddleware: RequestHandler = async (req, res, next) => {
   const authUser = await authorizeSupabase(req.headers.authorization);
 
-  const user = await liteLLM.getUser(authUser.id);
+  const user = await litellm.getUser(authUser.id);
 
   if (!user) {
     throwHttpError({

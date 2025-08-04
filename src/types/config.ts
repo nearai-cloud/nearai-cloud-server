@@ -4,7 +4,7 @@ export type Config = {
     apiUrl: string;
     anonKey: string;
   };
-  liteLLM: {
+  litellm: {
     apiUrl: string;
     adminKey: string;
   };

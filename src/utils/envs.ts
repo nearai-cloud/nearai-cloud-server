@@ -17,8 +17,8 @@ export const ENV: Env = requiredEnv('ENV') as Env;
 export const ENV_SUPABASE_API_URL = requiredEnv('SUPABASE_API_URL');
 export const ENV_SUPABASE_ANON_KEY = requiredEnv('SUPABASE_ANON_KEY');
 
-export const ENV_LITE_LLM_API_URL = requiredEnv('LITE_LLM_API_URL');
-export const ENV_LITE_LLM_ADMIN_KEY = requiredEnv('LITE_LLM_ADMIN_KEY');
+export const ENV_LITELLM_API_URL = requiredEnv('LITELLM_API_URL');
+export const ENV_LITELLM_ADMIN_KEY = requiredEnv('LITELLM_ADMIN_KEY');
 
 export const ENV_SERVER_PORT = Number(requiredEnv('PORT'));
 

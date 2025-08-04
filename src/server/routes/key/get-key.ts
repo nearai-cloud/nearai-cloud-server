@@ -1,11 +1,11 @@
 import ctx from 'express-http-context';
 import * as v from 'valibot';
-import { liteLLM } from '../../../services/lite-llm';
+import { litellm } from '../../../services/litellm';
 import { CTX_GLOBAL_KEYS, STATUS_CODES } from '../../../utils/consts';
 import { Auth, authMiddleware } from '../../middlewares/auth';
 import { throwHttpError } from '../../../utils/error';
 import { createRouteResolver } from '../../middlewares/route-resolver';
-import { Key } from '../../../types/lite-llm';
+import { Key } from '../../../types/litellm';
 
 // Note: Query input in is always a string
 const inputSchema = v.object({
@@ -39,7 +39,7 @@ export const getKey = createRouteResolver({
     async (req, res, next, { query }) => {
       const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
 
-      const key = await liteLLM.getKey(query.keyOrKeyHash);
+      const key = await litellm.getKey(query.keyOrKeyHash);
 
       if (key && key.userId !== user.userId) {
         throwHttpError({

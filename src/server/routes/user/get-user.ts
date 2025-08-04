@@ -1,6 +1,6 @@
 import ctx from 'express-http-context';
 import * as v from 'valibot';
-import { liteLLM } from '../../../services/lite-llm';
+import { litellm } from '../../../services/litellm';
 import { CTX_GLOBAL_KEYS } from '../../../utils/consts';
 import { WeakAuth, weakAuthMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
@@ -18,7 +18,7 @@ export const getUser = createRouteResolver({
   resolve: async () => {
     const { authUser }: WeakAuth = ctx.get(CTX_GLOBAL_KEYS.WEAK_AUTH);
 
-    const user = await liteLLM.getUser(authUser.id);
+    const user = await litellm.getUser(authUser.id);
 
     if (!user) {
       return null;
