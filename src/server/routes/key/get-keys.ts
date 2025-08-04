@@ -49,7 +49,6 @@ export const getKeys = createRouteResolver({
       page: query.page,
       pageSize: query.pageSize,
       userId: user.userId,
-      teamId: undefined, // TODO: Maybe need to specify a team id
       sortBy: 'created_at',
       sortOrder: 'desc',
     });

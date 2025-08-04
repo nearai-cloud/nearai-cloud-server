@@ -12,9 +12,10 @@ import {
   LightLLMRequestOptions,
   LightLLMGetOptions,
   LightLLMPostOptions,
+  UpdateKeyParams,
 } from '../types/light-llm';
 import { config } from '../config';
-import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
+import axios, { Axios, AxiosError } from 'axios';
 
 export class LightLLMError extends Error {
   type: string;
@@ -48,15 +49,16 @@ export class LightLLM {
 
   private async request<T, P = unknown, B = unknown>(
     options: LightLLMRequestOptions<P, B>,
-  ): Promise<AxiosResponse<T>> {
+  ): Promise<T> {
     try {
-      return await this.api.request({
+      const res = await this.api.request<T>({
         url: options.path,
         method: options.method,
         params: options.params,
         data: options.body,
         headers: options.headers,
       });
+      return res.data;
     } catch (e: unknown) {
       if (e instanceof AxiosError && e.response?.data) {
         throw new LightLLMError(e.response.data, e);
@@ -68,7 +70,7 @@ export class LightLLM {
 
   private async get<T, P = unknown>(
     options: LightLLMGetOptions<P>,
-  ): Promise<AxiosResponse<T>> {
+  ): Promise<T> {
     return this.request({
       ...options,
       method: 'GET',
@@ -77,7 +79,7 @@ export class LightLLM {
 
   private async post<T, B = unknown>(
     options: LightLLMPostOptions<B>,
-  ): Promise<AxiosResponse<T>> {
+  ): Promise<T> {
     return this.request({
       ...options,
       method: 'POST',
@@ -85,7 +87,16 @@ export class LightLLM {
   }
 
   async registerUser({ userId, teamId, userEmail }: RegisterUserParams) {
-    await this.post({
+    await this.post<
+      void,
+      {
+        user_id: string;
+        team_id?: string;
+        user_email?: string;
+        auto_create_key?: boolean;
+        user_role?: string;
+      }
+    >({
       path: '/user/new',
       body: {
         user_id: userId,
@@ -98,27 +109,32 @@ export class LightLLM {
   }
 
   async getUser(userId: string): Promise<User | null> {
-    const res = await this.get<{
-      user_info: {
-        user_id?: string;
-        team_id: string | null;
-        user_email: string | null;
-      };
-    }>({
+    const { user_info } = await this.get<
+      {
+        user_info: {
+          user_id?: string;
+          team_id: string | null;
+          user_email: string | null;
+        };
+      },
+      {
+        user_id: string;
+      }
+    >({
       path: '/user/info',
       params: {
         user_id: userId,
       },
     });
 
-    if (!res.data.user_info.user_id) {
+    if (!user_info.user_id) {
       return null;
     }
 
     return {
-      userId: res.data.user_info.user_id,
-      teamId: res.data.user_info.team_id,
-      userEmail: res.data.user_info.user_email,
+      userId: user_info.user_id,
+      teamId: user_info.team_id,
+      userEmail: user_info.user_email,
     };
   }
 
@@ -129,11 +145,10 @@ export class LightLLM {
     keyDuration,
     models,
     maxBudget,
-    budgetDuration,
     rpmLimit,
     tpmLimit,
   }: GenerateKeyParams): Promise<GenerateKeyResponse> {
-    const res = await this.post<
+    const { key, expires } = await this.post<
       {
         key: string;
         expires: string | null;
@@ -145,12 +160,8 @@ export class LightLLM {
         duration?: string;
         models?: string[];
         max_budget?: number;
-        budget_duration?: string;
         rpm_limit?: number;
         tpm_limit?: number;
-        tags?: string[];
-        allowed_routes?: string[];
-        blocked?: boolean;
       }
     >({
       path: '/key/generate',
@@ -161,22 +172,50 @@ export class LightLLM {
         duration: keyDuration,
         models: models,
         max_budget: maxBudget,
-        budget_duration: budgetDuration,
         rpm_limit: rpmLimit,
         tpm_limit: tpmLimit,
       },
     });
 
     return {
-      key: res.data.key,
-      expires: res.data.expires,
+      key,
+      expires,
     };
   }
 
+  async updateKey({
+    keyOrKeyHash,
+    keyAlias,
+    maxBudget,
+    blocked,
+  }: UpdateKeyParams) {
+    await this.post<
+      void,
+      {
+        key: string;
+        key_alias?: string;
+        max_budget?: number;
+        blocked?: boolean;
+      }
+    >({
+      path: '/key/update',
+      body: {
+        key: keyOrKeyHash,
+        key_alias: keyAlias,
+        max_budget: maxBudget,
+        blocked,
+      },
+    });
+  }
+
   async deleteKey({ keyOrKeyHashes, keyAliases }: DeleteKeyParams) {
-    await this.post<{
-      deleted_keys: string[];
-    }>({
+    await this.post<
+      void,
+      {
+        keys?: string[];
+        key_aliases?: string[];
+      }
+    >({
       path: '/key/delete',
       body: {
         keys: keyOrKeyHashes,
@@ -186,27 +225,32 @@ export class LightLLM {
   }
 
   async getKey(keyOrKeyHash: string): Promise<Key | null> {
-    let res: AxiosResponse<{
-      key: string;
-      info: {
-        key_name: string;
-        key_alias: string | null;
-        spend: number;
-        expires: string | null;
-        models: string[];
-        user_id: string;
-        team_id: string | null;
-        rpm_limit: number | null;
-        tpm_limit: number | null;
-        budget_id: string | null;
-        max_budget: number | null;
-        budget_duration: string | null;
-        budget_reset_at: string | null;
-      };
-    }>;
+    let keyInfo;
 
     try {
-      res = await this.get({
+      keyInfo = await this.get<
+        {
+          key: string;
+          info: {
+            key_name: string;
+            key_alias: string | null;
+            spend: number;
+            expires: string | null;
+            models: string[];
+            user_id: string;
+            team_id: string | null;
+            rpm_limit: number | null;
+            tpm_limit: number | null;
+            budget_id: string | null;
+            max_budget: number | null;
+            budget_duration: string | null;
+            budget_reset_at: string | null;
+          };
+        },
+        {
+          key: string;
+        }
+      >({
         path: '/key/info',
         params: {
           key: keyOrKeyHash,
@@ -221,20 +265,20 @@ export class LightLLM {
     }
 
     return {
-      keyOrKeyHash: res.data.key,
-      keyName: res.data.info.key_name,
-      keyAlias: res.data.info.key_alias,
-      spend: res.data.info.spend,
-      expires: res.data.info.expires,
-      models: res.data.info.models,
-      userId: res.data.info.user_id,
-      teamId: res.data.info.team_id,
-      rpmLimit: res.data.info.rpm_limit,
-      tpmLimit: res.data.info.tpm_limit,
-      budgetId: res.data.info.budget_id,
-      maxBudget: res.data.info.max_budget,
-      budgetDuration: res.data.info.budget_duration,
-      budgetResetAt: res.data.info.budget_reset_at,
+      keyOrKeyHash: keyInfo.key,
+      keyName: keyInfo.info.key_name,
+      keyAlias: keyInfo.info.key_alias,
+      spend: keyInfo.info.spend,
+      expires: keyInfo.info.expires,
+      models: keyInfo.info.models,
+      userId: keyInfo.info.user_id,
+      teamId: keyInfo.info.team_id,
+      rpmLimit: keyInfo.info.rpm_limit,
+      tpmLimit: keyInfo.info.tpm_limit,
+      budgetId: keyInfo.info.budget_id,
+      maxBudget: keyInfo.info.max_budget,
+      budgetDuration: keyInfo.info.budget_duration,
+      budgetResetAt: keyInfo.info.budget_reset_at,
     };
   }
 
@@ -246,7 +290,7 @@ export class LightLLM {
     sortBy,
     sortOrder,
   }: ListKeysParams = {}): Promise<ListKeysResponse> {
-    const res = await this.get<
+    const { keys, total_count, current_page, total_pages } = await this.get<
       {
         keys: string[];
         total_count: number;
@@ -274,11 +318,11 @@ export class LightLLM {
     });
 
     return {
-      keyHashes: res.data.keys,
-      totalKeys: res.data.total_count,
-      page: res.data.current_page,
+      keyHashes: keys,
+      totalKeys: total_count,
+      page: current_page,
       pageSize,
-      totalPages: res.data.total_pages,
+      totalPages: total_pages,
     };
   }
 }

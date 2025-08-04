@@ -29,7 +29,10 @@ export const generateKey = createRouteResolver({
       userId: user.userId,
       keyAlias: body.keyAlias,
       models: ['all-team-models'],
-      teamId: undefined, // TODO: Specify a team id
+      teamId: undefined, // TODO
+      maxBudget: undefined, // TODO
+      rpmLimit: undefined, // TODO
+      tpmLimit: undefined, // TODO
     });
 
     return {

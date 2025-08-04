@@ -1,18 +1,26 @@
 import ctx from 'express-http-context';
 import * as v from 'valibot';
 import { lightLLM } from '../../../services/light-llm';
-import { CTX_GLOBAL_KEYS, STATUS_CODES } from '../../../utils/consts';
+import {
+  CTX_GLOBAL_KEYS,
+  INPUT_LIMITS,
+  STATUS_CODES,
+} from '../../../utils/consts';
 import { Auth, authMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 import { throwHttpError } from '../../../utils/error';
-import { Key } from '../../../types/light-llm';
 import { keyForbiddenMessage } from './get-key';
 
 const inputSchema = v.object({
   keyOrKeyHash: v.string(),
+  keyAlias: v.optional(
+    v.pipe(v.string(), v.maxLength(INPUT_LIMITS.KEY_ALIAS_MAX_LENGTH)),
+  ),
+  maxBudget: v.optional(v.number()),
+  blocked: v.optional(v.boolean()),
 });
 
-export const deleteKey = createRouteResolver({
+export const updateKey = createRouteResolver({
   inputs: {
     body: inputSchema,
   },
@@ -23,25 +31,29 @@ export const deleteKey = createRouteResolver({
 
       const key = await lightLLM.getKey(body.keyOrKeyHash);
 
-      if (key && key.userId !== user.userId) {
+      if (!key) {
+        throwHttpError({
+          status: STATUS_CODES.BAD_REQUEST,
+          message: 'Key not exists',
+        });
+      }
+
+      if (key.userId !== user.userId) {
         throwHttpError({
           status: STATUS_CODES.FORBIDDEN,
           message: keyForbiddenMessage(key.userId),
         });
       }
 
-      ctx.set('key', key);
-
       next();
     },
   ],
-  resolve: async () => {
-    const key: Key | null = ctx.get('key');
-
-    if (key) {
-      await lightLLM.deleteKey({
-        keyOrKeyHashes: [key.keyOrKeyHash],
-      });
-    }
+  resolve: async ({ inputs: { body } }) => {
+    await lightLLM.updateKey({
+      keyOrKeyHash: body.keyOrKeyHash,
+      keyAlias: body.keyAlias,
+      maxBudget: body.maxBudget,
+      blocked: body.blocked,
+    });
   },
 });

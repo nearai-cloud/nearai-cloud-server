@@ -53,7 +53,6 @@ export type GenerateKeyParams = {
   keyDuration?: string; // e.g. 30s 30m 30h 30d
   models?: string[];
   maxBudget?: number;
-  budgetDuration?: string; // e.g. 30s 30m 30h 30d
   rpmLimit?: number;
   tpmLimit?: number;
 };
@@ -61,6 +60,13 @@ export type GenerateKeyParams = {
 export type GenerateKeyResponse = {
   key: string;
   expires: string | null; // ISO string
+};
+
+export type UpdateKeyParams = {
+  keyOrKeyHash: string;
+  keyAlias?: string;
+  maxBudget?: number;
+  blocked?: boolean;
 };
 
 export type DeleteKeyParams = {
