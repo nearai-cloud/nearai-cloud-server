@@ -1,11 +1,11 @@
 import ctx from 'express-http-context';
 import * as v from 'valibot';
-import { lightLLM } from '../../../services/light-llm';
+import { liteLLM } from '../../../services/lite-llm';
 import { CTX_GLOBAL_KEYS, STATUS_CODES } from '../../../utils/consts';
 import { Auth, authMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 import { throwHttpError } from '../../../utils/error';
-import { Key } from '../../../types/light-llm';
+import { Key } from '../../../types/lite-llm';
 import { keyForbiddenMessage } from './get-key';
 
 const inputSchema = v.object({
@@ -21,7 +21,7 @@ export const deleteKey = createRouteResolver({
     async (req, res, next, { body }) => {
       const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
 
-      const key = await lightLLM.getKey(body.keyOrKeyHash);
+      const key = await liteLLM.getKey(body.keyOrKeyHash);
 
       if (key && key.userId !== user.userId) {
         throwHttpError({
@@ -39,7 +39,7 @@ export const deleteKey = createRouteResolver({
     const key: Key | null = ctx.get('key');
 
     if (key) {
-      await lightLLM.deleteKey({
+      await liteLLM.deleteKey({
         keyOrKeyHashes: [key.keyOrKeyHash],
       });
     }

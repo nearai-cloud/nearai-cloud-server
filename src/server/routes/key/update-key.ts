@@ -1,6 +1,6 @@
 import ctx from 'express-http-context';
 import * as v from 'valibot';
-import { lightLLM } from '../../../services/light-llm';
+import { liteLLM } from '../../../services/lite-llm';
 import {
   CTX_GLOBAL_KEYS,
   INPUT_LIMITS,
@@ -29,7 +29,7 @@ export const updateKey = createRouteResolver({
     async (req, res, next, { body }) => {
       const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
 
-      const key = await lightLLM.getKey(body.keyOrKeyHash);
+      const key = await liteLLM.getKey(body.keyOrKeyHash);
 
       if (!key) {
         throwHttpError({
@@ -49,7 +49,7 @@ export const updateKey = createRouteResolver({
     },
   ],
   resolve: async ({ inputs: { body } }) => {
-    await lightLLM.updateKey({
+    await liteLLM.updateKey({
       keyOrKeyHash: body.keyOrKeyHash,
       keyAlias: body.keyAlias,
       maxBudget: body.maxBudget,

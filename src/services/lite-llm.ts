@@ -1,5 +1,5 @@
 import {
-  LightLLMOptions,
+  LiteLLMOptions,
   RegisterUserParams,
   GenerateKeyParams,
   DeleteKeyParams,
@@ -8,21 +8,21 @@ import {
   ListKeysResponse,
   User,
   Key,
-  LightLLMErrorOptions,
-  LightLLMRequestOptions,
-  LightLLMGetOptions,
-  LightLLMPostOptions,
+  LiteLLMErrorOptions,
+  LiteLLMRequestOptions,
+  LiteLLMGetOptions,
+  LiteLLMPostOptions,
   UpdateKeyParams,
-} from '../types/light-llm';
+} from '../types/lite-llm';
 import { config } from '../config';
 import axios, { Axios, AxiosError } from 'axios';
 
-export class LightLLMError extends Error {
+export class LiteLLMError extends Error {
   type: string;
   param: string;
   code: string;
 
-  constructor(options: LightLLMErrorOptions, cause?: unknown) {
+  constructor(options: LiteLLMErrorOptions, cause?: unknown) {
     super(options.error.message, {
       cause,
     });
@@ -31,14 +31,14 @@ export class LightLLMError extends Error {
     this.param = options.error.param;
     this.code = options.error.code;
 
-    this.name = LightLLMError.name;
+    this.name = LiteLLMError.name;
   }
 }
 
-export class LightLLM {
+export class LiteLLM {
   private api: Axios;
 
-  constructor({ apiUrl, adminKey }: LightLLMOptions) {
+  constructor({ apiUrl, adminKey }: LiteLLMOptions) {
     this.api = axios.create({
       baseURL: apiUrl,
       headers: {
@@ -48,7 +48,7 @@ export class LightLLM {
   }
 
   private async request<T, P = unknown, B = unknown>(
-    options: LightLLMRequestOptions<P, B>,
+    options: LiteLLMRequestOptions<P, B>,
   ): Promise<T> {
     try {
       const res = await this.api.request<T>({
@@ -61,16 +61,14 @@ export class LightLLM {
       return res.data;
     } catch (e: unknown) {
       if (e instanceof AxiosError && e.response?.data) {
-        throw new LightLLMError(e.response.data, e);
+        throw new LiteLLMError(e.response.data, e);
       }
 
       throw e;
     }
   }
 
-  private async get<T, P = unknown>(
-    options: LightLLMGetOptions<P>,
-  ): Promise<T> {
+  private async get<T, P = unknown>(options: LiteLLMGetOptions<P>): Promise<T> {
     return this.request({
       ...options,
       method: 'GET',
@@ -78,7 +76,7 @@ export class LightLLM {
   }
 
   private async post<T, B = unknown>(
-    options: LightLLMPostOptions<B>,
+    options: LiteLLMPostOptions<B>,
   ): Promise<T> {
     return this.request({
       ...options,
@@ -327,7 +325,7 @@ export class LightLLM {
   }
 }
 
-export const lightLLM = new LightLLM({
-  apiUrl: config.lightLLM.apiUrl,
-  adminKey: config.lightLLM.adminKey,
+export const liteLLM = new LiteLLM({
+  apiUrl: config.liteLLM.apiUrl,
+  adminKey: config.liteLLM.adminKey,
 });

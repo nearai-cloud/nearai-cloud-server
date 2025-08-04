@@ -1,4 +1,4 @@
-export type LightLLMErrorOptions = {
+export type LiteLLMErrorOptions = {
   error: {
     message: string;
     type: string;
@@ -7,12 +7,12 @@ export type LightLLMErrorOptions = {
   };
 };
 
-export type LightLLMOptions = {
+export type LiteLLMOptions = {
   apiUrl: string;
   adminKey: string;
 };
 
-export type LightLLMRequestOptions<P, B> = {
+export type LiteLLMRequestOptions<P, B> = {
   path: Path;
   method: 'GET' | 'POST';
   params?: P;
@@ -20,13 +20,13 @@ export type LightLLMRequestOptions<P, B> = {
   headers?: Record<string, string | undefined>;
 };
 
-export type LightLLMGetOptions<P> = {
+export type LiteLLMGetOptions<P> = {
   path: Path;
   params?: P;
   headers?: Record<string, string | undefined>;
 };
 
-export type LightLLMPostOptions<B> = {
+export type LiteLLMPostOptions<B> = {
   path: Path;
   body?: B;
   headers?: Record<string, string | undefined>;
