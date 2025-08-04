@@ -2,7 +2,7 @@ import ctx from 'express-http-context';
 import * as v from 'valibot';
 import { litellm } from '../../../services/litellm';
 import { CTX_GLOBAL_KEYS } from '../../../utils/consts';
-import { TokenAuth, tokenAuthMiddleware } from '../../middlewares/auth';
+import { SupabaseAuth, supabaseAuthMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 
 const outputSchema = v.nullable(
@@ -14,12 +14,12 @@ const outputSchema = v.nullable(
 
 export const getUser = createRouteResolver({
   output: outputSchema,
-  middlewares: [tokenAuthMiddleware],
+  middlewares: [supabaseAuthMiddleware],
   resolve: async () => {
-    const { authUser }: TokenAuth = ctx.get(CTX_GLOBAL_KEYS.PRE_AUTH);
+    const { supabaseUser }: SupabaseAuth = ctx.get(CTX_GLOBAL_KEYS.PRE_AUTH);
 
     const user = await litellm.getUser({
-      userId: authUser.id,
+      userId: supabaseUser.id,
     });
 
     if (!user) {

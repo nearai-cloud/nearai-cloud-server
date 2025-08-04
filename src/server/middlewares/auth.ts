@@ -11,22 +11,24 @@ import { throwHttpError } from '../../utils/error';
 import { litellm } from '../../services/litellm';
 import { User } from '../../types/litellm';
 
-export type AuthUser = SupabaseUser;
-
-export type TokenAuth = {
-  authUser: AuthUser;
+export type SupabaseAuth = {
+  supabaseUser: SupabaseUser;
 };
 
-export type CompleteAuth = {
-  authUser: AuthUser;
+export type Auth = {
+  supabaseUser: SupabaseUser;
   user: User;
 };
 
-export const tokenAuthMiddleware: RequestHandler = async (req, res, next) => {
+export const supabaseAuthMiddleware: RequestHandler = async (
+  req,
+  res,
+  next,
+) => {
   const authUser = await authorizeSupabase(req.headers.authorization);
 
-  const preAuth: TokenAuth = {
-    authUser,
+  const preAuth: SupabaseAuth = {
+    supabaseUser: authUser,
   };
 
   ctx.set(CTX_GLOBAL_KEYS.PRE_AUTH, preAuth);
@@ -34,11 +36,7 @@ export const tokenAuthMiddleware: RequestHandler = async (req, res, next) => {
   next();
 };
 
-export const completeAuthMiddleware: RequestHandler = async (
-  req,
-  res,
-  next,
-) => {
+export const authMiddleware: RequestHandler = async (req, res, next) => {
   const authUser = await authorizeSupabase(req.headers.authorization);
 
   const user = await litellm.getUser({
@@ -52,8 +50,8 @@ export const completeAuthMiddleware: RequestHandler = async (
     });
   }
 
-  const auth: CompleteAuth = {
-    authUser,
+  const auth: Auth = {
+    supabaseUser: authUser,
     user,
   };
 

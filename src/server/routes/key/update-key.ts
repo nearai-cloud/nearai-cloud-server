@@ -6,7 +6,7 @@ import {
   INPUT_LIMITS,
   STATUS_CODES,
 } from '../../../utils/consts';
-import { CompleteAuth, completeAuthMiddleware } from '../../middlewares/auth';
+import { Auth, authMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 import { throwHttpError } from '../../../utils/error';
 
@@ -24,9 +24,9 @@ export const updateKey = createRouteResolver({
     body: inputSchema,
   },
   middlewares: [
-    completeAuthMiddleware,
+    authMiddleware,
     async (req, res, next, { body }) => {
-      const { user }: CompleteAuth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
+      const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
 
       const key = await litellm.getKey({
         keyOrKeyHash: body.keyOrKeyHash,

@@ -2,7 +2,7 @@ import ctx from 'express-http-context';
 import * as v from 'valibot';
 import { litellm } from '../../../services/litellm';
 import { CTX_GLOBAL_KEYS } from '../../../utils/consts';
-import { CompleteAuth, completeAuthMiddleware } from '../../middlewares/auth';
+import { Auth, authMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 
 const inputSchema = v.object({
@@ -33,9 +33,9 @@ export const getSpendLogs = createRouteResolver({
     query: inputSchema,
   },
   output: outputSchema,
-  middlewares: [completeAuthMiddleware],
+  middlewares: [authMiddleware],
   resolve: async ({ inputs: { query } }) => {
-    const { user }: CompleteAuth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
+    const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
 
     const logs = await litellm.getSpendLogs({
       userId: user.userId,

@@ -1,17 +1,17 @@
 import ctx from 'express-http-context';
 import { litellm } from '../../../services/litellm';
 import { CTX_GLOBAL_KEYS } from '../../../utils/consts';
-import { TokenAuth, tokenAuthMiddleware } from '../../middlewares/auth';
+import { SupabaseAuth, supabaseAuthMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 
 export const registerUser = createRouteResolver({
-  middlewares: [tokenAuthMiddleware],
+  middlewares: [supabaseAuthMiddleware],
   resolve: async () => {
-    const { authUser }: TokenAuth = ctx.get(CTX_GLOBAL_KEYS.PRE_AUTH);
+    const { supabaseUser }: SupabaseAuth = ctx.get(CTX_GLOBAL_KEYS.PRE_AUTH);
 
     await litellm.registerUser({
-      userId: authUser.id,
-      userEmail: authUser.email,
+      userId: supabaseUser.id,
+      userEmail: supabaseUser.email,
     });
   },
 });
