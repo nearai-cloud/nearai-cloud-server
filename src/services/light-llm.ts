@@ -20,8 +20,6 @@ export class LightLLMError extends Error {
   param: string;
   code: string;
 
-  status: number;
-
   constructor(options: LightLLMErrorOptions, cause?: unknown) {
     super(options.error.message, {
       cause,
@@ -30,8 +28,6 @@ export class LightLLMError extends Error {
     this.type = options.error.type;
     this.param = options.error.param;
     this.code = options.error.code;
-
-    this.status = Number(this.code);
 
     this.name = LightLLMError.name;
   }
