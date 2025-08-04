@@ -1,8 +1,6 @@
 import {
   LightLLMOptions,
   RegisterUserParams,
-  PostOptions,
-  GetOptions,
   GenerateKeyParams,
   DeleteKeyParams,
   GenerateKeyResponse,
@@ -11,9 +9,12 @@ import {
   User,
   Key,
   LightLLMErrorOptions,
+  LightLLMRequestOptions,
+  LightLLMGetOptions,
+  LightLLMPostOptions,
 } from '../types/light-llm';
 import { config } from '../config';
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
 
 export class LightLLMError extends Error {
   type: string;
@@ -34,24 +35,27 @@ export class LightLLMError extends Error {
 }
 
 export class LightLLM {
-  private readonly apiUrl: string;
-  private readonly adminKey: string;
+  private api: Axios;
 
   constructor({ apiUrl, adminKey }: LightLLMOptions) {
-    this.apiUrl = apiUrl;
-    this.adminKey = adminKey;
+    this.api = axios.create({
+      baseURL: apiUrl,
+      headers: {
+        authorization: `Bearer ${adminKey}`,
+      },
+    });
   }
 
-  private async GET<
-    T,
-    P extends Record<string, unknown> = Record<string, unknown>,
-  >({ path, params }: GetOptions<P>): Promise<AxiosResponse<T>> {
+  private async request<T, P = unknown, B = unknown>(
+    options: LightLLMRequestOptions<P, B>,
+  ): Promise<AxiosResponse<T>> {
     try {
-      return await axios.get(`${this.apiUrl}${path}`, {
-        headers: {
-          authorization: `Bearer ${this.adminKey}`,
-        },
-        params,
+      return await this.api.request({
+        url: options.path,
+        method: options.method,
+        params: options.params,
+        data: options.body,
+        headers: options.headers,
       });
     } catch (e: unknown) {
       if (e instanceof AxiosError && e.response?.data) {
@@ -62,27 +66,26 @@ export class LightLLM {
     }
   }
 
-  private async POST<
-    T,
-    B extends Record<string, unknown> = Record<string, unknown>,
-  >({ path, body }: PostOptions<B>): Promise<AxiosResponse<T>> {
-    try {
-      return await axios.post(`${this.apiUrl}${path}`, body, {
-        headers: {
-          authorization: `Bearer ${this.adminKey}`,
-        },
-      });
-    } catch (e: unknown) {
-      if (e instanceof AxiosError && e.response?.data) {
-        throw new LightLLMError(e.response.data, e);
-      }
+  private async get<T, P = unknown>(
+    options: LightLLMGetOptions<P>,
+  ): Promise<AxiosResponse<T>> {
+    return this.request({
+      ...options,
+      method: 'GET',
+    });
+  }
 
-      throw e;
-    }
+  private async post<T, B = unknown>(
+    options: LightLLMPostOptions<B>,
+  ): Promise<AxiosResponse<T>> {
+    return this.request({
+      ...options,
+      method: 'POST',
+    });
   }
 
   async registerUser({ userId, teamId, userEmail }: RegisterUserParams) {
-    await this.POST({
+    await this.post({
       path: '/user/new',
       body: {
         user_id: userId,
@@ -95,7 +98,7 @@ export class LightLLM {
   }
 
   async getUser(userId: string): Promise<User | null> {
-    const res = await this.GET<{
+    const res = await this.get<{
       user_info: {
         user_id?: string;
         team_id: string | null;
@@ -130,7 +133,7 @@ export class LightLLM {
     rpmLimit,
     tpmLimit,
   }: GenerateKeyParams): Promise<GenerateKeyResponse> {
-    const res = await this.POST<
+    const res = await this.post<
       {
         key: string;
         expires: string | null;
@@ -171,7 +174,7 @@ export class LightLLM {
   }
 
   async deleteKey({ keyOrKeyHashes, keyAliases }: DeleteKeyParams) {
-    await this.POST<{
+    await this.post<{
       deleted_keys: string[];
     }>({
       path: '/key/delete',
@@ -203,7 +206,7 @@ export class LightLLM {
     }>;
 
     try {
-      res = await this.GET({
+      res = await this.get({
         path: '/key/info',
         params: {
           key: keyOrKeyHash,
@@ -243,7 +246,7 @@ export class LightLLM {
     sortBy,
     sortOrder,
   }: ListKeysParams = {}): Promise<ListKeysResponse> {
-    const res = await this.GET<
+    const res = await this.get<
       {
         keys: string[];
         total_count: number;

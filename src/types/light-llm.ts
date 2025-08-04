@@ -12,14 +12,24 @@ export type LightLLMOptions = {
   adminKey: string;
 };
 
-export type GetOptions<T> = {
+export type LightLLMRequestOptions<P, B> = {
   path: Path;
-  params: T;
+  method: 'GET' | 'POST';
+  params?: P;
+  body?: B;
+  headers?: Record<string, string | undefined>;
 };
 
-export type PostOptions<T> = {
+export type LightLLMGetOptions<P> = {
   path: Path;
-  body: T;
+  params?: P;
+  headers?: Record<string, string | undefined>;
+};
+
+export type LightLLMPostOptions<B> = {
+  path: Path;
+  body?: B;
+  headers?: Record<string, string | undefined>;
 };
 
 export type Path = `/${string}`;
