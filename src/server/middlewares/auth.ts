@@ -13,7 +13,7 @@ import { User } from '../../types/litellm';
 
 export type AuthUser = SupabaseUser;
 
-export type WeakAuth = {
+export type PreAuth = {
   authUser: AuthUser;
 };
 
@@ -22,14 +22,14 @@ export type Auth = {
   user: User;
 };
 
-export const weakAuthMiddleware: RequestHandler = async (req, res, next) => {
+export const preAuthMiddleware: RequestHandler = async (req, res, next) => {
   const authUser = await authorizeSupabase(req.headers.authorization);
 
-  const weakAuth: WeakAuth = {
+  const preAuth: PreAuth = {
     authUser,
   };
 
-  ctx.set(CTX_GLOBAL_KEYS.WEAK_AUTH, weakAuth);
+  ctx.set(CTX_GLOBAL_KEYS.PRE_AUTH, preAuth);
 
   next();
 };

@@ -18,7 +18,7 @@ const config: Config = {
     adminKey: ENV_LITELLM_ADMIN_KEY,
   },
   log: {
-    level: 'debug',
+    level: 'info',
   },
   server: {
     port: ENV_SERVER_PORT,

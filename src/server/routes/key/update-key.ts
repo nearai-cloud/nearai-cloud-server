@@ -9,7 +9,6 @@ import {
 import { Auth, authMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 import { throwHttpError } from '../../../utils/error';
-import { keyForbiddenMessage } from './get-key';
 
 const inputSchema = v.object({
   keyOrKeyHash: v.string(),
@@ -36,14 +35,15 @@ export const updateKey = createRouteResolver({
       if (!key) {
         throwHttpError({
           status: STATUS_CODES.BAD_REQUEST,
-          message: 'Key not exists',
+          message: 'Cannot update a key that does not exist',
         });
       }
 
       if (key.userId !== user.userId) {
         throwHttpError({
           status: STATUS_CODES.FORBIDDEN,
-          message: keyForbiddenMessage(key.userId),
+          message:
+            'No permission to access the key that is owned by other users',
         });
       }
 

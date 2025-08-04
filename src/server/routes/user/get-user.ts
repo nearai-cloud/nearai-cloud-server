@@ -2,7 +2,7 @@ import ctx from 'express-http-context';
 import * as v from 'valibot';
 import { litellm } from '../../../services/litellm';
 import { CTX_GLOBAL_KEYS } from '../../../utils/consts';
-import { WeakAuth, weakAuthMiddleware } from '../../middlewares/auth';
+import { PreAuth, preAuthMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 
 const outputSchema = v.nullable(
@@ -14,9 +14,9 @@ const outputSchema = v.nullable(
 
 export const getUser = createRouteResolver({
   output: outputSchema,
-  middlewares: [weakAuthMiddleware],
+  middlewares: [preAuthMiddleware],
   resolve: async () => {
-    const { authUser }: WeakAuth = ctx.get(CTX_GLOBAL_KEYS.WEAK_AUTH);
+    const { authUser }: PreAuth = ctx.get(CTX_GLOBAL_KEYS.PRE_AUTH);
 
     const user = await litellm.getUser({
       userId: authUser.id,

@@ -6,7 +6,6 @@ import { Auth, authMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 import { throwHttpError } from '../../../utils/error';
 import { Key } from '../../../types/litellm';
-import { keyForbiddenMessage } from './get-key';
 
 const inputSchema = v.object({
   keyOrKeyHash: v.string(),
@@ -28,7 +27,8 @@ export const deleteKey = createRouteResolver({
       if (key && key.userId !== user.userId) {
         throwHttpError({
           status: STATUS_CODES.FORBIDDEN,
-          message: keyForbiddenMessage(key.userId),
+          message:
+            'No permission to access the key that is owned by other users',
         });
       }
 
