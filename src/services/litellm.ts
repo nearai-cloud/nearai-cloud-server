@@ -13,6 +13,10 @@ import {
   LitellmGetOptions,
   LitellmPostOptions,
   UpdateKeyParams,
+  GetSpendLogsParams,
+  SpendLog,
+  GetUserParams,
+  GetKeyParams,
 } from '../types/litellm';
 import { config } from '../config';
 import axios, { Axios, AxiosError } from 'axios';
@@ -84,12 +88,11 @@ export class Litellm {
     });
   }
 
-  async registerUser({ userId, teamId, userEmail }: RegisterUserParams) {
+  async registerUser({ userId, userEmail }: RegisterUserParams) {
     await this.post<
       void,
       {
-        user_id: string;
-        team_id?: string;
+        user_id?: string;
         user_email?: string;
         auto_create_key?: boolean;
         user_role?: string;
@@ -98,7 +101,6 @@ export class Litellm {
       path: '/user/new',
       body: {
         user_id: userId,
-        team_id: teamId,
         user_email: userEmail,
         auto_create_key: false,
         user_role: 'internal_user_viewer',
@@ -106,7 +108,7 @@ export class Litellm {
     });
   }
 
-  async getUser(userId: string): Promise<User | null> {
+  async getUser({ userId }: GetUserParams): Promise<User | null> {
     const { user_info } = await this.get<
       {
         user_info: {
@@ -131,7 +133,6 @@ export class Litellm {
 
     return {
       userId: user_info.user_id,
-      teamId: user_info.team_id,
       userEmail: user_info.user_email,
     };
   }
@@ -152,7 +153,7 @@ export class Litellm {
         expires: string | null;
       },
       {
-        user_id: string;
+        user_id?: string;
         team_id?: string;
         key_alias?: string;
         duration?: string;
@@ -222,7 +223,7 @@ export class Litellm {
     });
   }
 
-  async getKey(keyOrKeyHash: string): Promise<Key | null> {
+  async getKey({ keyOrKeyHash }: GetKeyParams): Promise<Key | null> {
     let keyInfo;
 
     try {
@@ -281,13 +282,12 @@ export class Litellm {
   }
 
   async listKeys({
+    userId,
     page,
     pageSize = 10,
-    userId,
-    teamId,
     sortBy,
     sortOrder,
-  }: ListKeysParams = {}): Promise<ListKeysResponse> {
+  }: ListKeysParams): Promise<ListKeysResponse> {
     const { keys, total_count, current_page, total_pages } = await this.get<
       {
         keys: string[];
@@ -296,9 +296,9 @@ export class Litellm {
         total_pages: number;
       },
       {
+        user_id?: string;
         page?: number;
         size?: number;
-        user_id?: string;
         team_id?: string;
         sort_by?: string;
         sort_order?: 'asc' | 'desc';
@@ -306,10 +306,9 @@ export class Litellm {
     >({
       path: '/key/list',
       params: {
+        user_id: userId,
         page: page,
         size: pageSize,
-        user_id: userId,
-        team_id: teamId,
         sort_by: sortBy ?? 'created_at',
         sort_order: sortOrder ?? 'desc',
       },
@@ -322,6 +321,64 @@ export class Litellm {
       pageSize,
       totalPages: total_pages,
     };
+  }
+
+  async getSpendLogs({
+    requestId,
+    userId,
+    keyOrKeyHash,
+    startDate,
+    endDate,
+  }: GetSpendLogsParams): Promise<SpendLog[]> {
+    const logs = await this.get<
+      {
+        request_id: string;
+        user: string;
+        api_key: string;
+        status: string;
+        call_type: string;
+        spend: number;
+        prompt_tokens: number;
+        completion_tokens: number;
+        total_tokens: number;
+        model: string;
+        model_id: string;
+      }[],
+      {
+        request_id?: string;
+        user_id?: string;
+        api_key?: string;
+        start_date?: string;
+        end_date?: string;
+        summarize?: boolean;
+      }
+    >({
+      path: '/spend/logs',
+      params: {
+        request_id: requestId,
+        user_id: userId,
+        api_key: keyOrKeyHash,
+        start_date: startDate,
+        end_date: endDate,
+        summarize: false, // Use filtered individual logs
+      },
+    });
+
+    return logs.map((log) => {
+      return {
+        requestId: log.request_id,
+        userId: log.user,
+        keyHash: log.api_key,
+        status: log.status,
+        callType: log.call_type,
+        spend: log.spend,
+        promptTokens: log.prompt_tokens,
+        completionTokens: log.completion_tokens,
+        totalTokens: log.total_tokens,
+        modelId: log.model_id,
+        model: log.model,
+      };
+    });
   }
 }
 

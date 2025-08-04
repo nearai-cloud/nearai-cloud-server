@@ -37,7 +37,9 @@ export const weakAuthMiddleware: RequestHandler = async (req, res, next) => {
 export const authMiddleware: RequestHandler = async (req, res, next) => {
   const authUser = await authorizeSupabase(req.headers.authorization);
 
-  const user = await litellm.getUser(authUser.id);
+  const user = await litellm.getUser({
+    userId: authUser.id,
+  });
 
   if (!user) {
     throwHttpError({

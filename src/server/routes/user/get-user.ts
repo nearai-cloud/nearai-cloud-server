@@ -18,7 +18,9 @@ export const getUser = createRouteResolver({
   resolve: async () => {
     const { authUser }: WeakAuth = ctx.get(CTX_GLOBAL_KEYS.WEAK_AUTH);
 
-    const user = await litellm.getUser(authUser.id);
+    const user = await litellm.getUser({
+      userId: authUser.id,
+    });
 
     if (!user) {
       return null;

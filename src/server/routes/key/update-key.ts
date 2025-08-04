@@ -29,7 +29,9 @@ export const updateKey = createRouteResolver({
     async (req, res, next, { body }) => {
       const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
 
-      const key = await litellm.getKey(body.keyOrKeyHash);
+      const key = await litellm.getKey({
+        keyOrKeyHash: body.keyOrKeyHash,
+      });
 
       if (!key) {
         throwHttpError({

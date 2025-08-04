@@ -7,7 +7,6 @@ import { throwHttpError } from '../../../utils/error';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 import { Key } from '../../../types/litellm';
 
-// Note: Query input in is always a string
 const inputSchema = v.object({
   keyOrKeyHash: v.string(),
 });
@@ -39,7 +38,9 @@ export const getKey = createRouteResolver({
     async (req, res, next, { query }) => {
       const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
 
-      const key = await litellm.getKey(query.keyOrKeyHash);
+      const key = await litellm.getKey({
+        keyOrKeyHash: query.keyOrKeyHash,
+      });
 
       if (key && key.userId !== user.userId) {
         throwHttpError({

@@ -36,13 +36,15 @@ export type Path = `/${string}`;
 
 export type RegisterUserParams = {
   userId: string;
-  teamId?: string;
   userEmail?: string;
+};
+
+export type GetUserParams = {
+  userId: string;
 };
 
 export type User = {
   userId: string;
-  teamId: string | null;
   userEmail: string | null;
 };
 
@@ -74,6 +76,10 @@ export type DeleteKeyParams = {
   keyAliases?: string[];
 };
 
+export type GetKeyParams = {
+  keyOrKeyHash: string;
+};
+
 export type Key = {
   keyOrKeyHash: string;
   keyName: string; // Simplified key string. e.g. sk-...ABcd
@@ -92,10 +98,9 @@ export type Key = {
 };
 
 export type ListKeysParams = {
+  userId: string;
   page?: number; // Min: 1
   pageSize?: number; // Min: 1 Max: 100
-  userId?: string;
-  teamId?: string;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
 };
@@ -106,4 +111,26 @@ export type ListKeysResponse = {
   page: number;
   pageSize: number;
   totalPages: number;
+};
+
+export type GetSpendLogsParams = {
+  requestId?: string;
+  userId: string;
+  keyOrKeyHash?: string;
+  startDate?: string;
+  endDate?: string;
+};
+
+export type SpendLog = {
+  requestId: string;
+  userId: string;
+  keyHash: string;
+  status: string;
+  callType: string;
+  spend: number;
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+  modelId: string;
+  model: string;
 };

@@ -5,7 +5,6 @@ import { createRouteResolver } from '../../middlewares/route-resolver';
 import { litellm } from '../../../services/litellm';
 import { CTX_GLOBAL_KEYS, INPUT_LIMITS } from '../../../utils/consts';
 
-// Note: Query input in is always a string
 const inputSchema = v.object({
   page: v.optional(
     v.pipe(
@@ -46,9 +45,9 @@ export const getKeys = createRouteResolver({
     const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
 
     const keys = await litellm.listKeys({
+      userId: user.userId,
       page: query.page,
       pageSize: query.pageSize,
-      userId: user.userId,
       sortBy: 'created_at',
       sortOrder: 'desc',
     });
