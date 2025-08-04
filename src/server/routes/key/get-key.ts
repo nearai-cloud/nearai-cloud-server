@@ -44,7 +44,7 @@ export const getKey = createRouteResolver({
       if (key && key.userId !== user.userId) {
         throwHttpError({
           status: STATUS_CODES.FORBIDDEN,
-          message: `No permission to ge the key that is owned by ${key.userId ? `user (${key.userId})` : 'service account'}`,
+          message: keyForbiddenMessage(key.userId),
         });
       }
 
@@ -76,3 +76,7 @@ export const getKey = createRouteResolver({
     }
   },
 });
+
+export function keyForbiddenMessage(userId: string | null): string {
+  return `No permission to access the key that is owned by ${userId ? `user (${userId})` : 'service account'}`;
+}
