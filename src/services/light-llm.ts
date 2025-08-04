@@ -10,9 +10,32 @@ import {
   ListKeysResponse,
   User,
   Key,
+  LightLLMErrorOptions,
 } from '../types/light-llm';
 import { config } from '../config';
 import axios, { AxiosError, AxiosResponse } from 'axios';
+
+export class LightLLMError extends Error {
+  type: string;
+  param: string;
+  code: string;
+
+  status: number;
+
+  constructor(options: LightLLMErrorOptions, cause?: unknown) {
+    super(options.error.message, {
+      cause,
+    });
+
+    this.type = options.error.type;
+    this.param = options.error.param;
+    this.code = options.error.code;
+
+    this.status = Number(this.code);
+
+    this.name = LightLLMError.name;
+  }
+}
 
 export class LightLLM {
   private readonly apiUrl: string;
@@ -260,37 +283,6 @@ export class LightLLM {
     };
   }
 }
-
-export class LightLLMError extends Error {
-  type: string;
-  param: string;
-  code: string;
-
-  status: number;
-
-  constructor(data: LightLLMErrorData, cause?: unknown) {
-    super(data.error.message, {
-      cause,
-    });
-
-    this.type = data.error.type;
-    this.param = data.error.param;
-    this.code = data.error.code;
-
-    this.status = Number(this.code);
-
-    this.name = LightLLMError.name;
-  }
-}
-
-export type LightLLMErrorData = {
-  error: {
-    message: string;
-    type: string;
-    param: string;
-    code: string;
-  };
-};
 
 export const lightLLM = new LightLLM({
   apiUrl: config.lightLLM.apiUrl,

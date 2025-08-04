@@ -1,3 +1,12 @@
+export type LightLLMErrorOptions = {
+  error: {
+    message: string;
+    type: string;
+    param: string;
+    code: string;
+  };
+};
+
 export type LightLLMOptions = {
   apiUrl: string;
   adminKey: string;
