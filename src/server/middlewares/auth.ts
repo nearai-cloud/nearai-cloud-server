@@ -23,7 +23,7 @@ export type Auth = {
 };
 
 export const weakAuthMiddleware: RequestHandler = async (req, res, next) => {
-  const authUser = await authorize(req);
+  const authUser = await authorizeSupabase(req);
 
   const weakAuth: WeakAuth = {
     authUser,
@@ -35,7 +35,7 @@ export const weakAuthMiddleware: RequestHandler = async (req, res, next) => {
 };
 
 export const authMiddleware: RequestHandler = async (req, res, next) => {
-  const authUser = await authorize(req);
+  const authUser = await authorizeSupabase(req);
 
   const user = await lightLLM.getUser(authUser.id);
 
@@ -56,7 +56,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
   next();
 };
 
-async function authorize(req: Request): Promise<AuthUser> {
+async function authorizeSupabase(req: Request): Promise<AuthUser> {
   const authorization = req.headers['authorization'];
 
   if (!authorization) {
