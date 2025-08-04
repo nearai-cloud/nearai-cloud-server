@@ -1,4 +1,4 @@
-import { RequestHandler, Request } from 'express';
+import { RequestHandler } from 'express';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import ctx from 'express-http-context';
 import {
@@ -23,7 +23,7 @@ export type Auth = {
 };
 
 export const weakAuthMiddleware: RequestHandler = async (req, res, next) => {
-  const authUser = await authorizeSupabase(req);
+  const authUser = await authorizeSupabase(req.headers.authorization);
 
   const weakAuth: WeakAuth = {
     authUser,
@@ -35,7 +35,7 @@ export const weakAuthMiddleware: RequestHandler = async (req, res, next) => {
 };
 
 export const authMiddleware: RequestHandler = async (req, res, next) => {
-  const authUser = await authorizeSupabase(req);
+  const authUser = await authorizeSupabase(req.headers.authorization);
 
   const user = await lightLLM.getUser(authUser.id);
 
@@ -56,9 +56,9 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
   next();
 };
 
-async function authorizeSupabase(req: Request): Promise<AuthUser> {
-  const authorization = req.headers['authorization'];
-
+async function authorizeSupabase(
+  authorization?: string,
+): Promise<SupabaseUser> {
   if (!authorization) {
     throw throwHttpError({
       status: STATUS_CODES.UNAUTHORIZED,
