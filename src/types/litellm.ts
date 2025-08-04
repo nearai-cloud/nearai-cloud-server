@@ -133,4 +133,6 @@ export type SpendLog = {
   totalTokens: number;
   modelId: string;
   model: string;
+  startTime: string;
+  endTime: string;
 };

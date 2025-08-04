@@ -23,6 +23,8 @@ const outputSchema = v.array(
     totalTokens: v.number(),
     modelId: v.string(),
     model: v.string(),
+    startTime: v.string(),
+    endTime: v.string(),
   }),
 );
 
@@ -55,6 +57,8 @@ export const getSpendLogs = createRouteResolver({
         totalTokens: log.totalTokens,
         modelId: log.modelId,
         model: log.model,
+        startTime: log.startTime,
+        endTime: log.endTime,
       };
     });
   },

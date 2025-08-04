@@ -340,8 +340,10 @@ export class Litellm {
         prompt_tokens: number;
         completion_tokens: number;
         total_tokens: number;
-        model: string;
         model_id: string;
+        model: string;
+        start_time: string;
+        end_time: string;
       }[],
       {
         user_id?: string;
@@ -374,6 +376,8 @@ export class Litellm {
         totalTokens: log.total_tokens,
         modelId: log.model_id,
         model: log.model,
+        startTime: log.start_time,
+        endTime: log.end_time,
       };
     });
   }
