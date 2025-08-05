@@ -8,7 +8,7 @@ import {
   ListKeysResponse,
   User,
   Key,
-  LitellmErrorOptions,
+  LitellmClientErrorOptions,
   LitellmRequestOptions,
   LitellmGetOptions,
   LitellmPostOptions,
@@ -22,12 +22,14 @@ import { config } from '../config';
 import axios, { Axios, AxiosError } from 'axios';
 import { OpenAI } from 'openai/client';
 
-export class LitellmError extends Error {
+export class LitellmClientError extends Error {
   type: string;
   param: string;
   code: string;
 
-  constructor(options: LitellmErrorOptions, cause?: unknown) {
+  status: number;
+
+  constructor(options: LitellmClientErrorOptions, cause?: unknown) {
     super(options.error.message, {
       cause,
     });
@@ -36,7 +38,9 @@ export class LitellmError extends Error {
     this.param = options.error.param;
     this.code = options.error.code;
 
-    this.name = LitellmError.name;
+    this.status = Number(this.code);
+
+    this.name = LitellmClientError.name;
   }
 }
 
@@ -67,7 +71,7 @@ export class LitellmClient {
       return res.data;
     } catch (e: unknown) {
       if (axios.isAxiosError(e) && e.response?.data) {
-        throw new LitellmError(e.response.data, e);
+        throw new LitellmClientError(e.response.data, e);
       }
 
       throw e;

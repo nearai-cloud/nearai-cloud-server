@@ -1,4 +1,4 @@
-export type LitellmErrorOptions = {
+export type LitellmClientErrorOptions = {
   error: {
     message: string;
     type: string;
