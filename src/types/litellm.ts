@@ -12,18 +12,18 @@ export type LitellmOptions = {
   apiKey: string;
 };
 
-export type LitellmRequestOptions<P, B> = {
+export type LitellmRequestOptions<Q, B> = {
   path: string;
   method: 'get' | 'post';
-  params?: P;
+  query?: Q;
   body?: B;
   headers?: Record<string, string | undefined>;
   responseType?: 'stream';
 };
 
-export type LitellmGetOptions<P> = {
+export type LitellmGetOptions<Q> = {
   path: string;
-  params?: P;
+  query?: Q;
   headers?: Record<string, string | undefined>;
   responseType?: 'stream';
 };

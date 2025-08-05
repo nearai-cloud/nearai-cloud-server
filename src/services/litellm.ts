@@ -60,7 +60,7 @@ export class LitellmClient {
       const res = await this.api.request<T>({
         url: options.path,
         method: options.method,
-        params: options.params,
+        params: options.query,
         data: options.body,
         headers: options.headers,
         responseType: options.responseType,
@@ -125,7 +125,7 @@ export class LitellmClient {
       }
     >({
       path: '/user/info',
-      params: {
+      query: {
         user_id: userId,
       },
     });
@@ -256,7 +256,7 @@ export class LitellmClient {
         }
       >({
         path: '/key/info',
-        params: {
+        query: {
           key: keyOrKeyHash,
         },
       });
@@ -311,7 +311,7 @@ export class LitellmClient {
       }
     >({
       path: '/key/list',
-      params: {
+      query: {
         user_id: userId,
         page: page,
         size: pageSize,
@@ -360,7 +360,7 @@ export class LitellmClient {
       }
     >({
       path: '/spend/logs',
-      params: {
+      query: {
         user_id: userId,
         api_key: keyOrKeyHash,
         start_date: startDate,
