@@ -78,7 +78,7 @@ export class LitellmClient {
   private async get<T, P = unknown>(options: LitellmGetOptions<P>): Promise<T> {
     return this.request({
       ...options,
-      method: 'GET',
+      method: 'get',
     });
   }
 
@@ -87,7 +87,7 @@ export class LitellmClient {
   ): Promise<T> {
     return this.request({
       ...options,
-      method: 'POST',
+      method: 'post',
     });
   }
 

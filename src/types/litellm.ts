@@ -14,25 +14,25 @@ export type LitellmOptions = {
 
 export type LitellmRequestOptions<P, B> = {
   path: string;
-  method: 'GET' | 'POST';
+  method: 'get' | 'post';
   params?: P;
   body?: B;
   headers?: Record<string, string | undefined>;
-  responseType?: 'stream' | 'json';
+  responseType?: 'stream';
 };
 
 export type LitellmGetOptions<P> = {
   path: string;
   params?: P;
   headers?: Record<string, string | undefined>;
-  responseType?: 'stream' | 'json';
+  responseType?: 'stream';
 };
 
 export type LitellmPostOptions<B> = {
   path: string;
   body?: B;
   headers?: Record<string, string | undefined>;
-  responseType?: 'stream' | 'json';
+  responseType?: 'stream';
 };
 
 export type RegisterUserParams = {
