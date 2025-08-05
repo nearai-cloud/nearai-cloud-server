@@ -2,6 +2,8 @@ import { RequestHandler } from 'express';
 import morgan from 'morgan';
 import dayjs from 'dayjs';
 import { addColor, getHttpStatusColor } from '../../utils/color';
+import { throwHttpError } from '../../utils/error';
+import { STATUS_CODES } from '../../utils/consts';
 
 export function createIncomingLogMiddleware({
   isDev = true,
@@ -13,13 +15,19 @@ export function createIncomingLogMiddleware({
       const method = tokens['method']?.(req, res);
 
       if (!method) {
-        throw Error(`Incoming log token 'method' not found`);
+        throwHttpError({
+          status: STATUS_CODES.INTERNAL_SERVER_ERROR,
+          message: `Incoming log token 'method' not found`,
+        });
       }
 
       const url = tokens['url']?.(req, res);
 
       if (!url) {
-        throw Error(`Incoming log token 'url' not found`);
+        throwHttpError({
+          status: STATUS_CODES.INTERNAL_SERVER_ERROR,
+          message: `Incoming log token 'url' not found`,
+        });
       }
 
       return [
@@ -47,19 +55,28 @@ export function createOutgoingLogMiddleware({
     const method = tokens['method']?.(req, res);
 
     if (!method) {
-      throw Error(`Outgoing log token 'method' not found`);
+      throwHttpError({
+        status: STATUS_CODES.INTERNAL_SERVER_ERROR,
+        message: `Outgoing log token 'method' not found`,
+      });
     }
 
     const url = tokens['url']?.(req, res);
 
     if (!url) {
-      throw Error(`Outgoing log token 'url' not found`);
+      throwHttpError({
+        status: STATUS_CODES.INTERNAL_SERVER_ERROR,
+        message: `Outgoing log token 'url' not found`,
+      });
     }
 
     const status = tokens['status']?.(req, res);
 
     if (!status) {
-      throw Error(`Outgoing log token 'status' not found`);
+      throwHttpError({
+        status: STATUS_CODES.INTERNAL_SERVER_ERROR,
+        message: `Outgoing log token 'status' not found`,
+      });
     }
 
     const statusColor = getHttpStatusColor(Number(status));
@@ -67,7 +84,10 @@ export function createOutgoingLogMiddleware({
     const responseTime = tokens['response-time']?.(req, res);
 
     if (!responseTime) {
-      throw Error(`Outgoing log token 'response-time' not found`);
+      throwHttpError({
+        status: STATUS_CODES.INTERNAL_SERVER_ERROR,
+        message: `Outgoing log token 'response-time' not found`,
+      });
     }
 
     return [
