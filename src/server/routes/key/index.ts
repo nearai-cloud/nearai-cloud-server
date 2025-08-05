@@ -13,4 +13,4 @@ keyRouter.post('/update', updateKey);
 keyRouter.post('/delete', deleteKey);
 keyRouter.get('/info', getKey);
 keyRouter.get('/list', getKeys);
-keyRouter.get('/logs', getSpendLogs);
+keyRouter.get('/usage', getSpendLogs);
