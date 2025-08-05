@@ -27,6 +27,8 @@ export class LitellmClientError extends Error {
   param: string;
   code: string;
 
+  status: number;
+
   constructor(options: LitellmClientErrorOptions, cause?: unknown) {
     super(options.error.message, {
       cause,
@@ -35,6 +37,8 @@ export class LitellmClientError extends Error {
     this.type = options.error.type;
     this.param = options.error.param;
     this.code = options.error.code;
+
+    this.status = Number(this.code);
 
     this.name = LitellmClientError.name;
   }
