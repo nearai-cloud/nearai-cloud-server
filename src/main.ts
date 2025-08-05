@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { runServer } from './server/app';
 import { sendSlackInfo } from './services/slack';
 
