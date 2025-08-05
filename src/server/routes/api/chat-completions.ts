@@ -2,7 +2,6 @@ import ctx from 'express-http-context';
 import { RequestHandler } from 'express';
 import { KeyAuth, keyAuthMiddleware } from '../../middlewares/auth';
 import { CTX_GLOBAL_KEYS } from '../../../utils/consts';
-import { Readable } from 'node:stream';
 
 export const chatCompletions: RequestHandler[] = [
   keyAuthMiddleware,
@@ -11,7 +10,7 @@ export const chatCompletions: RequestHandler[] = [
 
     const data = await litellmClient.chatCompletions(req.body);
 
-    if (data instanceof Readable) {
+    if ('pipe' in data) {
       data.pipe(res);
     } else {
       res.json(data);

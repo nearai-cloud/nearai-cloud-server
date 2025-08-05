@@ -21,7 +21,6 @@ import {
 import { config } from '../config';
 import axios, { Axios, AxiosError } from 'axios';
 import { OpenAI } from 'openai/client';
-import { Readable } from 'node:stream';
 
 export class LitellmError extends Error {
   type: string;
@@ -387,7 +386,7 @@ export class LitellmClient {
 
   async chatCompletions(
     params: OpenAI.ChatCompletionCreateParams,
-  ): Promise<OpenAI.ChatCompletion | Readable> {
+  ): Promise<OpenAI.ChatCompletion | NodeJS.ReadableStream> {
     return this.post({
       path: '/chat/completions',
       body: params,
