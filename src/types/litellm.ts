@@ -9,30 +9,31 @@ export type LitellmErrorOptions = {
 
 export type LitellmOptions = {
   apiUrl: string;
-  adminKey: string;
+  apiKey: string;
 };
 
 export type LitellmRequestOptions<P, B> = {
-  path: Path;
+  path: string;
   method: 'GET' | 'POST';
   params?: P;
   body?: B;
   headers?: Record<string, string | undefined>;
+  responseType?: 'stream' | 'json';
 };
 
 export type LitellmGetOptions<P> = {
-  path: Path;
+  path: string;
   params?: P;
   headers?: Record<string, string | undefined>;
+  responseType?: 'stream' | 'json';
 };
 
 export type LitellmPostOptions<B> = {
-  path: Path;
+  path: string;
   body?: B;
   headers?: Record<string, string | undefined>;
+  responseType?: 'stream' | 'json';
 };
-
-export type Path = `/${string}`;
 
 export type RegisterUserParams = {
   userId: string;

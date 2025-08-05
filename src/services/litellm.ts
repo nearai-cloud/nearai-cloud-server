@@ -20,6 +20,8 @@ import {
 } from '../types/litellm';
 import { config } from '../config';
 import axios, { Axios, AxiosError } from 'axios';
+import { OpenAI } from 'openai/client';
+import { Readable } from 'node:stream';
 
 export class LitellmError extends Error {
   type: string;
@@ -39,14 +41,14 @@ export class LitellmError extends Error {
   }
 }
 
-export class Litellm {
+export class LitellmClient {
   private api: Axios;
 
-  constructor({ apiUrl, adminKey }: LitellmOptions) {
+  constructor({ apiUrl, apiKey }: LitellmOptions) {
     this.api = axios.create({
       baseURL: apiUrl,
       headers: {
-        authorization: `Bearer ${adminKey}`,
+        authorization: `Bearer ${apiKey}`,
       },
     });
   }
@@ -61,10 +63,11 @@ export class Litellm {
         params: options.params,
         data: options.body,
         headers: options.headers,
+        responseType: options.responseType,
       });
       return res.data;
     } catch (e: unknown) {
-      if (e instanceof AxiosError && e.response?.data) {
+      if (axios.isAxiosError(e) && e.response?.data) {
         throw new LitellmError(e.response.data, e);
       }
 
@@ -381,9 +384,23 @@ export class Litellm {
       };
     });
   }
+
+  async chatCompletions(
+    params: OpenAI.ChatCompletionCreateParams,
+  ): Promise<OpenAI.ChatCompletion | Readable> {
+    return this.post({
+      path: '/chat/completions',
+      body: params,
+      responseType: params.stream ? 'stream' : undefined,
+    });
+  }
 }
 
-export const litellm = new Litellm({
-  apiUrl: config.litellm.apiUrl,
-  adminKey: config.litellm.adminKey,
-});
+export function createLitellmClient(apiKey: string): LitellmClient {
+  return new LitellmClient({
+    apiUrl: config.litellm.apiUrl,
+    apiKey: apiKey,
+  });
+}
+
+export const adminLitellmClient = createLitellmClient(config.litellm.adminKey);

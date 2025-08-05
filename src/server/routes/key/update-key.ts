@@ -1,6 +1,6 @@
 import ctx from 'express-http-context';
 import * as v from 'valibot';
-import { litellm } from '../../../services/litellm';
+import { adminLitellmClient } from '../../../services/litellm';
 import {
   CTX_GLOBAL_KEYS,
   INPUT_LIMITS,
@@ -28,7 +28,7 @@ export const updateKey = createRouteResolver({
     async (req, res, next, { body }) => {
       const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
 
-      const key = await litellm.getKey({
+      const key = await adminLitellmClient.getKey({
         keyOrKeyHash: body.keyOrKeyHash,
       });
 
@@ -51,7 +51,7 @@ export const updateKey = createRouteResolver({
     },
   ],
   resolve: async ({ inputs: { body } }) => {
-    await litellm.updateKey({
+    await adminLitellmClient.updateKey({
       keyOrKeyHash: body.keyOrKeyHash,
       keyAlias: body.keyAlias,
       maxBudget: body.maxBudget,

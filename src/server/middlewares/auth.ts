@@ -8,8 +8,13 @@ import {
 } from '../../utils/consts';
 import { createSupabaseClient } from '../../services/supabase';
 import { throwHttpError } from '../../utils/error';
-import { litellm } from '../../services/litellm';
-import { User } from '../../types/litellm';
+import {
+  adminLitellmClient,
+  createLitellmClient,
+  LitellmClient,
+} from '../../services/litellm';
+import { Key, User } from '../../types/litellm';
+import { config } from '../../config';
 
 export type SupabaseAuth = {
   supabaseUser: SupabaseUser;
@@ -20,27 +25,26 @@ export type Auth = {
   user: User;
 };
 
+export type KeyAuth = {
+  key: string;
+  litellmClient: LitellmClient;
+};
+
 export const supabaseAuthMiddleware: RequestHandler = async (
   req,
   res,
   next,
 ) => {
-  const authUser = await authorizeSupabase(req.headers.authorization);
-
-  const supabaseAuth: SupabaseAuth = {
-    supabaseUser: authUser,
-  };
-
+  const supabaseAuth = await authorizeSupabase(req.headers.authorization);
   ctx.set(CTX_GLOBAL_KEYS.SUPABASE_AUTH, supabaseAuth);
-
   next();
 };
 
 export const authMiddleware: RequestHandler = async (req, res, next) => {
-  const authUser = await authorizeSupabase(req.headers.authorization);
+  const { supabaseUser } = await authorizeSupabase(req.headers.authorization);
 
-  const user = await litellm.getUser({
-    userId: authUser.id,
+  const user = await adminLitellmClient.getUser({
+    userId: supabaseUser.id,
   });
 
   if (!user) {
@@ -51,7 +55,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
   }
 
   const auth: Auth = {
-    supabaseUser: authUser,
+    supabaseUser,
     user,
   };
 
@@ -62,7 +66,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
 
 async function authorizeSupabase(
   authorization?: string,
-): Promise<SupabaseUser> {
+): Promise<SupabaseAuth> {
   if (!authorization) {
     throw throwHttpError({
       status: STATUS_CODES.UNAUTHORIZED,
@@ -82,7 +86,7 @@ async function authorizeSupabase(
   const client = createSupabaseClient();
 
   const {
-    data: { user },
+    data: { user: supabaseUser },
     error,
   } = await client.auth.getUser(token);
 
@@ -93,12 +97,70 @@ async function authorizeSupabase(
     });
   }
 
-  if (!user) {
+  if (!supabaseUser) {
     throwHttpError({
       status: STATUS_CODES.UNAUTHORIZED,
       message: 'Invalid authorization token',
     });
   }
 
-  return user;
+  return {
+    supabaseUser,
+  };
+}
+
+export const keyAuthMiddleware: RequestHandler = async (req, res, next) => {
+  const keyAuth = await authorizeKey(req.headers.authorization);
+  ctx.set(CTX_GLOBAL_KEYS.KEY_AUTH, keyAuth);
+  next();
+};
+
+async function authorizeKey(authorization?: string): Promise<KeyAuth> {
+  if (!authorization) {
+    throw throwHttpError({
+      status: STATUS_CODES.UNAUTHORIZED,
+      message: 'Missing authorization token',
+    });
+  }
+
+  if (!authorization.startsWith(BEARER_TOKEN_PREFIX)) {
+    throwHttpError({
+      status: STATUS_CODES.UNAUTHORIZED,
+      message: `Authorization token must start with '${BEARER_TOKEN_PREFIX}'`,
+    });
+  }
+
+  const token = authorization.slice(BEARER_TOKEN_PREFIX.length);
+
+  if (token === config.litellm.adminKey) {
+    return {
+      key: token,
+      litellmClient: adminLitellmClient,
+    };
+  } else {
+    const litellmClient = createLitellmClient(token);
+
+    let key: Key | null;
+
+    try {
+      key = await litellmClient.getKey({ keyOrKeyHash: token });
+    } catch (e: unknown) {
+      throwHttpError({
+        status: STATUS_CODES.UNAUTHORIZED,
+        cause: e,
+      });
+    }
+
+    if (!key) {
+      throwHttpError({
+        status: STATUS_CODES.UNAUTHORIZED,
+        message: 'Invalid authorization token',
+      });
+    }
+
+    return {
+      key: token,
+      litellmClient,
+    };
+  }
 }
