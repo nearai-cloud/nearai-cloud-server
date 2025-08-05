@@ -97,6 +97,7 @@ export type Key = {
   maxBudget: number | null;
   budgetDuration: string | null;
   budgetResetAt: string | null;
+  createdAt: string;
 };
 
 export type ListKeysParams = {
