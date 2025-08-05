@@ -14,7 +14,6 @@ import {
   LitellmClient,
 } from '../../services/litellm';
 import { Key, User } from '../../types/litellm';
-import { config } from '../../config';
 
 export type SupabaseAuth = {
   supabaseUser: SupabaseUser;
@@ -26,7 +25,7 @@ export type Auth = {
 };
 
 export type KeyAuth = {
-  key: string;
+  key: Key;
   litellmClient: LitellmClient;
 };
 
@@ -132,35 +131,28 @@ async function authorizeKey(authorization?: string): Promise<KeyAuth> {
 
   const token = authorization.slice(BEARER_TOKEN_PREFIX.length);
 
-  if (token === config.litellm.adminKey) {
-    return {
-      key: token,
-      litellmClient: adminLitellmClient,
-    };
-  } else {
-    const litellmClient = createLitellmClient(token);
+  const litellmClient = createLitellmClient(token);
 
-    let key: Key | null;
+  let key: Key | null;
 
-    try {
-      key = await litellmClient.getKey({ keyOrKeyHash: token });
-    } catch (e: unknown) {
-      throwHttpError({
-        status: STATUS_CODES.UNAUTHORIZED,
-        cause: e,
-      });
-    }
-
-    if (!key) {
-      throwHttpError({
-        status: STATUS_CODES.UNAUTHORIZED,
-        message: 'Invalid authorization token',
-      });
-    }
-
-    return {
-      key: token,
-      litellmClient,
-    };
+  try {
+    key = await litellmClient.getKey({ keyOrKeyHash: token });
+  } catch (e: unknown) {
+    throwHttpError({
+      status: STATUS_CODES.UNAUTHORIZED,
+      cause: e,
+    });
   }
+
+  if (!key) {
+    throwHttpError({
+      status: STATUS_CODES.UNAUTHORIZED,
+      message: 'Invalid authorization token',
+    });
+  }
+
+  return {
+    key,
+    litellmClient,
+  };
 }
