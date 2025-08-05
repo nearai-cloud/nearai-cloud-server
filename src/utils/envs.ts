@@ -3,8 +3,7 @@ import { config } from 'dotenv';
 export const ENV = requiredEnv('ENV');
 
 config({
-  path: ['.env', `.env.${ENV}`],
-  override: true,
+  path: [`.env.${ENV}`],
 });
 
 // ------------------------------- Load through dotenv -------------------------------
