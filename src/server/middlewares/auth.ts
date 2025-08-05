@@ -92,6 +92,7 @@ async function authorizeSupabase(
   if (error) {
     throwHttpError({
       status: STATUS_CODES.UNAUTHORIZED,
+      message: 'Failed to authorize',
       cause: error,
     });
   }
@@ -140,6 +141,7 @@ async function authorizeKey(authorization?: string): Promise<KeyAuth> {
   } catch (e: unknown) {
     throwHttpError({
       status: STATUS_CODES.UNAUTHORIZED,
+      message: 'Failed to authorize',
       cause: e,
     });
   }

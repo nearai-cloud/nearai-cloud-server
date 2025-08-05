@@ -27,8 +27,6 @@ export class LitellmClientError extends Error {
   param: string;
   code: string;
 
-  status: number;
-
   constructor(options: LitellmClientErrorOptions, cause?: unknown) {
     super(options.error.message, {
       cause,
@@ -37,8 +35,6 @@ export class LitellmClientError extends Error {
     this.type = options.error.type;
     this.param = options.error.param;
     this.code = options.error.code;
-
-    this.status = Number(this.code);
 
     this.name = LitellmClientError.name;
   }
@@ -395,6 +391,12 @@ export class LitellmClient {
       path: '/chat/completions',
       body: params,
       responseType: params.stream ? 'stream' : undefined,
+    });
+  }
+
+  async models(): Promise<OpenAI.PageResponse<OpenAI.Model>> {
+    return this.get({
+      path: 'models',
     });
   }
 }
