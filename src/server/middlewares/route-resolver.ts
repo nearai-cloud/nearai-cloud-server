@@ -11,6 +11,7 @@ import {
   ToUndefinedSchema,
   toUndefinedSchema,
 } from '../../types/route-resolver';
+import stream from 'node:stream';
 
 export function createRouteResolver<
   TParamsInputSchema extends BaseSchema = ToUndefinedSchema,
@@ -76,8 +77,10 @@ export function createRouteResolver<
 
     if (output === undefined) {
       res.status(STATUS_CODES.NO_CONTENT).send();
+    } else if (output instanceof stream.Readable) {
+      output.pipe(res);
     } else {
-      res.json(output);
+      res.send(output);
     }
   };
 
