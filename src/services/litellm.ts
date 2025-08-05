@@ -113,8 +113,8 @@ export class Litellm {
       {
         user_info: {
           user_id?: string;
-          team_id: string | null;
           user_email: string | null;
+          spend: number;
         };
       },
       {
@@ -134,6 +134,7 @@ export class Litellm {
     return {
       userId: user_info.user_id,
       userEmail: user_info.user_email,
+      spend: user_info.spend,
     };
   }
 
