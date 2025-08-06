@@ -1,4 +1,4 @@
-import { PrismaClient } from '../../.prisma';
+import { PrismaClient } from '@prisma/client';
 import { config } from '../config';
 import { litellmDecryptValue } from '../utils/crypto';
 

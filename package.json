@@ -12,7 +12,7 @@
     "lint": "eslint 'src/**/*.ts' '*.mjs' --fix",
     "prettier": "prettier 'src/**/*.ts' '*.mjs' --write --list-different",
     "check": "tsc",
-    "prepare": "husky"
+    "prepare": "husky && pnpm generate"
   },
   "dependencies": {
     "@prisma/client": "^6.13.0",
