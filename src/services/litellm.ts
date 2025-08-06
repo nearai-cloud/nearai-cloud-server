@@ -116,7 +116,7 @@ export class Litellm {
         user_info: {
           user_id?: string;
           user_email: string | null;
-          max_budget: number;
+          max_budget: number | null;
           spend: number;
         };
       },
@@ -150,7 +150,7 @@ export class Litellm {
       void,
       {
         user_id: string;
-        max_budget: number;
+        max_budget: number | null;
       }
     >({
       path: '/user/update',
