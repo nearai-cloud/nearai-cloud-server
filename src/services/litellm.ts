@@ -315,9 +315,9 @@ export class LitellmClient extends Client {
         completion_tokens: number;
         total_tokens: number;
         model_id: string;
-        model: string;
-        start_time: string;
-        end_time: string;
+        model_group: string;
+        startTime: string;
+        endTime: string;
       }[],
       {
         user_id?: string;
@@ -349,9 +349,9 @@ export class LitellmClient extends Client {
         completionTokens: log.completion_tokens,
         totalTokens: log.total_tokens,
         modelId: log.model_id,
-        model: log.model,
-        startTime: log.start_time,
-        endTime: log.end_time,
+        modelGroup: log.model_group,
+        startTime: log.startTime,
+        endTime: log.endTime,
       };
     });
   }
