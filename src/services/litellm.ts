@@ -248,6 +248,7 @@ export class LitellmClient {
             max_budget: number | null;
             budget_duration: string | null;
             budget_reset_at: string | null;
+            blocked: boolean | null;
             created_at: string;
           };
         },
@@ -283,6 +284,7 @@ export class LitellmClient {
       maxBudget: keyInfo.info.max_budget,
       budgetDuration: keyInfo.info.budget_duration,
       budgetResetAt: keyInfo.info.budget_reset_at,
+      blocked: keyInfo.info.blocked,
       createdAt: keyInfo.info.created_at,
     };
   }

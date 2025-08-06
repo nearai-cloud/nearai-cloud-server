@@ -98,6 +98,7 @@ export type Key = {
   maxBudget: number | null;
   budgetDuration: string | null;
   budgetResetAt: string | null;
+  blocked: boolean | null;
   createdAt: string;
 };
 
