@@ -377,9 +377,12 @@ export class LitellmApiClient extends ApiClient {
   }
 }
 
-export function createLitellmApiClient(apiKey: string): LitellmApiClient {
+export function createLitellmApiClient(
+  apiKey: string,
+  apiUrl = config.litellm.apiUrl,
+): LitellmApiClient {
   return new LitellmApiClient({
-    apiUrl: config.litellm.apiUrl,
+    apiUrl,
     apiKey,
   });
 }

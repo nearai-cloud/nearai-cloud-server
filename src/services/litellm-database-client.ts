@@ -98,8 +98,10 @@ export class LitellmDatabaseClient {
   }
 }
 
-export function createLitellmDatabaseClient(): LitellmDatabaseClient {
-  return new LitellmDatabaseClient(config.litellm.dbUrl);
+export function createLitellmDatabaseClient(
+  datasourceUrl = config.litellm.dbUrl,
+): LitellmDatabaseClient {
+  return new LitellmDatabaseClient(datasourceUrl);
 }
 
 export const litellmDatabaseClient = createLitellmDatabaseClient();

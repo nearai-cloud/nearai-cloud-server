@@ -1,10 +1,12 @@
 import { createRouteResolver } from '../../middlewares/route-resolver';
 import { keyAuthMiddleware } from '../../middlewares/auth';
 import * as v from 'valibot';
+import * as ctx from 'express-http-context';
 import { litellmDatabaseClient } from '../../../services/litellm-database-client';
 import { throwHttpError } from '../../../utils/error';
 import { STATUS_CODES } from '../../../utils/consts';
-import { PrivatellmApiClient } from '../../../services/privatellm-api-client';
+import { createPrivatellmApiClient } from '../../../services/privatellm-api-client';
+import { InternalModelParams } from '../../../types/litellm-database-client';
 
 const paramsInputSchema = v.object({
   chat_id: v.string(),
@@ -12,7 +14,14 @@ const paramsInputSchema = v.object({
 
 const queryInputSchema = v.object({
   model: v.string(),
-  signing_algo: v.string(),
+  signing_algo: v.union([v.literal('ecdsa'), v.literal('ed25519')]),
+});
+
+const outputSchema = v.object({
+  text: v.string(),
+  signature: v.string(),
+  signing_address: v.string(),
+  signing_algo: v.union([v.literal('ecdsa'), v.literal('ed25519')]),
 });
 
 export const signature = createRouteResolver({
@@ -20,28 +29,36 @@ export const signature = createRouteResolver({
     params: paramsInputSchema,
     query: queryInputSchema,
   },
-  middlewares: [keyAuthMiddleware],
+  output: outputSchema,
+  middlewares: [
+    keyAuthMiddleware,
+    async (req, res, next, { query }) => {
+      const modelParams = await litellmDatabaseClient.getInternalModelParams(
+        query.model,
+      );
+
+      if (!modelParams) {
+        throwHttpError({
+          status: STATUS_CODES.BAD_REQUEST,
+          message: 'Invalid model',
+        });
+      }
+
+      ctx.set('modelParams', modelParams);
+
+      next();
+    },
+  ],
   resolve: async ({ inputs: { params, query } }) => {
-    const modelParams = await litellmDatabaseClient.getInternalModelParams(
-      query.model,
+    const modelParams: InternalModelParams = ctx.get('modelParams');
+    const client = createPrivatellmApiClient(
+      modelParams.apiKey,
+      modelParams.apiUrl,
     );
-
-    if (!modelParams) {
-      throwHttpError({
-        status: STATUS_CODES.BAD_REQUEST,
-        message: 'Unsupported model',
-      });
-    }
-
-    const client = new PrivatellmApiClient({
-      apiUrl: modelParams.apiUrl,
-      apiKey: modelParams.apiKey,
+    return client.signature({
+      chat_id: params.chat_id,
+      model: modelParams.model,
+      signing_algo: query.signing_algo,
     });
-
-    return client.signature(
-      modelParams.model,
-      params.chat_id,
-      query.signing_algo,
-    );
   },
 });
