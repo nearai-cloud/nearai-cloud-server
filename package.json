@@ -7,12 +7,12 @@
   "scripts": {
     "generate": "prisma generate",
     "dev": "ENV=dev tsx src/main.ts",
-    "build": "rm -rf dist && tsup",
+    "build": "pnpm generate && rm -rf dist && tsup",
     "start": "node dist/main.js",
     "lint": "eslint 'src/**/*.ts' '*.mjs' --fix",
     "prettier": "prettier 'src/**/*.ts' '*.mjs' --write --list-different",
     "check": "tsc",
-    "prepare": "husky && prisma generate"
+    "prepare": "husky"
   },
   "dependencies": {
     "@prisma/client": "^6.13.0",
