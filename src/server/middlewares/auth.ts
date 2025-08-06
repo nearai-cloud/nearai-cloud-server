@@ -9,11 +9,11 @@ import {
 import { createSupabaseClient } from '../../services/supabase';
 import { throwHttpError } from '../../utils/error';
 import {
-  adminLitellmClient,
-  createLitellmClient,
-  LitellmClient,
-} from '../../services/litellm';
-import { Key, User } from '../../types/litellm';
+  adminLitellmApiClient,
+  createLitellmApiClient,
+  LitellmApiClient,
+} from '../../services/litellm-api-client';
+import { Key, User } from '../../types/litellm-api-client';
 
 export type SupabaseAuth = {
   supabaseUser: SupabaseUser;
@@ -26,7 +26,7 @@ export type Auth = {
 
 export type KeyAuth = {
   key: Key;
-  litellmClient: LitellmClient;
+  litellmClient: LitellmApiClient;
 };
 
 export const supabaseAuthMiddleware: RequestHandler = async (
@@ -42,7 +42,7 @@ export const supabaseAuthMiddleware: RequestHandler = async (
 export const authMiddleware: RequestHandler = async (req, res, next) => {
   const { supabaseUser } = await authorizeSupabase(req.headers.authorization);
 
-  const user = await adminLitellmClient.getUser({
+  const user = await adminLitellmApiClient.getUser({
     userId: supabaseUser.id,
   });
 
@@ -132,7 +132,7 @@ async function authorizeKey(authorization?: string): Promise<KeyAuth> {
 
   const token = authorization.slice(BEARER_TOKEN_PREFIX.length);
 
-  const litellmClient = createLitellmClient(token);
+  const litellmClient = createLitellmApiClient(token);
 
   let key: Key | null;
 

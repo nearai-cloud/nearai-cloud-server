@@ -1,38 +1,10 @@
-export type LitellmClientErrorOptions = {
+export type LitellmApiClientErrorOptions = {
   error: {
     message: string;
     type: string;
     param: string;
     code: string;
   };
-};
-
-export type LitellmOptions = {
-  apiUrl: string;
-  apiKey: string;
-};
-
-export type LitellmRequestOptions<Q, B> = {
-  path: string;
-  method: 'get' | 'post';
-  query?: Q;
-  body?: B;
-  headers?: Record<string, string | undefined>;
-  responseType?: 'stream';
-};
-
-export type LitellmGetOptions<Q> = {
-  path: string;
-  query?: Q;
-  headers?: Record<string, string | undefined>;
-  responseType?: 'stream';
-};
-
-export type LitellmPostOptions<B> = {
-  path: string;
-  body?: B;
-  headers?: Record<string, string | undefined>;
-  responseType?: 'stream';
 };
 
 export type RegisterUserParams = {

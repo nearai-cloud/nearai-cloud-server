@@ -7,25 +7,29 @@ import {
   ListKeysResponse,
   User,
   Key,
-  LitellmClientErrorOptions,
+  LitellmApiClientErrorOptions,
   UpdateKeyParams,
   GetSpendLogsParams,
   SpendLog,
   GetUserParams,
   GetKeyParams,
-} from '../types/litellm';
+} from '../types/litellm-api-client';
 import { config } from '../config';
 import axios, { AxiosError } from 'axios';
 import { OpenAI } from 'openai/client';
 import stream from 'node:stream';
-import { Client, ClientOptions, RequestOptions } from '../utils/Client';
+import {
+  ApiClient,
+  ApiClientOptions,
+  RequestOptions,
+} from '../utils/api-client';
 
-export class LitellmClientError extends Error {
+export class LitellmApiClientError extends Error {
   type: string;
   param: string;
   code: string;
 
-  constructor(options: LitellmClientErrorOptions, cause?: unknown) {
+  constructor(options: LitellmApiClientErrorOptions, cause?: unknown) {
     super(options.error.message, {
       cause,
     });
@@ -34,12 +38,12 @@ export class LitellmClientError extends Error {
     this.param = options.error.param;
     this.code = options.error.code;
 
-    this.name = LitellmClientError.name;
+    this.name = LitellmApiClientError.name;
   }
 }
 
-export class LitellmClient extends Client {
-  constructor(options: ClientOptions) {
+export class LitellmApiClient extends ApiClient {
+  constructor(options: ApiClientOptions) {
     super(options);
   }
 
@@ -50,7 +54,7 @@ export class LitellmClient extends Client {
       return await super.request(options);
     } catch (e: unknown) {
       if (axios.isAxiosError(e) && e.response?.data) {
-        throw new LitellmClientError(e.response.data, e);
+        throw new LitellmApiClientError(e.response.data, e);
       }
 
       throw e;
@@ -373,11 +377,13 @@ export class LitellmClient extends Client {
   }
 }
 
-export function createLitellmClient(apiKey: string): LitellmClient {
-  return new LitellmClient({
+export function createLitellmApiClient(apiKey: string): LitellmApiClient {
+  return new LitellmApiClient({
     apiUrl: config.litellm.apiUrl,
     apiKey,
   });
 }
 
-export const adminLitellmClient = createLitellmClient(config.litellm.adminKey);
+export const adminLitellmApiClient = createLitellmApiClient(
+  config.litellm.adminKey,
+);

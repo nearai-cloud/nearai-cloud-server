@@ -1,6 +1,6 @@
 import ctx from 'express-http-context';
 import * as v from 'valibot';
-import { adminLitellmClient } from '../../../services/litellm';
+import { adminLitellmApiClient } from '../../../services/litellm-api-client';
 import { CTX_GLOBAL_KEYS } from '../../../utils/consts';
 import { SupabaseAuth, supabaseAuthMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
@@ -21,7 +21,7 @@ export const getUser = createRouteResolver({
       CTX_GLOBAL_KEYS.SUPABASE_AUTH,
     );
 
-    const user = await adminLitellmClient.getUser({
+    const user = await adminLitellmApiClient.getUser({
       userId: supabaseUser.id,
     });
 

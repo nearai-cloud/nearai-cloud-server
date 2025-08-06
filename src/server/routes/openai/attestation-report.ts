@@ -1,10 +1,10 @@
 import { createRouteResolver } from '../../middlewares/route-resolver';
 import { keyAuthMiddleware } from '../../middlewares/auth';
 import * as v from 'valibot';
-import { getInternalModelMetadata } from '../../../database/client';
+import { litellmDatabaseClient } from '../../../services/litellm-database-client';
 import { throwHttpError } from '../../../utils/error';
 import { STATUS_CODES } from '../../../utils/consts';
-import { PrivatellmClient } from '../../../services/privatellm';
+import { PrivatellmApiClient } from '../../../services/privatellm-api-client';
 
 const inputSchema = v.object({
   model: v.string(),
@@ -16,7 +16,9 @@ export const attestationReport = createRouteResolver({
   },
   middlewares: [keyAuthMiddleware],
   resolve: async ({ inputs: { query } }) => {
-    const metadata = await getInternalModelMetadata(query.model);
+    const metadata = await litellmDatabaseClient.getInternalModelParams(
+      query.model,
+    );
 
     if (!metadata) {
       throwHttpError({
@@ -25,7 +27,7 @@ export const attestationReport = createRouteResolver({
       });
     }
 
-    const client = new PrivatellmClient({
+    const client = new PrivatellmApiClient({
       apiUrl: metadata.apiUrl,
       apiKey: metadata.apiKey,
     });

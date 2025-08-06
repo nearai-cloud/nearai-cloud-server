@@ -1,7 +1,7 @@
-import { Client, ClientOptions } from '../utils/Client';
+import { ApiClient, ApiClientOptions } from '../utils/api-client';
 
-export class PrivatellmClient extends Client {
-  constructor(options: ClientOptions) {
+export class PrivatellmApiClient extends ApiClient {
+  constructor(options: ApiClientOptions) {
     super(options);
   }
 

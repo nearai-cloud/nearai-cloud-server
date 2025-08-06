@@ -1,10 +1,10 @@
 import { createRouteResolver } from '../../middlewares/route-resolver';
 import { keyAuthMiddleware } from '../../middlewares/auth';
 import * as v from 'valibot';
-import { getInternalModelMetadata } from '../../../database/client';
+import { litellmDatabaseClient } from '../../../services/litellm-database-client';
 import { throwHttpError } from '../../../utils/error';
 import { STATUS_CODES } from '../../../utils/consts';
-import { PrivatellmClient } from '../../../services/privatellm';
+import { PrivatellmApiClient } from '../../../services/privatellm-api-client';
 
 const paramsInputSchema = v.object({
   chat_id: v.string(),
@@ -22,20 +22,26 @@ export const signature = createRouteResolver({
   },
   middlewares: [keyAuthMiddleware],
   resolve: async ({ inputs: { params, query } }) => {
-    const metadata = await getInternalModelMetadata(query.model);
+    const modelParams = await litellmDatabaseClient.getInternalModelParams(
+      query.model,
+    );
 
-    if (!metadata) {
+    if (!modelParams) {
       throwHttpError({
         status: STATUS_CODES.BAD_REQUEST,
-        message: 'Invalid model',
+        message: 'Unsupported model',
       });
     }
 
-    const client = new PrivatellmClient({
-      apiUrl: metadata.apiUrl,
-      apiKey: metadata.apiKey,
+    const client = new PrivatellmApiClient({
+      apiUrl: modelParams.apiUrl,
+      apiKey: modelParams.apiKey,
     });
 
-    return client.signature(metadata.model, params.chat_id, query.signing_algo);
+    return client.signature(
+      modelParams.model,
+      params.chat_id,
+      query.signing_algo,
+    );
   },
 });

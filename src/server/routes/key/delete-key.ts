@@ -1,11 +1,11 @@
 import ctx from 'express-http-context';
 import * as v from 'valibot';
-import { adminLitellmClient } from '../../../services/litellm';
+import { adminLitellmApiClient } from '../../../services/litellm-api-client';
 import { CTX_GLOBAL_KEYS, STATUS_CODES } from '../../../utils/consts';
 import { Auth, authMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 import { throwHttpError } from '../../../utils/error';
-import { Key } from '../../../types/litellm';
+import { Key } from '../../../types/litellm-api-client';
 
 const inputSchema = v.object({
   keyOrKeyHash: v.string(),
@@ -20,7 +20,7 @@ export const deleteKey = createRouteResolver({
     async (req, res, next, { body }) => {
       const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
 
-      const key = await adminLitellmClient.getKey({
+      const key = await adminLitellmApiClient.getKey({
         keyOrKeyHash: body.keyOrKeyHash,
       });
 
@@ -41,7 +41,7 @@ export const deleteKey = createRouteResolver({
     const key: Key | null = ctx.get('key');
 
     if (key) {
-      await adminLitellmClient.deleteKey({
+      await adminLitellmApiClient.deleteKey({
         keyOrKeyHashes: [key.keyOrKeyHash],
       });
     }

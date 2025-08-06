@@ -2,7 +2,7 @@ import ctx from 'express-http-context';
 import { KeyAuth, keyAuthMiddleware } from '../../middlewares/auth';
 import { CTX_GLOBAL_KEYS } from '../../../utils/consts';
 import { throwHttpError } from '../../../utils/error';
-import { LitellmClientError } from '../../../services/litellm';
+import { LitellmApiClientError } from '../../../services/litellm-api-client';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 
 export const chatCompletions = createRouteResolver({
@@ -13,7 +13,7 @@ export const chatCompletions = createRouteResolver({
     try {
       return await litellmClient.chatCompletions(req.body);
     } catch (e: unknown) {
-      if (e instanceof LitellmClientError) {
+      if (e instanceof LitellmApiClientError) {
         throwHttpError({
           status: Number(e.code),
           cause: e,

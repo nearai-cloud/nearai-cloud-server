@@ -1,10 +1,10 @@
 import axios, { Axios } from 'axios';
 
-export abstract class Client {
-  protected api: Axios;
+export abstract class ApiClient {
+  protected client: Axios;
 
-  protected constructor({ apiUrl, apiKey }: ClientOptions) {
-    this.api = axios.create({
+  protected constructor({ apiUrl, apiKey }: ApiClientOptions) {
+    this.client = axios.create({
       baseURL: apiUrl,
       headers: {
         authorization: `Bearer ${apiKey}`,
@@ -15,7 +15,7 @@ export abstract class Client {
   protected async request<T, P = unknown, B = unknown>(
     options: RequestOptions<P, B>,
   ): Promise<T> {
-    const res = await this.api.request<T>({
+    const res = await this.client.request<T>({
       url: options.path,
       method: options.method,
       params: options.query,
@@ -42,7 +42,7 @@ export abstract class Client {
   }
 }
 
-export type ClientOptions = {
+export type ApiClientOptions = {
   apiUrl: string;
   apiKey: string;
 };
