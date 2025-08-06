@@ -7,12 +7,12 @@ import { STATUS_CODES } from '../../../utils/consts';
 import { PrivatellmClient } from '../../../services/privatellm';
 
 const paramsInputSchema = v.object({
-  chatId: v.string(),
+  chat_id: v.string(),
 });
 
 const queryInputSchema = v.object({
   model: v.string(),
-  signingAlgo: v.string(),
+  signing_algo: v.string(),
 });
 
 export const signature = createRouteResolver({
@@ -36,6 +36,6 @@ export const signature = createRouteResolver({
       apiKey: metadata.apiKey,
     });
 
-    return client.signature(metadata.model, params.chatId, query.signingAlgo);
+    return client.signature(metadata.model, params.chat_id, query.signing_algo);
   },
 });
