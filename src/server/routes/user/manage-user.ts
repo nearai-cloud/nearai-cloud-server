@@ -14,7 +14,7 @@ export const manageUser = createRouteResolver({
   },
   middlewares: [litellmServiceAccountMiddleware],
   resolve: async ({ inputs: { body } }) => {
-    await litellm.updateUserBudget({
+    await litellm.manageUser({
       userId: body.userId,
       maxBudget: body.maxBudget,
     });

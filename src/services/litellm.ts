@@ -17,7 +17,7 @@ import {
   SpendLog,
   GetUserParams,
   GetKeyParams,
-  UpdateUserBudgetParams,
+  ManageUserParams,
   KeyMetadata,
 } from '../types/litellm';
 import { config } from '../config';
@@ -142,7 +142,10 @@ export class Litellm {
     };
   }
 
-  async updateUserBudget({ userId, maxBudget }: UpdateUserBudgetParams) {
+  /**
+   * Update user budget. The function should only be called by service account.
+   */
+  async manageUser({ userId, maxBudget }: ManageUserParams) {
     await this.post<
       void,
       {

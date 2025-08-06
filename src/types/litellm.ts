@@ -44,7 +44,7 @@ export type GetUserParams = {
   userId: string;
 };
 
-export type UpdateUserBudgetParams = {
+export type ManageUserParams = {
   userId: string;
   maxBudget: number;
 };
