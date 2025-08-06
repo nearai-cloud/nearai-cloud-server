@@ -17,6 +17,8 @@ import {
   SpendLog,
   GetUserParams,
   GetKeyParams,
+  UpdateUserBudgetParams,
+  KeyMetadata,
 } from '../types/litellm';
 import { config } from '../config';
 import axios, { Axios, AxiosError } from 'axios';
@@ -140,6 +142,22 @@ export class Litellm {
     };
   }
 
+  async updateUserBudget({ userId, maxBudget }: UpdateUserBudgetParams) {
+    await this.post<
+      void,
+      {
+        user_id: string;
+        max_budget: number;
+      }
+    >({
+      path: '/user/update',
+      body: {
+        user_id: userId,
+        max_budget: maxBudget,
+      },
+    });
+  }
+
   async generateKey({
     userId,
     teamId,
@@ -226,7 +244,10 @@ export class Litellm {
     });
   }
 
-  async getKey({ keyOrKeyHash }: GetKeyParams): Promise<Key | null> {
+  async getKey(
+    { keyOrKeyHash }: GetKeyParams,
+    headers?: Record<string, string>,
+  ): Promise<Key | null> {
     let keyInfo;
 
     try {
@@ -249,16 +270,18 @@ export class Litellm {
             budget_reset_at: string | null;
             blocked: boolean | null;
             created_at: string;
+            metadata: KeyMetadata;
           };
         },
         {
-          key: string;
+          key: string | undefined;
         }
       >({
         path: '/key/info',
         params: {
           key: keyOrKeyHash,
         },
+        headers,
       });
     } catch (e: unknown) {
       if (e instanceof AxiosError && e.status === 404) {
@@ -285,6 +308,7 @@ export class Litellm {
       budgetResetAt: keyInfo.info.budget_reset_at,
       blocked: keyInfo.info.blocked,
       createdAt: keyInfo.info.created_at,
+      metadata: keyInfo.info.metadata,
     };
   }
 

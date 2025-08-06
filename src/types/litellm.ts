@@ -44,6 +44,11 @@ export type GetUserParams = {
   userId: string;
 };
 
+export type UpdateUserBudgetParams = {
+  userId: string;
+  maxBudget: number;
+};
+
 export type User = {
   userId: string;
   userEmail: string | null;
@@ -80,7 +85,7 @@ export type DeleteKeyParams = {
 };
 
 export type GetKeyParams = {
-  keyOrKeyHash: string;
+  keyOrKeyHash?: string;
 };
 
 export type Key = {
@@ -100,7 +105,10 @@ export type Key = {
   budgetResetAt: string | null;
   blocked: boolean | null;
   createdAt: string;
+  metadata: KeyMetadata;
 };
+
+export type KeyMetadata = Record<string, string>;
 
 export type ListKeysParams = {
   userId: string;
