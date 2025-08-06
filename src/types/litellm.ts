@@ -47,6 +47,7 @@ export type GetUserParams = {
 export type User = {
   userId: string;
   userEmail: string | null;
+  maxBudget: number;
   spend: number;
 };
 
