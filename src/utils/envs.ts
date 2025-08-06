@@ -4,6 +4,7 @@ export const ENV = requiredEnv('ENV');
 
 config({
   path: `.env.${ENV}`,
+  quiet: true,
 });
 
 // ------------------------------- Load through dotenv -------------------------------
@@ -13,6 +14,8 @@ export const ENV_SUPABASE_ANON_KEY = requiredEnv('SUPABASE_ANON_KEY');
 
 export const ENV_LITELLM_API_URL = requiredEnv('LITELLM_API_URL');
 export const ENV_LITELLM_ADMIN_KEY = requiredEnv('LITELLM_ADMIN_KEY');
+export const ENV_LITELLM_DB_URL = requiredEnv('LITELLM_DB_URL');
+export const ENV_LITELLM_SIGNING_KEY = requiredEnv('LITELLM_SIGNING_KEY');
 
 export const ENV_SERVER_PORT = Number(requiredEnv('PORT'));
 

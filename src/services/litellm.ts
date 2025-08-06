@@ -1,5 +1,4 @@
 import {
-  LitellmOptions,
   RegisterUserParams,
   GenerateKeyParams,
   DeleteKeyParams,
@@ -9,9 +8,6 @@ import {
   User,
   Key,
   LitellmClientErrorOptions,
-  LitellmRequestOptions,
-  LitellmGetOptions,
-  LitellmPostOptions,
   UpdateKeyParams,
   GetSpendLogsParams,
   SpendLog,
@@ -19,9 +15,10 @@ import {
   GetKeyParams,
 } from '../types/litellm';
 import { config } from '../config';
-import axios, { Axios, AxiosError } from 'axios';
+import axios, { AxiosError } from 'axios';
 import { OpenAI } from 'openai/client';
 import stream from 'node:stream';
+import { Client, ClientOptions, RequestOptions } from '../utils/Client';
 
 export class LitellmClientError extends Error {
   type: string;
@@ -41,31 +38,16 @@ export class LitellmClientError extends Error {
   }
 }
 
-export class LitellmClient {
-  private api: Axios;
-
-  constructor({ apiUrl, apiKey }: LitellmOptions) {
-    this.api = axios.create({
-      baseURL: apiUrl,
-      headers: {
-        authorization: `Bearer ${apiKey}`,
-      },
-    });
+export class LitellmClient extends Client {
+  constructor(options: ClientOptions) {
+    super(options);
   }
 
-  private async request<T, P = unknown, B = unknown>(
-    options: LitellmRequestOptions<P, B>,
+  protected async request<T, P = unknown, B = unknown>(
+    options: RequestOptions<P, B>,
   ): Promise<T> {
     try {
-      const res = await this.api.request<T>({
-        url: options.path,
-        method: options.method,
-        params: options.query,
-        data: options.body,
-        headers: options.headers,
-        responseType: options.responseType,
-      });
-      return res.data;
+      return await super.request(options);
     } catch (e: unknown) {
       if (axios.isAxiosError(e) && e.response?.data) {
         throw new LitellmClientError(e.response.data, e);
@@ -73,22 +55,6 @@ export class LitellmClient {
 
       throw e;
     }
-  }
-
-  private async get<T, P = unknown>(options: LitellmGetOptions<P>): Promise<T> {
-    return this.request({
-      ...options,
-      method: 'get',
-    });
-  }
-
-  private async post<T, B = unknown>(
-    options: LitellmPostOptions<B>,
-  ): Promise<T> {
-    return this.request({
-      ...options,
-      method: 'post',
-    });
   }
 
   async registerUser({ userId, userEmail }: RegisterUserParams) {
@@ -410,7 +376,7 @@ export class LitellmClient {
 export function createLitellmClient(apiKey: string): LitellmClient {
   return new LitellmClient({
     apiUrl: config.litellm.apiUrl,
-    apiKey: apiKey,
+    apiKey,
   });
 }
 
