@@ -22,7 +22,7 @@ const outputSchema = v.array(
     completionTokens: v.number(),
     totalTokens: v.number(),
     modelId: v.string(),
-    model: v.string(),
+    modelGroup: v.string(),
     startTime: v.string(),
     endTime: v.string(),
   }),
@@ -56,7 +56,7 @@ export const getSpendLogs = createRouteResolver({
         completionTokens: log.completionTokens,
         totalTokens: log.totalTokens,
         modelId: log.modelId,
-        model: log.model,
+        modelGroup: log.modelGroup,
         startTime: log.startTime,
         endTime: log.endTime,
       };
