@@ -19,7 +19,7 @@ export class LitellmDatabaseClient {
   async getInternalModelParams(
     modelName: string,
   ): Promise<InternalModelParams | null> {
-    const proxyModel = await this.client.liteLLM_ProxyModel.findFirst({
+    const proxyModel = await this.client.liteLLM_ProxyModelTable.findFirst({
       where: {
         model_name: modelName,
       },
@@ -73,7 +73,7 @@ export class LitellmDatabaseClient {
   private async getCredentialValues(
     credentialName: string,
   ): Promise<LitellmCredentialValues | null> {
-    const credential = await this.client.liteLLM_Credentials.findFirst({
+    const credential = await this.client.liteLLM_CredentialsTable.findFirst({
       where: {
         credential_name: credentialName,
       },
