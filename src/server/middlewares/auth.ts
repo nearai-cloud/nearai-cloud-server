@@ -95,10 +95,17 @@ export const litellmServiceAccountMiddleware: RequestHandler = async (
     });
   }
 
-  if (!key.metadata.service_account_id && !key.blocked) {
+  if (!key.metadata.service_account_id) {
     throwHttpError({
       status: STATUS_CODES.UNAUTHORIZED,
       message: 'Only service account can access this endpoint',
+    });
+  }
+
+  if (key.blocked) {
+    throwHttpError({
+      status: STATUS_CODES.UNAUTHORIZED,
+      message: 'Service account is blocked',
     });
   }
 
