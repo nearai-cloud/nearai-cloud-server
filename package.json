@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "generate": "find node_modules/.pnpm -name \".prisma\" -type d -exec rm -rf {} + && prisma generate",
-    "preview": "tsx src/main.ts",
     "build": "pnpm generate && rm -rf dist && tsup",
+    "preview": "tsx src/main.ts",
     "start": "node dist/main.js",
     "lint": "eslint 'src/**/*.ts' '*.mjs' --fix",
     "prettier": "prettier 'src/**/*.ts' '*.mjs' --write --list-different",
