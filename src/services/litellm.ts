@@ -368,8 +368,6 @@ export class Litellm {
       },
     });
 
-    console.log(logs);
-
     return logs.map((log) => {
       return {
         requestId: log.request_id,
