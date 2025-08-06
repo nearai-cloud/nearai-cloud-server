@@ -1,10 +1,16 @@
 import { config } from 'dotenv';
 
+config({
+  path: '.env.local',
+  quiet: true,
+});
+
 export const ENV = requiredEnv('ENV');
 
 config({
   path: `.env.${ENV}`,
   quiet: true,
+  override: true,
 });
 
 // ------------------------------- Load through dotenv -------------------------------

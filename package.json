@@ -5,14 +5,14 @@
   "main": "dist/main.js",
   "type": "module",
   "scripts": {
-    "generate": "prisma generate",
-    "dev": "ENV=dev tsx src/main.ts",
+    "generate": "find node_modules/.pnpm -name \".prisma\" -type d -exec rm -rf {} + && prisma generate",
+    "preview": "tsx src/main.ts",
     "build": "pnpm generate && rm -rf dist && tsup",
     "start": "node dist/main.js",
     "lint": "eslint 'src/**/*.ts' '*.mjs' --fix",
     "prettier": "prettier 'src/**/*.ts' '*.mjs' --write --list-different",
     "check": "tsc",
-    "prepare": "husky && pnpm generate"
+    "prepare": "husky"
   },
   "dependencies": {
     "@prisma/client": "^6.13.0",
