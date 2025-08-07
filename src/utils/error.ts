@@ -7,6 +7,40 @@ import {
 } from '../types/error';
 import * as v from 'valibot';
 
+export function isOpenAiHttpError(e: unknown): e is OpenAiHttpError {
+  if (!isHttpError(e)) {
+    return false;
+  }
+
+  const schema = v.object({
+    type: v.nullable(v.string()), // Use `nullable` for LiteLLM compatibility
+    param: v.nullable(v.string()),
+    code: v.nullable(v.string()),
+  });
+
+  const { success } = v.safeParse(schema, e);
+
+  return success;
+}
+
+export function createOpenAiHttpError({
+  status,
+  message,
+  cause,
+  type,
+  param,
+  code,
+}: ThrowOpenAiHttpErrorOptions = {}): OpenAiHttpError {
+  return new InternalOpenAiHttpError({
+    status,
+    message,
+    cause,
+    type,
+    param,
+    code,
+  });
+}
+
 function createHttpError({
   status,
   message,
@@ -24,38 +58,6 @@ function createHttpError({
   }
 }
 
-export function createOpenAiHttpError({
-  status,
-  message,
-  cause,
-  param,
-  code,
-}: ThrowOpenAiHttpErrorOptions = {}): OpenAiHttpError {
-  return new InternalOpenAiHttpError({
-    status,
-    message,
-    cause,
-    param,
-    code,
-  });
-}
-
-export function isOpenAiHttpError(e: unknown): e is OpenAiHttpError {
-  if (!isHttpError(e)) {
-    return false;
-  }
-
-  const schema = v.object({
-    type: v.nullable(v.string()),
-    param: v.nullable(v.string()),
-    code: v.nullable(v.string()),
-  });
-
-  const { success } = v.safeParse(schema, e);
-
-  return success;
-}
-
 class InternalOpenAiHttpError extends Error implements HttpError {
   status: number;
   statusCode: number;
@@ -69,6 +71,7 @@ class InternalOpenAiHttpError extends Error implements HttpError {
     status,
     message,
     cause,
+    type,
     param,
     code,
   }: InternalOpenAiHttpErrorOptions) {
@@ -86,7 +89,7 @@ class InternalOpenAiHttpError extends Error implements HttpError {
     this.statusCode = e.statusCode;
     this.expose = e.expose;
 
-    this.type = 'error';
+    this.type = type ?? 'error';
     this.param = param ?? null;
     this.code = code ?? e.status.toString();
 

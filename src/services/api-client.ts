@@ -21,7 +21,7 @@ export class ApiError extends Error {
     const schema = v.object({
       error: v.object({
         message: v.string(),
-        type: v.nullable(v.string()),
+        type: v.nullable(v.string()), // Use `nullable` for LiteLLM compatibility
         param: v.nullable(v.string()),
         code: v.nullable(v.string()),
       }),
