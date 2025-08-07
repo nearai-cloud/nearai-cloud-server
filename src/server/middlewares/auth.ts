@@ -26,7 +26,7 @@ export type Auth = {
 
 export type KeyAuth = {
   key: Key;
-  litellmClient: LitellmApiClient;
+  litellmApiClient: LitellmApiClient;
 };
 
 export const supabaseAuthMiddleware: RequestHandler = async (
@@ -141,12 +141,12 @@ async function authorizeKey(authorization?: string): Promise<KeyAuth> {
 
   const token = authorization.slice(BEARER_TOKEN_PREFIX.length);
 
-  const litellmClient = createLitellmApiClient(token);
+  const litellmApiClient = createLitellmApiClient(token);
 
   let key: Key | null;
 
   try {
-    key = await litellmClient.getKey({ keyOrKeyHash: token });
+    key = await litellmApiClient.getKey({ keyOrKeyHash: token });
   } catch (e: unknown) {
     throwHttpError({
       status: STATUS_CODES.UNAUTHORIZED,
@@ -164,7 +164,7 @@ async function authorizeKey(authorization?: string): Promise<KeyAuth> {
 
   return {
     key,
-    litellmClient,
+    litellmApiClient,
   };
 }
 
@@ -185,9 +185,9 @@ export async function authorizeLitellmServiceAccount(authorization?: string) {
 
   const token = authorization.slice(BEARER_TOKEN_PREFIX.length);
 
-  const litellmClient = createLitellmApiClient(token);
+  const client = createLitellmApiClient(token);
 
-  const key = await litellmClient.getKey({
+  const key = await client.getKey({
     keyOrKeyHash: token,
   });
 

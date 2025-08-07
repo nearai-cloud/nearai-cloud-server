@@ -6,7 +6,7 @@ import { createRouteResolver } from '../../middlewares/route-resolver';
 export const models = createRouteResolver({
   middlewares: [keyAuthMiddleware],
   resolve: async () => {
-    const { litellmClient }: KeyAuth = ctx.get(CTX_GLOBAL_KEYS.KEY_AUTH);
-    return litellmClient.models();
+    const { litellmApiClient }: KeyAuth = ctx.get(CTX_GLOBAL_KEYS.KEY_AUTH);
+    return litellmApiClient.models();
   },
 });
