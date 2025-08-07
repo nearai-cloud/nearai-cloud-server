@@ -3,7 +3,7 @@ import * as v from 'valibot';
 import { adminLitellmApiClient } from '../../../services/litellm-api-client';
 import { CTX_GLOBAL_KEYS, STATUS_CODES } from '../../../utils/consts';
 import { Auth, authMiddleware } from '../../middlewares/auth';
-import { throwHttpError } from '../../../utils/error';
+import { createHttpError } from '../../../utils/error';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 import { Key } from '../../../types/litellm-api-client';
 
@@ -45,7 +45,7 @@ export const getKey = createRouteResolver({
       });
 
       if (key && key.userId !== user.userId) {
-        throwHttpError({
+        throw createHttpError({
           status: STATUS_CODES.FORBIDDEN,
           message:
             'No permission to access the key that is owned by other users',

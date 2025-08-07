@@ -1,6 +1,6 @@
 import { ErrorRequestHandler } from 'express';
 import { isHttpError } from 'http-errors';
-import { throwHttpError } from '../../utils/error';
+import { isOpenAiHttpError, createHttpError } from '../../utils/error';
 import { STATUS_CODES } from '../../utils/consts';
 
 export function createHttpErrorMiddleware({
@@ -23,7 +23,7 @@ export function createHttpErrorMiddleware({
       throw e;
     }
 
-    throwHttpError({
+    throw createHttpError({
       status: STATUS_CODES.INTERNAL_SERVER_ERROR,
       cause: e,
     });
@@ -40,16 +40,27 @@ export function createExposeErrorMiddleware({
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     next,
   ) => {
-    if (isHttpError(e)) {
+    if (isOpenAiHttpError(e)) {
       res.status(e.status).json({
         error: {
           message:
             isDev || e.status !== STATUS_CODES.INTERNAL_SERVER_ERROR
               ? e.message
               : 'Internal Server Error',
-          type: 'error',
-          param: null,
-          code: e.status.toString(),
+          type: e.type,
+          param: e.param,
+          code: e.code,
+          status: e.status,
+          stack: isDev ? e.stack : undefined,
+        },
+      });
+    } else if (isHttpError(e)) {
+      res.status(e.status).json({
+        error: {
+          message:
+            isDev || e.status !== STATUS_CODES.INTERNAL_SERVER_ERROR
+              ? e.message
+              : 'Internal Server Error',
           status: e.status,
           stack: isDev ? e.stack : undefined,
         },
@@ -58,9 +69,6 @@ export function createExposeErrorMiddleware({
       res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
         error: {
           message: isDev ? e.message : 'Internal Server Error',
-          type: 'error',
-          param: null,
-          code: STATUS_CODES.INTERNAL_SERVER_ERROR.toString(),
           status: STATUS_CODES.INTERNAL_SERVER_ERROR,
           stack: isDev ? e.stack : undefined,
         },
@@ -69,9 +77,6 @@ export function createExposeErrorMiddleware({
       res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
         error: {
           message: 'Internal Server Error',
-          type: 'error',
-          param: null,
-          code: STATUS_CODES.INTERNAL_SERVER_ERROR.toString(),
           status: STATUS_CODES.INTERNAL_SERVER_ERROR,
         },
       });

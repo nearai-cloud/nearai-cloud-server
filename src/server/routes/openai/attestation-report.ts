@@ -2,7 +2,7 @@ import { createRouteResolver } from '../../middlewares/route-resolver';
 import { keyAuthMiddleware } from '../../middlewares/auth';
 import * as v from 'valibot';
 import { litellmDatabaseClient } from '../../../services/litellm-database-client';
-import { throwHttpError } from '../../../utils/error';
+import { createOpenAiHttpError } from '../../../utils/error';
 import { STATUS_CODES } from '../../../utils/consts';
 import { createPrivatellmApiClient } from '../../../services/privatellm-api-client';
 import * as ctx from 'express-http-context';
@@ -38,7 +38,7 @@ export const attestationReport = createRouteResolver({
       );
 
       if (!modelParams) {
-        throwHttpError({
+        throw createOpenAiHttpError({
           status: STATUS_CODES.BAD_REQUEST,
           message: 'Invalid model',
         });

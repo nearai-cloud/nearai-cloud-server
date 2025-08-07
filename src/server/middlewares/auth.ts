@@ -7,7 +7,7 @@ import {
   STATUS_CODES,
 } from '../../utils/consts';
 import { createSupabaseClient } from '../../services/supabase';
-import { throwHttpError } from '../../utils/error';
+import { createHttpError, createOpenAiHttpError } from '../../utils/error';
 import {
   adminLitellmApiClient,
   createLitellmApiClient,
@@ -47,7 +47,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
   });
 
   if (!user) {
-    throwHttpError({
+    throw createHttpError({
       status: STATUS_CODES.FORBIDDEN,
       message: 'Incomplete user registration',
     });
@@ -82,14 +82,14 @@ async function authorizeSupabase(
   authorization?: string,
 ): Promise<SupabaseAuth> {
   if (!authorization) {
-    throw throwHttpError({
+    throw createHttpError({
       status: STATUS_CODES.UNAUTHORIZED,
       message: 'Missing authorization token',
     });
   }
 
   if (!authorization.startsWith(BEARER_TOKEN_PREFIX)) {
-    throwHttpError({
+    throw createHttpError({
       status: STATUS_CODES.UNAUTHORIZED,
       message: `Authorization token must start with '${BEARER_TOKEN_PREFIX}'`,
     });
@@ -105,7 +105,7 @@ async function authorizeSupabase(
   } = await client.auth.getUser(token);
 
   if (error) {
-    throwHttpError({
+    throw createHttpError({
       status: STATUS_CODES.UNAUTHORIZED,
       message: 'Failed to authorize', // Override with simple error message
       cause: error,
@@ -113,7 +113,7 @@ async function authorizeSupabase(
   }
 
   if (!supabaseUser) {
-    throwHttpError({
+    throw createHttpError({
       status: STATUS_CODES.UNAUTHORIZED,
       message: 'Invalid authorization token',
     });
@@ -126,14 +126,14 @@ async function authorizeSupabase(
 
 async function authorizeKey(authorization?: string): Promise<KeyAuth> {
   if (!authorization) {
-    throw throwHttpError({
+    throw createOpenAiHttpError({
       status: STATUS_CODES.UNAUTHORIZED,
       message: 'Missing authorization token',
     });
   }
 
   if (!authorization.startsWith(BEARER_TOKEN_PREFIX)) {
-    throwHttpError({
+    throw createOpenAiHttpError({
       status: STATUS_CODES.UNAUTHORIZED,
       message: `Authorization token must start with '${BEARER_TOKEN_PREFIX}'`,
     });
@@ -148,7 +148,7 @@ async function authorizeKey(authorization?: string): Promise<KeyAuth> {
   try {
     key = await litellmApiClient.getKey({ keyOrKeyHash: token });
   } catch (e: unknown) {
-    throwHttpError({
+    throw createOpenAiHttpError({
       status: STATUS_CODES.UNAUTHORIZED,
       message: 'Failed to authorize', // Override with simple error message
       cause: e,
@@ -156,7 +156,7 @@ async function authorizeKey(authorization?: string): Promise<KeyAuth> {
   }
 
   if (!key) {
-    throwHttpError({
+    throw createOpenAiHttpError({
       status: STATUS_CODES.UNAUTHORIZED,
       message: 'Invalid authorization token',
     });
@@ -170,14 +170,14 @@ async function authorizeKey(authorization?: string): Promise<KeyAuth> {
 
 export async function authorizeLitellmServiceAccount(authorization?: string) {
   if (!authorization) {
-    throwHttpError({
+    throw createHttpError({
       status: STATUS_CODES.UNAUTHORIZED,
       message: 'Missing authorization token',
     });
   }
 
   if (!authorization.startsWith(BEARER_TOKEN_PREFIX)) {
-    throwHttpError({
+    throw createHttpError({
       status: STATUS_CODES.UNAUTHORIZED,
       message: `Authorization token must start with '${BEARER_TOKEN_PREFIX}'`,
     });
@@ -192,21 +192,21 @@ export async function authorizeLitellmServiceAccount(authorization?: string) {
   });
 
   if (!key) {
-    throwHttpError({
+    throw createHttpError({
       status: STATUS_CODES.UNAUTHORIZED,
       message: 'Invalid authorization token',
     });
   }
 
   if (!key.metadata.service_account_id) {
-    throwHttpError({
+    throw createHttpError({
       status: STATUS_CODES.FORBIDDEN,
       message: 'Only service account can access this endpoint',
     });
   }
 
   if (key.blocked) {
-    throwHttpError({
+    throw createHttpError({
       status: STATUS_CODES.FORBIDDEN,
       message: 'Service account is blocked',
     });

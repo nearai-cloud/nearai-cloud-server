@@ -1,50 +1,65 @@
-import createHttpError from 'http-errors';
+import internalCreateHttpError, { HttpError, isHttpError } from 'http-errors';
 import {
-  OpenAiCompatibleErrorOptions,
+  InternalOpenAiHttpErrorOptions,
   ThrowHttpErrorOptions,
+  OpenAiHttpError,
+  ThrowOpenAiHttpErrorOptions,
 } from '../types/error';
 import * as v from 'valibot';
 
-export function throwHttpError({
+export function createHttpError({
   status,
-  cause,
   message,
-}: ThrowHttpErrorOptions = {}): never {
+  cause,
+}: ThrowHttpErrorOptions = {}) {
   const error = message ?? cause;
   if (status && error) {
-    throw createHttpError(status, error);
+    return internalCreateHttpError(status, error);
   } else if (!status && error) {
-    throw createHttpError(error);
+    return internalCreateHttpError(error);
   } else if (status && !error) {
-    throw createHttpError(status);
+    return internalCreateHttpError(status);
   } else {
-    throw createHttpError();
+    return internalCreateHttpError();
   }
 }
 
-export function isOpenAiCompatibleHttpError(e: unknown): boolean {
+export function createOpenAiHttpError({
+  status,
+  message,
+  cause,
+  param,
+  code,
+}: ThrowOpenAiHttpErrorOptions = {}): OpenAiHttpError {
+  return new InternalOpenAiHttpError({
+    status,
+    message,
+    cause,
+    param,
+    code,
+  });
+}
+
+export function isOpenAiHttpError(e: unknown): e is OpenAiHttpError {
+  if (!isHttpError(e)) {
+    return false;
+  }
+
   const schema = v.object({
-    message: v.string(),
     type: v.string(),
     param: v.nullable(v.string()),
     code: v.nullable(v.string()),
   });
 
-  try {
-    v.parse(schema, e);
-  } catch (e: unknown) {
-    if (e instanceof v.ValiError) {
-      return false;
-    }
+  const { success } = v.safeParse(schema, e);
 
-    throw e;
-  }
-
-  return true;
+  return success;
 }
 
-export class OpenAiCompatibleHttpError extends Error {
+class InternalOpenAiHttpError extends Error implements HttpError {
   status: number;
+  statusCode: number;
+  expose: boolean;
 
   type: string;
   param: string | null;
@@ -52,17 +67,29 @@ export class OpenAiCompatibleHttpError extends Error {
 
   constructor({
     status,
-    error: { message, type, param, code },
+    message,
     cause,
-  }: OpenAiCompatibleErrorOptions) {
-    super(message, { cause });
+    param,
+    code,
+  }: InternalOpenAiHttpErrorOptions) {
+    const e = createHttpError({
+      status,
+      message,
+      cause,
+    });
 
-    this.status = status;
+    super(e.message, {
+      cause,
+    });
 
-    this.type = type;
-    this.param = param;
-    this.code = code;
+    this.status = e.status;
+    this.statusCode = e.statusCode;
+    this.expose = e.expose;
 
-    this.name = OpenAiCompatibleHttpError.name;
+    this.type = 'error';
+    this.param = param ?? null;
+    this.code = code ?? e.status.toString();
+
+    this.name = InternalOpenAiHttpError.name;
   }
 }

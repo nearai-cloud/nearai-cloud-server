@@ -17,8 +17,6 @@ export class ApiError extends Error {
 
   status?: number;
 
-  isOpenAiCompatible: boolean;
-
   constructor(options: ApiErrorOptions, cause?: unknown) {
     const schema = v.object({
       error: v.object({
@@ -29,21 +27,9 @@ export class ApiError extends Error {
       }),
     });
 
-    let data: v.InferOutput<typeof schema> | undefined;
+    const { success, output } = v.safeParse(schema, options.data);
 
-    let isOpenAiCompatible;
-
-    try {
-      data = v.parse(schema, options.data);
-      isOpenAiCompatible = true;
-    } catch (e: unknown) {
-      if (e instanceof v.ValiError) {
-        data = undefined;
-        isOpenAiCompatible = false;
-      } else {
-        throw e;
-      }
-    }
+    const data = success ? output : undefined;
 
     super(data?.error.message, {
       cause,
@@ -56,8 +42,6 @@ export class ApiError extends Error {
     this.data = options.data;
 
     this.status = options.status;
-
-    this.isOpenAiCompatible = isOpenAiCompatible;
 
     this.name = ApiError.name;
   }

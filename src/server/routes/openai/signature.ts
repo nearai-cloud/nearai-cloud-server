@@ -3,7 +3,7 @@ import { keyAuthMiddleware } from '../../middlewares/auth';
 import * as v from 'valibot';
 import * as ctx from 'express-http-context';
 import { litellmDatabaseClient } from '../../../services/litellm-database-client';
-import { throwHttpError } from '../../../utils/error';
+import { createOpenAiHttpError } from '../../../utils/error';
 import { STATUS_CODES } from '../../../utils/consts';
 import { createPrivatellmApiClient } from '../../../services/privatellm-api-client';
 import { InternalModelParams } from '../../../types/litellm-database-client';
@@ -38,7 +38,7 @@ export const signature = createRouteResolver({
       );
 
       if (!modelParams) {
-        throwHttpError({
+        throw createOpenAiHttpError({
           status: STATUS_CODES.BAD_REQUEST,
           message: 'Invalid model',
         });
