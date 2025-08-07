@@ -12,6 +12,8 @@ import {
   SpendLog,
   GetUserParams,
   GetKeyParams,
+  ManageUserParams,
+  KeyMetadata,
 } from '../types/litellm-api-client';
 import { config } from '../config';
 import { OpenAI } from 'openai/client';
@@ -31,6 +33,7 @@ export class LitellmApiClient extends ApiClient {
       {
         user_id?: string;
         user_email?: string;
+        max_budget?: number;
         auto_create_key?: boolean;
         user_role?: string;
       }
@@ -39,6 +42,7 @@ export class LitellmApiClient extends ApiClient {
       body: {
         user_id: userId,
         user_email: userEmail,
+        max_budget: 0, // no budget when user is registered until user purchases credits
         auto_create_key: false,
         user_role: 'internal_user_viewer',
       },
@@ -51,6 +55,7 @@ export class LitellmApiClient extends ApiClient {
         user_info: {
           user_id?: string;
           user_email: string | null;
+          max_budget: number | null;
           spend: number;
         };
       },
@@ -71,8 +76,28 @@ export class LitellmApiClient extends ApiClient {
     return {
       userId: user_info.user_id,
       userEmail: user_info.user_email,
+      maxBudget: user_info.max_budget,
       spend: user_info.spend,
     };
+  }
+
+  /**
+   * Update user budget. The function should only be called by service account.
+   */
+  async manageUser({ userId, maxBudget }: ManageUserParams) {
+    await this.post<
+      void,
+      {
+        user_id: string;
+        max_budget: number | null;
+      }
+    >({
+      path: '/user/update',
+      body: {
+        user_id: userId,
+        max_budget: maxBudget,
+      },
+    });
   }
 
   async generateKey({
@@ -184,10 +209,11 @@ export class LitellmApiClient extends ApiClient {
             budget_reset_at: string | null;
             blocked: boolean | null;
             created_at: string;
+            metadata: KeyMetadata;
           };
         },
         {
-          key: string;
+          key: string | undefined;
         }
       >({
         path: '/key/info',
@@ -223,6 +249,7 @@ export class LitellmApiClient extends ApiClient {
       budgetResetAt: keyInfo.info.budget_reset_at,
       blocked: keyInfo.info.blocked,
       createdAt: keyInfo.info.created_at,
+      metadata: keyInfo.info.metadata,
     };
   }
 

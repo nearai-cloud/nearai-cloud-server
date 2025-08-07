@@ -8,9 +8,15 @@ export type GetUserParams = {
   userId: string;
 };
 
+export type ManageUserParams = {
+  userId: string;
+  maxBudget: number | null; // null means unlimited
+};
+
 export type User = {
   userId: string;
   userEmail: string | null;
+  maxBudget: number | null; // null means unlimited
   spend: number;
 };
 
@@ -63,7 +69,10 @@ export type Key = {
   budgetResetAt: string | null;
   blocked: boolean | null;
   createdAt: string;
+  metadata: KeyMetadata;
 };
+
+export type KeyMetadata = Record<string, string>;
 
 export type ListKeysParams = {
   userId: string;

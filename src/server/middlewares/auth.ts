@@ -63,6 +63,21 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
   next();
 };
 
+export const keyAuthMiddleware: RequestHandler = async (req, res, next) => {
+  const keyAuth = await authorizeKey(req.headers.authorization);
+  ctx.set(CTX_GLOBAL_KEYS.KEY_AUTH, keyAuth);
+  next();
+};
+
+export const litellmServiceAccountAuthMiddleware: RequestHandler = async (
+  req,
+  res,
+  next,
+) => {
+  await authorizeLitellmServiceAccount(req.headers.authorization);
+  next();
+};
+
 async function authorizeSupabase(
   authorization?: string,
 ): Promise<SupabaseAuth> {
@@ -109,12 +124,6 @@ async function authorizeSupabase(
   };
 }
 
-export const keyAuthMiddleware: RequestHandler = async (req, res, next) => {
-  const keyAuth = await authorizeKey(req.headers.authorization);
-  ctx.set(CTX_GLOBAL_KEYS.KEY_AUTH, keyAuth);
-  next();
-};
-
 async function authorizeKey(authorization?: string): Promise<KeyAuth> {
   if (!authorization) {
     throw throwHttpError({
@@ -157,4 +166,49 @@ async function authorizeKey(authorization?: string): Promise<KeyAuth> {
     key,
     litellmClient,
   };
+}
+
+export async function authorizeLitellmServiceAccount(authorization?: string) {
+  if (!authorization) {
+    throwHttpError({
+      status: STATUS_CODES.UNAUTHORIZED,
+      message: 'Missing authorization token',
+    });
+  }
+
+  if (!authorization.startsWith(BEARER_TOKEN_PREFIX)) {
+    throwHttpError({
+      status: STATUS_CODES.UNAUTHORIZED,
+      message: `Authorization token must start with '${BEARER_TOKEN_PREFIX}'`,
+    });
+  }
+
+  const token = authorization.slice(BEARER_TOKEN_PREFIX.length);
+
+  const litellmClient = createLitellmApiClient(token);
+
+  const key = await litellmClient.getKey({
+    keyOrKeyHash: token,
+  });
+
+  if (!key) {
+    throwHttpError({
+      status: STATUS_CODES.UNAUTHORIZED,
+      message: 'Invalid authorization token',
+    });
+  }
+
+  if (!key.metadata.service_account_id) {
+    throwHttpError({
+      status: STATUS_CODES.FORBIDDEN,
+      message: 'Only service account can access this endpoint',
+    });
+  }
+
+  if (key.blocked) {
+    throwHttpError({
+      status: STATUS_CODES.FORBIDDEN,
+      message: 'Service account is blocked',
+    });
+  }
 }
