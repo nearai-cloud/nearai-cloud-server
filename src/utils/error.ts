@@ -7,7 +7,7 @@ import {
 } from '../types/error';
 import * as v from 'valibot';
 
-export function createHttpError({
+function createHttpError({
   status,
   message,
   cause,

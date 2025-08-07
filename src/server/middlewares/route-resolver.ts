@@ -1,6 +1,6 @@
 import * as v from 'valibot';
 import ctx from 'express-http-context';
-import { createHttpError } from '../../utils/error';
+import { createOpenAiHttpError } from '../../utils/error';
 import { CTX_GLOBAL_KEYS, STATUS_CODES } from '../../utils/consts';
 import { RequestHandler } from 'express';
 import {
@@ -92,7 +92,7 @@ function parseInput(schema: BaseSchema, data: unknown): unknown {
     return v.parse(schema, data);
   } catch (e: unknown) {
     if (e instanceof v.ValiError) {
-      throw createHttpError({
+      throw createOpenAiHttpError({
         status: STATUS_CODES.BAD_REQUEST,
         cause: e,
       });
@@ -107,7 +107,7 @@ function parseOutput(schema: BaseSchema, data: unknown): unknown {
     return v.parse(schema, data);
   } catch (e: unknown) {
     if (e instanceof v.ValiError) {
-      throw createHttpError({
+      throw createOpenAiHttpError({
         status: STATUS_CODES.INTERNAL_SERVER_ERROR,
         cause: e,
       });
