@@ -46,7 +46,7 @@ export function isOpenAiHttpError(e: unknown): e is OpenAiHttpError {
   }
 
   const schema = v.object({
-    type: v.string(),
+    type: v.nullable(v.string()),
     param: v.nullable(v.string()),
     code: v.nullable(v.string()),
   });

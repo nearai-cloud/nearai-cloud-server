@@ -43,6 +43,7 @@ export function createExposeErrorMiddleware({
     if (isOpenAiHttpError(e)) {
       res.status(e.status).json({
         error: {
+          status: e.status,
           message:
             isDev || e.status !== STATUS_CODES.INTERNAL_SERVER_ERROR
               ? e.message
@@ -50,34 +51,33 @@ export function createExposeErrorMiddleware({
           type: e.type,
           param: e.param,
           code: e.code,
-          status: e.status,
           stack: isDev ? e.stack : undefined,
         },
       });
     } else if (isHttpError(e)) {
       res.status(e.status).json({
         error: {
+          status: e.status,
           message:
             isDev || e.status !== STATUS_CODES.INTERNAL_SERVER_ERROR
               ? e.message
               : 'Internal Server Error',
-          status: e.status,
           stack: isDev ? e.stack : undefined,
         },
       });
     } else if (e instanceof Error) {
       res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
         error: {
-          message: isDev ? e.message : 'Internal Server Error',
           status: STATUS_CODES.INTERNAL_SERVER_ERROR,
+          message: isDev ? e.message : 'Internal Server Error',
           stack: isDev ? e.stack : undefined,
         },
       });
     } else {
       res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
         error: {
-          message: 'Internal Server Error',
           status: STATUS_CODES.INTERNAL_SERVER_ERROR,
+          message: 'Internal Server Error',
         },
       });
     }

@@ -1,6 +1,7 @@
 export type ApiErrorOptions = {
   status?: number;
-  data: unknown;
+  message: string;
+  data?: unknown;
 };
 
 export type ApiClientOptions = {

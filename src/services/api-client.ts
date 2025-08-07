@@ -9,19 +9,19 @@ import { ApiErrorOptions } from '../types/api-client';
 import * as v from 'valibot';
 
 export class ApiError extends Error {
-  type?: string;
+  status?: number;
+
+  type?: string | null;
   param?: string | null;
   code?: string | null;
 
-  data: unknown;
+  data?: unknown;
 
-  status?: number;
-
-  constructor(options: ApiErrorOptions, cause?: unknown) {
+  constructor(options: ApiErrorOptions) {
     const schema = v.object({
       error: v.object({
         message: v.string(),
-        type: v.string(),
+        type: v.nullable(v.string()),
         param: v.nullable(v.string()),
         code: v.nullable(v.string()),
       }),
@@ -31,9 +31,7 @@ export class ApiError extends Error {
 
     const data = success ? output : undefined;
 
-    super(data?.error.message, {
-      cause,
-    });
+    super(data?.error.message ?? options.message);
 
     this.type = data?.error.type;
     this.param = data?.error.param;
@@ -75,13 +73,11 @@ export abstract class ApiClient {
       return res.data;
     } catch (e) {
       if (axios.isAxiosError(e)) {
-        throw new ApiError(
-          {
-            status: e.status,
-            data: e.response?.data,
-          },
-          e,
-        );
+        throw new ApiError({
+          status: e.status,
+          message: e.message,
+          data: e.response?.data,
+        });
       }
 
       throw e;
