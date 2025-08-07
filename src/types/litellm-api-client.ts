@@ -1,12 +1,3 @@
-export type LitellmApiClientErrorOptions = {
-  error: {
-    message: string;
-    type: string;
-    param: string;
-    code: string;
-  };
-};
-
 export type RegisterUserParams = {
   userId: string;
   userEmail?: string;

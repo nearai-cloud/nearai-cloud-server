@@ -9,6 +9,7 @@ import { keyRouter } from './key';
 export const router = express.Router();
 
 router.use('', openaiRouter);
+router.use('/v1', openaiRouter);
 
 router.get('/', ping);
 router.use('/user', userRouter);

@@ -1,10 +1,11 @@
-import { ApiClient, ApiClientOptions } from '../utils/api-client';
+import { ApiClient } from './api-client';
 import {
   AttestationReport,
   AttestationReportParams,
   Signature,
   SignatureParams,
 } from '../types/privatellm-api-client';
+import { ApiClientOptions } from '../types/api-client';
 
 export class PrivatellmApiClient extends ApiClient {
   constructor(options: ApiClientOptions) {

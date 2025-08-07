@@ -40,29 +40,41 @@ export function createExposeErrorMiddleware({
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     next,
   ) => {
-    let status;
-    let message: string;
-    let stack: string | undefined;
-
     if (isHttpError(e)) {
-      status = e.status;
-      message = isDev || status !== 500 ? e.message : 'Internal Server Error';
-      stack = isDev ? e.stack : undefined;
+      res.status(e.status).json({
+        error: {
+          message:
+            isDev || e.status !== STATUS_CODES.INTERNAL_SERVER_ERROR
+              ? e.message
+              : 'Internal Server Error',
+          type: 'error',
+          param: null,
+          code: e.status.toString(),
+          status: e.status,
+          stack: isDev ? e.stack : undefined,
+        },
+      });
     } else if (e instanceof Error) {
-      status = 500;
-      message = isDev ? e.message : 'Internal Server Error';
-      stack = isDev ? e.stack : undefined;
+      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+        error: {
+          message: isDev ? e.message : 'Internal Server Error',
+          type: 'error',
+          param: null,
+          code: STATUS_CODES.INTERNAL_SERVER_ERROR.toString(),
+          status: STATUS_CODES.INTERNAL_SERVER_ERROR,
+          stack: isDev ? e.stack : undefined,
+        },
+      });
     } else {
-      status = 500;
-      message = 'Internal Server Error';
+      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+        error: {
+          message: 'Internal Server Error',
+          type: 'error',
+          param: null,
+          code: STATUS_CODES.INTERNAL_SERVER_ERROR.toString(),
+          status: STATUS_CODES.INTERNAL_SERVER_ERROR,
+        },
+      });
     }
-
-    res.status(status).json({
-      error: {
-        status,
-        message,
-        stack,
-      },
-    });
   };
 }

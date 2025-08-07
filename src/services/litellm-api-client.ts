@@ -7,7 +7,6 @@ import {
   ListKeysResponse,
   User,
   Key,
-  LitellmApiClientErrorOptions,
   UpdateKeyParams,
   GetSpendLogsParams,
   SpendLog,
@@ -15,50 +14,15 @@ import {
   GetKeyParams,
 } from '../types/litellm-api-client';
 import { config } from '../config';
-import axios, { AxiosError } from 'axios';
 import { OpenAI } from 'openai/client';
 import stream from 'node:stream';
-import {
-  ApiClient,
-  ApiClientOptions,
-  RequestOptions,
-} from '../utils/api-client';
-
-export class LitellmApiClientError extends Error {
-  type: string;
-  param: string;
-  code: string;
-
-  constructor(options: LitellmApiClientErrorOptions, cause?: unknown) {
-    super(options.error.message, {
-      cause,
-    });
-
-    this.type = options.error.type;
-    this.param = options.error.param;
-    this.code = options.error.code;
-
-    this.name = LitellmApiClientError.name;
-  }
-}
+import { ApiClientOptions } from '../types/api-client';
+import { STATUS_CODES } from '../utils/consts';
+import { ApiClient, ApiError } from './api-client';
 
 export class LitellmApiClient extends ApiClient {
   constructor(options: ApiClientOptions) {
     super(options);
-  }
-
-  protected async request<T, P = unknown, B = unknown>(
-    options: RequestOptions<P, B>,
-  ): Promise<T> {
-    try {
-      return await super.request(options);
-    } catch (e: unknown) {
-      if (axios.isAxiosError(e) && e.response?.data) {
-        throw new LitellmApiClientError(e.response.data, e);
-      }
-
-      throw e;
-    }
   }
 
   async registerUser({ userId, userEmail }: RegisterUserParams) {
@@ -232,7 +196,10 @@ export class LitellmApiClient extends ApiClient {
         },
       });
     } catch (e: unknown) {
-      if (e instanceof AxiosError && e.status === 404) {
+      if (
+        e instanceof ApiError &&
+        e.code === STATUS_CODES.NOT_FOUND.toString()
+      ) {
         return null;
       }
 
