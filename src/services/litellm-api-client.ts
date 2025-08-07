@@ -347,7 +347,7 @@ export class LitellmApiClient extends ApiClient {
         completionTokens: log.completion_tokens,
         totalTokens: log.total_tokens,
         modelId: log.model_id,
-        modelGroup: log.model_group,
+        model: log.model_group,
         startTime: log.startTime,
         endTime: log.endTime,
       };

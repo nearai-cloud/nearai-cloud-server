@@ -108,7 +108,7 @@ export type SpendLog = {
   completionTokens: number;
   totalTokens: number;
   modelId: string;
-  modelGroup: string;
+  model: string;
   startTime: string;
   endTime: string;
 };
