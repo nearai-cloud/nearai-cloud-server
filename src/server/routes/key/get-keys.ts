@@ -23,11 +23,38 @@ const inputSchema = v.object({
       v.maxValue(INPUT_LIMITS.MAX_PAGE_SIZE),
     ),
   ),
+  returnFullObject: v.optional(
+    v.pipe(
+      v.string(),
+      v.transform((value) => value === 'true'),
+    ),
+  ),
 });
 
 const outputSchema = v.nullable(
   v.object({
     keyHashes: v.array(v.string()),
+    keys: v.nullable(
+      v.array(
+        v.object({
+          keyOrKeyHash: v.string(),
+          keyName: v.string(),
+          keyAlias: v.nullable(v.string()),
+          spend: v.number(),
+          expires: v.nullable(v.string()),
+          userId: v.nullable(v.string()),
+          rpmLimit: v.nullable(v.number()),
+          tpmLimit: v.nullable(v.number()),
+          budgetId: v.nullable(v.string()),
+          maxBudget: v.nullable(v.number()),
+          budgetDuration: v.nullable(v.string()),
+          budgetResetAt: v.nullable(v.string()),
+          blocked: v.nullable(v.boolean()),
+          createdAt: v.string(),
+          metadata: v.record(v.string(), v.string()),
+        }),
+      ),
+    ),
     totalKeys: v.number(),
     page: v.number(),
     pageSize: v.number(),
@@ -50,10 +77,12 @@ export const getKeys = createRouteResolver({
       pageSize: query.pageSize,
       sortBy: 'created_at',
       sortOrder: 'desc',
+      returnFullObject: query.returnFullObject,
     });
 
     return {
       keyHashes: keys.keyHashes,
+      keys: keys.keys || null,
       totalKeys: keys.totalKeys,
       page: keys.page,
       pageSize: keys.pageSize,

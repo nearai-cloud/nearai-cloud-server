@@ -14,6 +14,7 @@ import {
   GetKeyParams,
   ManageUserParams,
   KeyMetadata,
+  LiteLLMKey,
 } from '../types/litellm-api-client';
 import { config } from '../config';
 import { OpenAI } from 'openai/client';
@@ -259,10 +260,30 @@ export class LitellmApiClient extends ApiClient {
     pageSize = 10,
     sortBy = 'created_at',
     sortOrder = 'desc',
+    returnFullObject = true,
   }: ListKeysParams): Promise<ListKeysResponse> {
     const { keys, total_count, current_page, total_pages } = await this.get<
       {
-        keys: string[];
+        keys:
+          | string[]
+          | {
+              token: string;
+              key_name: string;
+              key_alias: string | null;
+              spend: number;
+              expires: string | null;
+              models: string[];
+              user_id: string;
+              team_id: string | null;
+              rpm_limit: number | null;
+              tpm_limit: number | null;
+              max_budget: number | null;
+              budget_duration: string | null;
+              budget_reset_at: string | null;
+              blocked: boolean | null;
+              created_at: string;
+              metadata: KeyMetadata;
+            }[];
         total_count: number;
         current_page: number;
         total_pages: number;
@@ -272,6 +293,7 @@ export class LitellmApiClient extends ApiClient {
         page?: number;
         size?: number;
         team_id?: string;
+        return_full_object?: boolean;
         sort_by?: string;
         sort_order?: 'asc' | 'desc';
       }
@@ -283,11 +305,46 @@ export class LitellmApiClient extends ApiClient {
         size: pageSize,
         sort_by: sortBy,
         sort_order: sortOrder,
+        return_full_object: returnFullObject,
       },
     });
 
+    // Handle both string[] and object[] responses
+    const keyHashes =
+      Array.isArray(keys) && keys.length > 0 && typeof keys[0] === 'string'
+        ? (keys as string[])
+        : (keys as LiteLLMKey[]).map((key) => key.token);
+
+    // Transform full objects to Key type when returnFullObject is true
+    const transformedKeys =
+      returnFullObject &&
+      Array.isArray(keys) &&
+      keys.length > 0 &&
+      typeof keys[0] === 'object'
+        ? (keys as LiteLLMKey[]).map((key) => ({
+            keyOrKeyHash: key.token,
+            keyName: key.key_name,
+            keyAlias: key.key_alias,
+            spend: key.spend,
+            expires: key.expires,
+            models: key.models,
+            userId: key.user_id,
+            teamId: key.team_id,
+            rpmLimit: key.rpm_limit,
+            tpmLimit: key.tpm_limit,
+            budgetId: null, // doesn't exist in the response
+            maxBudget: key.max_budget,
+            budgetDuration: key.budget_duration,
+            budgetResetAt: key.budget_reset_at,
+            blocked: key.blocked,
+            createdAt: key.created_at,
+            metadata: key.metadata,
+          }))
+        : undefined;
+
     return {
-      keyHashes: keys,
+      keyHashes,
+      keys: transformedKeys,
       totalKeys: total_count,
       page: current_page,
       pageSize,

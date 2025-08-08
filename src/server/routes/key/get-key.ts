@@ -28,6 +28,7 @@ const outputSchema = v.nullable(
     budgetResetAt: v.nullable(v.string()),
     blocked: v.nullable(v.boolean()),
     createdAt: v.string(),
+    metadata: v.record(v.string(), v.string()),
   }),
 );
 
@@ -82,6 +83,7 @@ export const getKey = createRouteResolver({
         budgetResetAt: key.budgetResetAt,
         blocked: key.blocked,
         createdAt: key.createdAt,
+        metadata: key.metadata,
       };
     }
   },
