@@ -6,6 +6,7 @@ import {
   InternalModelParams,
   LitellmCredentialValues,
 } from '../types/litellm-database-client';
+import { Signature, SigningAlgo } from '../types/privatellm-api-client';
 
 export class LitellmDatabaseClient {
   private client: PrismaClient;
@@ -95,6 +96,41 @@ export class LitellmDatabaseClient {
       apiUrl: litellmDecryptValue(credentialValues.api_base),
       apiKey: litellmDecryptValue(credentialValues.api_key),
     };
+  }
+
+  async getSignature(
+    chatId: string,
+    signingAlgo: SigningAlgo,
+  ): Promise<Signature | null> {
+    const signature = await this.client.signatures.findUnique({
+      where: {
+        chat_id_signing_algo: {
+          chat_id: chatId,
+          signing_algo: signingAlgo,
+        },
+      },
+    });
+
+    if (!signature) {
+      return null;
+    }
+
+    return {
+      text: signature.text,
+      signature: signature.signature,
+      signing_address: signature.signing_address,
+      signing_algo: signature.signing_algo,
+    };
+  }
+
+  async setSignature(chatId: string, model: string, signature: Signature) {
+    await this.client.signatures.create({
+      data: {
+        ...signature,
+        chat_id: chatId,
+        model,
+      },
+    });
   }
 }
 

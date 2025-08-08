@@ -50,15 +50,34 @@ export const signature = createRouteResolver({
     },
   ],
   resolve: async ({ inputs: { params, query } }) => {
+    const cache = await litellmDatabaseClient.getSignature(
+      params.chat_id,
+      query.signing_algo,
+    );
+
+    if (cache) {
+      return cache;
+    }
+
     const modelParams: InternalModelParams = ctx.get('modelParams');
+
     const client = createPrivatellmApiClient(
       modelParams.apiKey,
       modelParams.apiUrl,
     );
-    return client.signature({
+
+    const signature = await client.signature({
       chat_id: params.chat_id,
       model: modelParams.model,
       signing_algo: query.signing_algo,
     });
+
+    await litellmDatabaseClient.setSignature(
+      params.chat_id,
+      modelParams.model,
+      signature,
+    );
+
+    return signature;
   },
 });

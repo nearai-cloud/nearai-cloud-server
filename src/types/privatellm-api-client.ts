@@ -22,5 +22,7 @@ export type Signature = {
   text: string;
   signature: string;
   signing_address: string;
-  signing_algo: 'ecdsa' | 'ed25519';
+  signing_algo: SigningAlgo;
 };
+
+export type SigningAlgo = 'ecdsa' | 'ed25519';

@@ -145,8 +145,6 @@ async function authorizeKey(authorization?: string): Promise<KeyAuth> {
 
   let key: Key | null;
 
-  console.log(authorization);
-
   try {
     key = await litellmApiClient.getKey({ keyOrKeyHash: token });
   } catch (e: unknown) {

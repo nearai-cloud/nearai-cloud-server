@@ -14,7 +14,7 @@ model LiteLLM_ProxyModelTable {
   model_info     Json?    @db.JsonB
   created_at     DateTime @db.Timestamp(3) @default(now())
   created_by     String   @db.Text
-  updated_at     DateTime @db.Timestamp(3) @default(now())
+  updated_at     DateTime @db.Timestamp(3) @default(now()) @updatedAt
   updated_by     String   @db.Text
 }
 
@@ -25,6 +25,24 @@ model LiteLLM_CredentialsTable {
   credential_info   Json?    @db.JsonB
   created_at        DateTime @db.Timestamp(3) @default(now())
   created_by        String   @db.Text
-  updated_at        DateTime @db.Timestamp(3) @default(now())
+  updated_at        DateTime @db.Timestamp(3) @default(now()) @updatedAt
   updated_by        String   @db.Text
+}
+
+enum SigningAlgo {
+  ecdsa
+  ed25519
+}
+
+model Signatures {
+  chat_id           String      @db.Text
+  model             String      @db.Text
+  text              String      @db.Text
+  signature         String      @db.Text
+  signing_address   String      @db.Text
+  signing_algo      SigningAlgo
+  created_at        DateTime    @db.Timestamp(3) @default(now())
+  updated_at        DateTime    @db.Timestamp(3) @default(now()) @updatedAt
+
+  @@id([chat_id, signing_algo])
 }
