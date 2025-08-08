@@ -9,6 +9,7 @@ import {
 import { Auth, authMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 import { createOpenAiHttpError } from '../../../utils/error';
+import { toKeyAlias } from '../../../utils/common';
 
 const inputSchema = v.object({
   keyOrKeyHash: v.string(),
@@ -51,9 +52,13 @@ export const updateKey = createRouteResolver({
     },
   ],
   resolve: async ({ inputs: { body } }) => {
+    const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
+
     await adminLitellmApiClient.updateKey({
       keyOrKeyHash: body.keyOrKeyHash,
-      keyAlias: body.keyAlias,
+      keyAlias: body.keyAlias
+        ? toKeyAlias(user.userId, body.keyAlias)
+        : undefined,
       maxBudget: body.maxBudget,
       blocked: body.blocked,
     });
