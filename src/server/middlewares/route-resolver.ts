@@ -78,6 +78,9 @@ export function createRouteResolver<
     if (output === undefined) {
       res.status(STATUS_CODES.NO_CONTENT).send();
     } else if (output instanceof stream.Readable) {
+      res.setHeader('content-type', 'text/event-stream');
+      res.setHeader('cache-control', 'no-cache');
+      res.setHeader('connection', 'keep-alive');
       output.pipe(res);
     } else {
       res.send(output);
