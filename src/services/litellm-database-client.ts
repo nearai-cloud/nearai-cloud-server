@@ -44,6 +44,7 @@ export class LitellmDatabaseClient {
 
     if (params.api_base && params.api_key) {
       return {
+        modelId: proxyModel.model_id,
         model,
         apiUrl: litellmDecryptValue(params.api_base),
         apiKey: litellmDecryptValue(params.api_key),
@@ -62,6 +63,7 @@ export class LitellmDatabaseClient {
       }
 
       return {
+        modelId: proxyModel.model_id,
         model,
         apiUrl: credentialValues.apiUrl,
         apiKey: credentialValues.apiKey,
@@ -99,12 +101,14 @@ export class LitellmDatabaseClient {
   }
 
   async getSignature(
+    modelId: string,
     chatId: string,
     signingAlgo: SigningAlgo,
   ): Promise<Signature | null> {
-    const signature = await this.client.signatures.findUnique({
+    const signature = await this.client.nearAI_MessageSignatures.findUnique({
       where: {
-        chat_id_signing_algo: {
+        model_id_chat_id_signing_algo: {
+          model_id: modelId,
           chat_id: chatId,
           signing_algo: signingAlgo,
         },
@@ -123,10 +127,16 @@ export class LitellmDatabaseClient {
     };
   }
 
-  async setSignature(chatId: string, model: string, signature: Signature) {
-    await this.client.signatures.create({
+  async setSignature(
+    modelId: string,
+    chatId: string,
+    model: string,
+    signature: Signature,
+  ) {
+    await this.client.nearAI_MessageSignatures.create({
       data: {
         ...signature,
+        model_id: modelId,
         chat_id: chatId,
         model,
       },

@@ -93,6 +93,6 @@ class InternalOpenAiHttpError extends Error implements HttpError {
     this.param = param ?? null;
     this.code = code ?? e.status.toString();
 
-    this.name = InternalOpenAiHttpError.name;
+    this.name = e.name;
   }
 }

@@ -508,9 +508,10 @@ enum JobStatus {
 
 // ========================= Custom models ===============================
 
-model Signatures {
-  chat_id           String      @db.Text
+model NearAI_MessageSignatures {
+  model_id          String      @db.Text
   model             String      @db.Text
+  chat_id           String      @db.Text
   text              String      @db.Text
   signature         String      @db.Text
   signing_address   String      @db.Text
@@ -518,5 +519,5 @@ model Signatures {
   created_at        DateTime    @db.Timestamptz @default(now())
   updated_at        DateTime    @db.Timestamptz @default(now()) @updatedAt
 
-  @@id([chat_id, signing_algo])
+  @@id([model_id, chat_id, signing_algo])
 }
