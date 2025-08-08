@@ -119,7 +119,7 @@ export class LitellmDatabaseClient {
       text: signature.text,
       signature: signature.signature,
       signing_address: signature.signing_address,
-      signing_algo: signature.signing_algo,
+      signing_algo: signature.signing_algo as SigningAlgo,
     };
   }
 
