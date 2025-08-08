@@ -6,6 +6,7 @@ import { Auth, authMiddleware } from '../../middlewares/auth';
 import { createOpenAiHttpError } from '../../../utils/error';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 import { Key } from '../../../types/litellm-api-client';
+import { toKeyAliasDisplay } from '../../../utils/common';
 
 const inputSchema = v.object({
   keyOrKeyHash: v.string(),
@@ -66,7 +67,10 @@ export const getKey = createRouteResolver({
       return {
         keyOrKeyHash: key.keyOrKeyHash,
         keyName: key.keyName,
-        keyAlias: key.keyAlias,
+        keyAlias:
+          key.userId && key.keyAlias
+            ? toKeyAliasDisplay(key.userId, key.keyAlias)
+            : null,
         spend: key.spend,
         expires: key.expires,
         userId: key.userId,
