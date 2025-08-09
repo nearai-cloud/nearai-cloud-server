@@ -22,6 +22,7 @@ import stream from 'node:stream';
 import { ApiClientOptions } from '../types/api-client';
 import { STATUS_CODES } from '../utils/consts';
 import { ApiClient, ApiError } from './api-client';
+import { toKeyAliasDisplay } from '../utils/common';
 
 export class LitellmApiClient extends ApiClient {
   constructor(options: ApiClientOptions) {
@@ -324,7 +325,10 @@ export class LitellmApiClient extends ApiClient {
         ? (keys as LiteLLMKey[]).map((key) => ({
             keyOrKeyHash: key.token,
             keyName: key.key_name,
-            keyAlias: key.key_alias,
+            keyAlias:
+              key.user_id && key.key_alias
+                ? toKeyAliasDisplay(key.user_id, key.key_alias)
+                : null,
             spend: key.spend,
             expires: key.expires,
             models: key.models,
