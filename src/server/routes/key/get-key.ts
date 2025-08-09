@@ -71,7 +71,7 @@ export const getKey = createRouteResolver({
         keyAlias:
           key.userId && key.keyAlias
             ? toKeyAliasDisplay(key.userId, key.keyAlias)
-            : null,
+            : key.keyAlias,
         spend: key.spend,
         expires: key.expires,
         userId: key.userId,

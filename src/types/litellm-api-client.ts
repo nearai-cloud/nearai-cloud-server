@@ -72,26 +72,7 @@ export type Key = {
   metadata: KeyMetadata;
 };
 
-export type KeyMetadata = Record<string, string>;
-
-export type LiteLLMKey = {
-  token: string;
-  key_name: string;
-  key_alias: string | null;
-  max_budget: number | null;
-  spend: number;
-  expires: string | null;
-  models: string[];
-  user_id: string;
-  team_id: string | null;
-  rpm_limit: number | null;
-  tpm_limit: number | null;
-  budget_duration: string | null;
-  budget_reset_at: string | null;
-  blocked: boolean | null;
-  created_at: string;
-  metadata: KeyMetadata;
-};
+export type KeyMetadata = Record<string, string>; // TODO: Maybe `Record<string, unknown>` or more a specific type
 
 export type ListKeysParams = {
   userId: string;
@@ -99,12 +80,10 @@ export type ListKeysParams = {
   pageSize?: number; // Min: 1 Max: 100
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
-  returnFullObject?: boolean;
 };
 
 export type ListKeysResponse = {
-  keys?: Key[];
-  keyHashes: string[];
+  keys: Key[];
   totalKeys: number;
   page: number;
   pageSize: number;
