@@ -23,6 +23,8 @@ export const ENV_LITELLM_ADMIN_KEY = requiredEnv('LITELLM_ADMIN_KEY');
 export const ENV_LITELLM_DB_URL = requiredEnv('LITELLM_DB_URL');
 export const ENV_LITELLM_SIGNING_KEY = requiredEnv('LITELLM_SIGNING_KEY');
 
+export const ENV_NEAR_AI_CLOUD_DB_URL = requiredEnv('NEAR_AI_CLOUD_DB_URL');
+
 export const ENV_SERVER_PORT = Number(requiredEnv('PORT'));
 
 export const ENV_SLACK_WEBHOOK_URL = optionalEnv('SLACK_WEBHOOK_URL');

@@ -5,8 +5,10 @@
   "main": "dist/main.js",
   "type": "commonjs",
   "scripts": {
-    "generate:litellm": "rm -rf node_modules/prisma-ge/litellm && prisma generate --schema schema.litellm.prisma",
-    "build": "pnpm generate:litellm && rm -rf dist && tsup",
+    "generate:litellm": "rm -rf .prisma/litellm && prisma generate --schema schema.litellm.prisma",
+    "generate:nearai-cloud": "rm -rf .prisma/nearai-cloud && prisma generate --schema schema.nearai-cloud.prisma",
+    "migrate:nearai-cloud": "prisma migrate dev --schema schema.nearai-cloud.prisma",
+    "build": "rm -rf dist && pnpm generate:litellm && pnpm generate:nearai-cloud && tsup",
     "preview": "tsx src/main.ts",
     "start": "node dist/main.js",
     "lint": "eslint 'src/**/*.ts' '*.mjs' --fix",

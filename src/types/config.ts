@@ -7,8 +7,11 @@ export type Config = {
   litellm: {
     apiUrl: string;
     adminKey: string;
-    dbUrl: string;
     signingKey: string;
+    databaseUrl: string;
+  };
+  nearAiCloud: {
+    databaseUrl: string;
   };
   log: {
     level: 'debug' | 'info';

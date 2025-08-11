@@ -1,4 +1,4 @@
-import winston, {Logger, LoggerOptions} from 'winston';
+import winston, { Logger, LoggerOptions } from 'winston';
 import { getConfig } from '../config';
 
 export async function createLogger({ isDev = true }: { isDev?: boolean } = {}) {

@@ -8,6 +8,7 @@ import {
   ENV_LITELLM_ADMIN_KEY,
   ENV_LITELLM_DB_URL,
   ENV_LITELLM_SIGNING_KEY,
+  ENV_NEAR_AI_CLOUD_DB_URL,
 } from '../utils/envs';
 
 const config: Config = {
@@ -19,8 +20,11 @@ const config: Config = {
   litellm: {
     apiUrl: ENV_LITELLM_API_URL,
     adminKey: ENV_LITELLM_ADMIN_KEY,
-    dbUrl: ENV_LITELLM_DB_URL,
+    databaseUrl: ENV_LITELLM_DB_URL,
     signingKey: ENV_LITELLM_SIGNING_KEY,
+  },
+  nearAiCloud: {
+    databaseUrl: ENV_NEAR_AI_CLOUD_DB_URL,
   },
   log: {
     level: 'debug',

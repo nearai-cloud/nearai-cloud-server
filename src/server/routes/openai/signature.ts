@@ -7,6 +7,7 @@ import { createOpenAiHttpError } from '../../../utils/error';
 import { STATUS_CODES } from '../../../utils/consts';
 import { createPrivateLlmApiClient } from '../../../services/private-llm-api-client';
 import { InternalModelParams } from '../../../types/litellm-database-client';
+import { createNearAiCloudDatabaseClient } from '../../../services/nearai-cloud-database-client';
 
 const paramsInputSchema = v.object({
   chat_id: v.string(),
@@ -52,12 +53,11 @@ export const signature = createRouteResolver({
     },
   ],
   resolve: async ({ inputs: { params, query } }) => {
-    const litellmDatabaseClient = await createLitellmDatabaseClient();
+    const nearAiCloudDatabaseClient = await createNearAiCloudDatabaseClient();
 
     const modelParams: InternalModelParams = ctx.get('modelParams');
 
-    const cache = await litellmDatabaseClient.getSignature(
-      modelParams.modelId,
+    const cache = await nearAiCloudDatabaseClient.getSignature(
       params.chat_id,
       query.signing_algo,
     );
@@ -77,7 +77,7 @@ export const signature = createRouteResolver({
       signing_algo: query.signing_algo,
     });
 
-    await litellmDatabaseClient.setSignature(
+    await nearAiCloudDatabaseClient.setSignature(
       modelParams.modelId,
       params.chat_id,
       modelParams.model,

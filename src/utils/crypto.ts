@@ -8,7 +8,7 @@ export async function litellmDecryptValue(
 ): Promise<string> {
   const config = await getConfig();
 
-  signingKey = signingKey ?? config.litellm.signingKey
+  signingKey = signingKey ?? config.litellm.signingKey;
 
   const value = Buffer.from(valueBase64, 'base64');
 

@@ -6,7 +6,6 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = ""
-  directUrl = env("LITELLM_DB_DIRECT_URL")
 }
 
 model LiteLLM_AuditLog {
