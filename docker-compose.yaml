@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  # LiteLLM Gateway server
+  litellm-gateway:
+    image: ghcr.io/berriai/litellm:v1.74.15-stable
+    ports:
+      - "4000:4000"
+    environment:
+      DATABASE_URL: ${LITELLM_DATABASE_URL}
+      LITELLM_PORT: 4000
+      STORE_MODEL_IN_DB: true
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY}
+      LITELLM_SALT_KEY: ${LITELLM_SALT_KEY}
+    restart: unless-stopped
+
+  # NEAR AI Cloud server
+  nearai-cloud-server:
+    image: robortyan/nearai-cloud-server:latest
+    ports:
+      - "3000:3000"
+    environment:
+      ENV: prd
+      PORT: 3000
+      LITELLM_API_URL: http://litellm-gateway:4000
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY}
+      LITELLM_SALT_KEY: ${LITELLM_SALT_KEY}
+      LITELLM_DATABASE_URL: ${LITELLM_DATABASE_URL}
+      SUPABASE_API_URL: ${SUPABASE_API_URL}
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+      SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL}
+    restart: unless-stopped
