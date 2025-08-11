@@ -57,6 +57,6 @@ export async function createNearAiCloudDatabaseClient(
   datasourceUrl?: string,
 ): Promise<LitellmDatabaseClient> {
   const config = await getConfig();
-  datasourceUrl = datasourceUrl ?? config.litellm.databaseUrl;
+  datasourceUrl = datasourceUrl ?? config.nearAiCloud.databaseUrl;
   return new LitellmDatabaseClient(datasourceUrl);
 }
