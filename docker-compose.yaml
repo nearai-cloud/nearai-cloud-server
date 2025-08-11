@@ -7,12 +7,20 @@ services:
     ports:
       - "4000:4000"
     environment:
-      DATABASE_URL: ${LITELLM_DATABASE_URL}
-      LITELLM_PORT: 4000
+      PORT: 4000
       STORE_MODEL_IN_DB: true
+      DATABASE_URL: ${LITELLM_DATABASE_URL}
       LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY}
       LITELLM_SALT_KEY: ${LITELLM_SALT_KEY}
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
 
   # NEAR AI Cloud server
   nearai-cloud-server:
@@ -23,10 +31,18 @@ services:
       ENV: prd
       PORT: 3000
       LITELLM_API_URL: http://litellm-gateway:4000
-      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY}
-      LITELLM_SALT_KEY: ${LITELLM_SALT_KEY}
-      LITELLM_DATABASE_URL: ${LITELLM_DATABASE_URL}
+      LITELLM_ADMIN_KEY: ${LITELLM_MASTER_KEY}
+      LITELLM_SIGNING_KEY: ${LITELLM_SALT_KEY}
+      LITELLM_DB_URL: ${LITELLM_DATABASE_URL}
       SUPABASE_API_URL: ${SUPABASE_API_URL}
       SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
       SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL}
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
