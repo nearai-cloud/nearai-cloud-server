@@ -72,7 +72,7 @@ export type Key = {
   metadata: KeyMetadata;
 };
 
-export type KeyMetadata = Record<string, string>;
+export type KeyMetadata = Record<string, string>; // TODO: Maybe `Record<string, unknown>` or a more specific type
 
 export type ListKeysParams = {
   userId: string;
@@ -83,7 +83,7 @@ export type ListKeysParams = {
 };
 
 export type ListKeysResponse = {
-  keyHashes: string[];
+  keys: Key[];
   totalKeys: number;
   page: number;
   pageSize: number;

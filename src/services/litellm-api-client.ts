@@ -262,7 +262,24 @@ export class LitellmApiClient extends ApiClient {
   }: ListKeysParams): Promise<ListKeysResponse> {
     const { keys, total_count, current_page, total_pages } = await this.get<
       {
-        keys: string[];
+        keys: {
+          token: string;
+          key_name: string;
+          key_alias: string | null;
+          spend: number;
+          expires: string | null;
+          models: string[];
+          user_id: string;
+          team_id: string | null;
+          rpm_limit: number | null;
+          tpm_limit: number | null;
+          max_budget: number | null;
+          budget_duration: string | null;
+          budget_reset_at: string | null;
+          blocked: boolean | null;
+          created_at: string;
+          metadata: KeyMetadata;
+        }[];
         total_count: number;
         current_page: number;
         total_pages: number;
@@ -271,7 +288,7 @@ export class LitellmApiClient extends ApiClient {
         user_id?: string;
         page?: number;
         size?: number;
-        team_id?: string;
+        return_full_object?: boolean;
         sort_by?: string;
         sort_order?: 'asc' | 'desc';
       }
@@ -281,13 +298,32 @@ export class LitellmApiClient extends ApiClient {
         user_id: userId,
         page: page,
         size: pageSize,
+        return_full_object: true,
         sort_by: sortBy,
         sort_order: sortOrder,
       },
     });
 
     return {
-      keyHashes: keys,
+      keys: keys.map((key) => ({
+        keyOrKeyHash: key.token, // This is definitely the key hash, but we keep the name `keyOrKeyHash` for type compatibility
+        keyName: key.key_name,
+        keyAlias: key.key_alias,
+        spend: key.spend,
+        expires: key.expires,
+        models: key.models,
+        userId: key.user_id,
+        teamId: key.team_id,
+        rpmLimit: key.rpm_limit,
+        tpmLimit: key.tpm_limit,
+        budgetId: null, // TODO: Doesn't exist in the response. Keeping it `null` will confuse users if the id does exist
+        maxBudget: key.max_budget,
+        budgetDuration: key.budget_duration,
+        budgetResetAt: key.budget_reset_at,
+        blocked: key.blocked,
+        createdAt: key.created_at,
+        metadata: key.metadata,
+      })),
       totalKeys: total_count,
       page: current_page,
       pageSize,
