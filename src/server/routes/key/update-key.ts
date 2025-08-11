@@ -1,6 +1,6 @@
 import ctx from 'express-http-context';
 import * as v from 'valibot';
-import { adminLitellmApiClient } from '../../../services/litellm-api-client';
+import { getAdminLitellmApiClient } from '../../../services/litellm-api-client';
 import {
   CTX_GLOBAL_KEYS,
   INPUT_LIMITS,
@@ -29,6 +29,8 @@ export const updateKey = createRouteResolver({
     async (req, res, next, { body }) => {
       const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
 
+      const adminLitellmApiClient = await getAdminLitellmApiClient();
+
       const key = await adminLitellmApiClient.getKey({
         keyOrKeyHash: body.keyOrKeyHash,
       });
@@ -53,6 +55,8 @@ export const updateKey = createRouteResolver({
   ],
   resolve: async ({ inputs: { body } }) => {
     const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
+
+    const adminLitellmApiClient = await getAdminLitellmApiClient();
 
     await adminLitellmApiClient.updateKey({
       keyOrKeyHash: body.keyOrKeyHash,

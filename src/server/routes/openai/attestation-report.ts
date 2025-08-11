@@ -1,7 +1,7 @@
 import { createRouteResolver } from '../../middlewares/route-resolver';
 import { keyAuthMiddleware } from '../../middlewares/auth';
 import * as v from 'valibot';
-import { litellmDatabaseClient } from '../../../services/litellm-database-client';
+import { createLitellmDatabaseClient } from '../../../services/litellm-database-client';
 import { createOpenAiHttpError } from '../../../utils/error';
 import { STATUS_CODES } from '../../../utils/consts';
 import { createPrivateLlmApiClient } from '../../../services/private-llm-api-client';
@@ -33,6 +33,8 @@ export const attestationReport = createRouteResolver({
   middlewares: [
     keyAuthMiddleware,
     async (req, res, next, { query }) => {
+      const litellmDatabaseClient = await createLitellmDatabaseClient();
+
       const modelParams = await litellmDatabaseClient.getInternalModelParams(
         query.model,
       );

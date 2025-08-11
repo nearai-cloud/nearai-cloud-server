@@ -15,7 +15,7 @@ import {
   ManageUserParams,
   KeyMetadata,
 } from '../types/litellm-api-client';
-import { config } from '../config';
+import { getConfig } from '../config';
 import { OpenAI } from 'openai/client';
 import stream from 'node:stream';
 import { ApiClientOptions } from '../types/api-client';
@@ -407,16 +407,26 @@ export class LitellmApiClient extends ApiClient {
   }
 }
 
-export function createLitellmApiClient(
+export async function createLitellmApiClient(
   apiKey: string,
-  apiUrl = config.litellm.apiUrl,
-): LitellmApiClient {
+  apiUrl?: string,
+): Promise<LitellmApiClient> {
+  const config = await getConfig();
+  apiUrl = apiUrl ?? config.litellm.apiUrl;
   return new LitellmApiClient({
     apiUrl,
     apiKey,
   });
 }
 
-export const adminLitellmApiClient = createLitellmApiClient(
-  config.litellm.adminKey,
-);
+let adminLitellmApiClient: LitellmApiClient | undefined;
+
+export async function getAdminLitellmApiClient(): Promise<LitellmApiClient> {
+  if (!adminLitellmApiClient) {
+    const config = await getConfig();
+    adminLitellmApiClient = await createLitellmApiClient(
+      config.litellm.adminKey,
+    );
+  }
+  return adminLitellmApiClient;
+}

@@ -1,7 +1,8 @@
-import winston, { LoggerOptions } from 'winston';
-import { config } from '../config';
+import winston, {Logger, LoggerOptions} from 'winston';
+import { getConfig } from '../config';
 
-export function createLogger({ isDev = true }: { isDev?: boolean } = {}) {
+export async function createLogger({ isDev = true }: { isDev?: boolean } = {}) {
+  const config = await getConfig();
   const loggerOptions: LoggerOptions = {
     level: config.log.level,
     transports: [new winston.transports.Console()],
@@ -22,5 +23,12 @@ export function createLogger({ isDev = true }: { isDev?: boolean } = {}) {
   return winston.createLogger(loggerOptions);
 }
 
-// Global logger
-export const logger = createLogger({ isDev: config.isDev });
+let globalLogger: Logger | undefined;
+
+export async function getGlobalLogger(): Promise<Logger> {
+  if (!globalLogger) {
+    const config = await getConfig();
+    globalLogger = await createLogger({ isDev: config.isDev });
+  }
+  return globalLogger;
+}

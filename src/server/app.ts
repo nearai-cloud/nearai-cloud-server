@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import ctx from 'express-http-context';
-import { config } from '../config';
+import { getConfig } from '../config';
 import {
   createIncomingLogMiddleware,
   createOutgoingLogMiddleware,
@@ -12,7 +12,9 @@ import {
 } from './middlewares/error';
 import { router } from './routes';
 
-export function runServer() {
+export async function runServer() {
+  const config = await getConfig();
+
   const app = express();
 
   app.disable('x-powered-by');

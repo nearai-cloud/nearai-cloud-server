@@ -1,6 +1,6 @@
 import ctx from 'express-http-context';
 import * as v from 'valibot';
-import { adminLitellmApiClient } from '../../../services/litellm-api-client';
+import { getAdminLitellmApiClient } from '../../../services/litellm-api-client';
 import { CTX_GLOBAL_KEYS, STATUS_CODES } from '../../../utils/consts';
 import { Auth, authMiddleware } from '../../middlewares/auth';
 import { createOpenAiHttpError } from '../../../utils/error';
@@ -41,6 +41,8 @@ export const getKey = createRouteResolver({
     authMiddleware,
     async (req, res, next, { query }) => {
       const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
+
+      const adminLitellmApiClient = await getAdminLitellmApiClient();
 
       const key = await adminLitellmApiClient.getKey({
         keyOrKeyHash: query.keyOrKeyHash,

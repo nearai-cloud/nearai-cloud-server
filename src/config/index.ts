@@ -1,6 +1,7 @@
 import { Config } from '../types/config';
 import { ENV } from '../utils/envs';
 
-const module = await import(`./${ENV}.ts`);
-
-export const config: Config = module.default;
+export async function getConfig(): Promise<Config> {
+  const module = await import(`./${ENV}.ts`);
+  return module.default;
+}

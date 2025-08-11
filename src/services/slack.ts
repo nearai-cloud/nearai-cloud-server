@@ -1,5 +1,5 @@
-import { logger } from './logger';
-import { config } from '../config';
+import { getGlobalLogger } from './logger';
+import { getConfig } from '../config';
 import { ENV } from '../utils/envs';
 import { SLACK_ALERT_TAG } from '../utils/consts';
 import axios from 'axios';
@@ -14,6 +14,8 @@ export async function sendSlackInfo(
     channel?: boolean;
   } = {},
 ) {
+  const logger = await getGlobalLogger();
+
   if (emitLog) {
     logger.info(message);
   }
@@ -41,6 +43,8 @@ export async function sendSlackWarning(
     channel?: boolean;
   } = {},
 ) {
+  const logger = await getGlobalLogger();
+
   if (emitLog) {
     logger.warn(message);
   }
@@ -68,6 +72,8 @@ export async function sendSlackError(
     channel?: boolean;
   } = {},
 ) {
+  const logger = await getGlobalLogger();
+
   if (emitLog) {
     logger.error(message);
   }
@@ -104,6 +110,7 @@ async function sendSlackAlert({
 }
 
 async function sendSlackMessage(message: string) {
+  const config = await getConfig();
   if (!config.slack.webhookUrl) {
     return;
   }

@@ -2,8 +2,8 @@ import { runServer } from './server/app';
 import { sendSlackInfo } from './services/slack';
 
 async function main() {
-  runServer();
+  await runServer();
   await sendSlackInfo('Server started');
 }
 
-await main();
+void main();

@@ -2,7 +2,7 @@ import ctx from 'express-http-context';
 import * as v from 'valibot';
 import { Auth, authMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
-import { adminLitellmApiClient } from '../../../services/litellm-api-client';
+import { getAdminLitellmApiClient } from '../../../services/litellm-api-client';
 import { CTX_GLOBAL_KEYS, INPUT_LIMITS } from '../../../utils/consts';
 import { toShortKeyAlias } from '../../../utils/common';
 
@@ -60,6 +60,8 @@ export const listKeys = createRouteResolver({
   middlewares: [authMiddleware],
   resolve: async ({ inputs: { query } }) => {
     const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
+
+    const adminLitellmApiClient = await getAdminLitellmApiClient();
 
     const keys = await adminLitellmApiClient.listKeys({
       userId: user.userId,

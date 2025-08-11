@@ -1,5 +1,5 @@
-import { PrismaClient } from '@prisma/client';
-import { config } from '../config';
+import { PrismaClient } from '../../.prisma/litellm';
+import { getConfig } from '../config';
 import { litellmDecryptValue } from '../utils/crypto';
 import * as v from 'valibot';
 import {
@@ -40,17 +40,17 @@ export class LitellmDatabaseClient {
       proxyModel.litellm_params,
     );
 
-    const model = litellmDecryptValue(params.model);
+    const model = await litellmDecryptValue(params.model);
 
     if (params.api_base && params.api_key) {
       return {
         modelId: proxyModel.model_id,
         model,
-        apiUrl: litellmDecryptValue(params.api_base),
-        apiKey: litellmDecryptValue(params.api_key),
+        apiUrl: await litellmDecryptValue(params.api_base),
+        apiKey: await litellmDecryptValue(params.api_key),
       };
     } else if (params.litellm_credential_name) {
-      const credentialName = litellmDecryptValue(
+      const credentialName = await litellmDecryptValue(
         params.litellm_credential_name,
       );
 
@@ -95,8 +95,8 @@ export class LitellmDatabaseClient {
     );
 
     return {
-      apiUrl: litellmDecryptValue(credentialValues.api_base),
-      apiKey: litellmDecryptValue(credentialValues.api_key),
+      apiUrl: await litellmDecryptValue(credentialValues.api_base),
+      apiKey: await litellmDecryptValue(credentialValues.api_key),
     };
   }
 
@@ -144,10 +144,10 @@ export class LitellmDatabaseClient {
   }
 }
 
-export function createLitellmDatabaseClient(
-  datasourceUrl = config.litellm.dbUrl,
-): LitellmDatabaseClient {
+export async function createLitellmDatabaseClient(
+  datasourceUrl?: string,
+): Promise<LitellmDatabaseClient> {
+  const config = await getConfig();
+  datasourceUrl = datasourceUrl ?? config.litellm.dbUrl;
   return new LitellmDatabaseClient(datasourceUrl);
 }
-
-export const litellmDatabaseClient = createLitellmDatabaseClient();
