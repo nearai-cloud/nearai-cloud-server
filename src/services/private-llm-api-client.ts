@@ -7,7 +7,7 @@ import {
 } from '../types/privatellm-api-client';
 import { ApiClientOptions } from '../types/api-client';
 
-export class PrivatellmApiClient extends ApiClient {
+export class PrivateLlmApiClient extends ApiClient {
   constructor(options: ApiClientOptions) {
     super(options);
   }
@@ -43,11 +43,11 @@ export class PrivatellmApiClient extends ApiClient {
   }
 }
 
-export function createPrivatellmApiClient(
+export function createPrivateLlmApiClient(
   apiKey: string,
   apiUrl: string,
-): PrivatellmApiClient {
-  return new PrivatellmApiClient({
+): PrivateLlmApiClient {
+  return new PrivateLlmApiClient({
     apiUrl,
     apiKey,
   });

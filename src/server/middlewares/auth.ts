@@ -198,7 +198,7 @@ export async function authorizeLitellmServiceAccount(authorization?: string) {
     });
   }
 
-  if (!key.metadata.service_account_id) {
+  if (!key.metadata.service_account_id || key.userId !== null) {
     throw createOpenAiHttpError({
       status: STATUS_CODES.FORBIDDEN,
       message: 'Only service account can access this endpoint',

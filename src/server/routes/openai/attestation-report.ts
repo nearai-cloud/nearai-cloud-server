@@ -4,7 +4,7 @@ import * as v from 'valibot';
 import { litellmDatabaseClient } from '../../../services/litellm-database-client';
 import { createOpenAiHttpError } from '../../../utils/error';
 import { STATUS_CODES } from '../../../utils/consts';
-import { createPrivatellmApiClient } from '../../../services/privatellm-api-client';
+import { createPrivateLlmApiClient } from '../../../services/private-llm-api-client';
 import * as ctx from 'express-http-context';
 import { InternalModelParams } from '../../../types/litellm-database-client';
 
@@ -51,7 +51,7 @@ export const attestationReport = createRouteResolver({
   ],
   resolve: async () => {
     const modelParams: InternalModelParams = ctx.get('modelParams');
-    const client = createPrivatellmApiClient(
+    const client = createPrivateLlmApiClient(
       modelParams.apiKey,
       modelParams.apiUrl,
     );

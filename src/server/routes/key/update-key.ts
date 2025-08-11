@@ -9,7 +9,7 @@ import {
 import { Auth, authMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 import { createOpenAiHttpError } from '../../../utils/error';
-import { toKeyAlias } from '../../../utils/common';
+import { toFullKeyAlias } from '../../../utils/common';
 
 const inputSchema = v.object({
   keyOrKeyHash: v.string(),
@@ -57,7 +57,7 @@ export const updateKey = createRouteResolver({
     await adminLitellmApiClient.updateKey({
       keyOrKeyHash: body.keyOrKeyHash,
       keyAlias: body.keyAlias
-        ? toKeyAlias(user.userId, body.keyAlias)
+        ? toFullKeyAlias(user.userId, body.keyAlias)
         : undefined,
       maxBudget: body.maxBudget,
       blocked: body.blocked,

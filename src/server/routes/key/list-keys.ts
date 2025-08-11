@@ -4,7 +4,7 @@ import { Auth, authMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 import { adminLitellmApiClient } from '../../../services/litellm-api-client';
 import { CTX_GLOBAL_KEYS, INPUT_LIMITS } from '../../../utils/consts';
-import { toKeyAliasDisplay } from '../../../utils/common';
+import { toShortKeyAlias } from '../../../utils/common';
 
 const inputSchema = v.object({
   page: v.optional(
@@ -75,7 +75,7 @@ export const listKeys = createRouteResolver({
           ...key,
           keyAlias:
             key.userId && key.keyAlias
-              ? toKeyAliasDisplay(key.userId, key.keyAlias)
+              ? toShortKeyAlias(key.userId, key.keyAlias)
               : key.keyAlias,
         };
       }),

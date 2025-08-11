@@ -5,7 +5,7 @@ import * as ctx from 'express-http-context';
 import { litellmDatabaseClient } from '../../../services/litellm-database-client';
 import { createOpenAiHttpError } from '../../../utils/error';
 import { STATUS_CODES } from '../../../utils/consts';
-import { createPrivatellmApiClient } from '../../../services/privatellm-api-client';
+import { createPrivateLlmApiClient } from '../../../services/private-llm-api-client';
 import { InternalModelParams } from '../../../types/litellm-database-client';
 
 const paramsInputSchema = v.object({
@@ -62,7 +62,7 @@ export const signature = createRouteResolver({
       return cache;
     }
 
-    const client = createPrivatellmApiClient(
+    const client = createPrivateLlmApiClient(
       modelParams.apiKey,
       modelParams.apiUrl,
     );

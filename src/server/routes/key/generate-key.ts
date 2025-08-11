@@ -4,7 +4,7 @@ import { adminLitellmApiClient } from '../../../services/litellm-api-client';
 import { CTX_GLOBAL_KEYS, INPUT_LIMITS } from '../../../utils/consts';
 import { Auth, authMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
-import { toKeyAlias } from '../../../utils/common';
+import { toFullKeyAlias } from '../../../utils/common';
 
 const inputSchema = v.object({
   keyAlias: v.optional(
@@ -30,7 +30,7 @@ export const generateKey = createRouteResolver({
     const { key, expires } = await adminLitellmApiClient.generateKey({
       userId: user.userId,
       keyAlias: body.keyAlias
-        ? toKeyAlias(user.userId, body.keyAlias)
+        ? toFullKeyAlias(user.userId, body.keyAlias)
         : undefined,
       models: ['all-team-models'],
       teamId: undefined, // TODO
