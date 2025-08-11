@@ -9,7 +9,7 @@ datasource db {
   directUrl = env("NEAR_AI_CLOUD_DB_DIRECT_URL")
 }
 
-model NearAI_MessageSignatures {
+model NearAi_MessageSignatures {
   model_id          String      @db.Text
   model             String      @db.Text
   chat_id           String      @db.Text

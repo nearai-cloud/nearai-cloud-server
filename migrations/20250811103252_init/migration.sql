@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "public"."NearAI_MessageSignatures" (
+CREATE TABLE "public"."NearAi_MessageSignatures" (
     "model_id" TEXT NOT NULL,
     "model" TEXT NOT NULL,
     "chat_id" TEXT NOT NULL,
@@ -10,5 +10,5 @@ CREATE TABLE "public"."NearAI_MessageSignatures" (
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "NearAI_MessageSignatures_pkey" PRIMARY KEY ("chat_id","signing_algo")
+    CONSTRAINT "NearAi_MessageSignatures_pkey" PRIMARY KEY ("chat_id","signing_algo")
 );

@@ -2,7 +2,7 @@ import { PrismaClient } from '../../.prisma/nearai-cloud';
 import { getConfig } from '../config';
 import { Signature, SigningAlgo } from '../types/privatellm-api-client';
 
-export class LitellmDatabaseClient {
+export class NearAiCloudDatabaseClient {
   private client: PrismaClient;
 
   constructor(datasourceUrl: string) {
@@ -15,7 +15,7 @@ export class LitellmDatabaseClient {
     chatId: string,
     signingAlgo: SigningAlgo,
   ): Promise<Signature | null> {
-    const signature = await this.client.nearAI_MessageSignatures.findUnique({
+    const signature = await this.client.nearAi_MessageSignatures.findUnique({
       where: {
         chat_id_signing_algo: {
           chat_id: chatId,
@@ -42,7 +42,7 @@ export class LitellmDatabaseClient {
     model: string,
     signature: Signature,
   ) {
-    await this.client.nearAI_MessageSignatures.create({
+    await this.client.nearAi_MessageSignatures.create({
       data: {
         ...signature,
         model_id: modelId,
@@ -55,8 +55,8 @@ export class LitellmDatabaseClient {
 
 export async function createNearAiCloudDatabaseClient(
   datasourceUrl?: string,
-): Promise<LitellmDatabaseClient> {
+): Promise<NearAiCloudDatabaseClient> {
   const config = await getConfig();
   datasourceUrl = datasourceUrl ?? config.nearAiCloud.databaseUrl;
-  return new LitellmDatabaseClient(datasourceUrl);
+  return new NearAiCloudDatabaseClient(datasourceUrl);
 }
