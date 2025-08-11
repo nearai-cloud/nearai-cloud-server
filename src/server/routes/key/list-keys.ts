@@ -18,7 +18,7 @@ const inputSchema = v.object({
   pageSize: v.optional(
     v.pipe(
       v.string(),
-      v.transform((page) => Number(page)),
+      v.transform((pageSize) => Number(pageSize)),
       v.integer(),
       v.minValue(INPUT_LIMITS.MIN_PAGE_SIZE),
       v.maxValue(INPUT_LIMITS.MAX_PAGE_SIZE),

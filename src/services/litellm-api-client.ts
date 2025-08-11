@@ -402,7 +402,7 @@ export class LitellmApiClient extends ApiClient {
 
   async models(): Promise<OpenAI.PageResponse<OpenAI.Model>> {
     return this.get({
-      path: 'models',
+      path: '/models',
     });
   }
 }
