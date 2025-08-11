@@ -1,9 +1,9 @@
 # Stage 1: Development with Dependencies
 FROM node:22-slim AS dev
 
-# Install Python and build-essential for node-gyp dependencies
+# Install Python, build-essential, and OpenSSL for node-gyp dependencies
 RUN apt-get update && \
-    apt-get install -y python3 build-essential && \
+    apt-get install -y python3 build-essential openssl && \
     ln -s /usr/bin/python3 /usr/bin/python && \
     rm -rf /var/lib/apt/lists/*
 
@@ -25,6 +25,11 @@ FROM node:22-slim AS runtime
 
 WORKDIR /app
 ENV NODE_ENV=production
+
+# Install OpenSSL for runtime
+RUN apt-get update && \
+    apt-get install -y openssl && \
+    rm -rf /var/lib/apt/lists/*
 
 # Set up a non-root user
 RUN groupmod -g 1001 node \
