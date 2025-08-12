@@ -1,8 +1,8 @@
 migrations/litellm/sync:
-	@prisma db pull --schema schema.litellm.prisma
+	@prisma db pull --schema .prisma/litellm.schema.prisma
 
 migrations/nearai-cloud/dev:
-	@prisma migrate dev --schema schema.nearai-cloud.prisma --skip-generate
+	@prisma migrate dev --schema .prisma/nearai-cloud.schema.prisma --skip-generate
 
 migrations/nearai-cloud/prd:
-	@prisma migrate deploy --schema schema.nearai-cloud.prisma
+	@prisma migrate deploy --schema .prisma/nearai-cloud.schema.prisma

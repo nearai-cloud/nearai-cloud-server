@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { logger } from './services/logger';
 
-const SCHEMA_FILE_PATH = 'schema.nearai-cloud.prisma';
+const SCHEMA_FILE_PATH = '.prisma/nearai-cloud.schema.prisma';
 
 export async function runMigrations() {
   logger.info(`${'-'.repeat(40)} Start run migrations ${'-'.repeat(40)}`);

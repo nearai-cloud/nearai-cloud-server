@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output   = ".prisma/nearai-cloud"
+  output   = "./generated/nearai-cloud"
 }
 
 datasource db {

@@ -1,4 +1,4 @@
-import { PrismaClient } from '../../.prisma/nearai-cloud';
+import { PrismaClient } from '../../.prisma/generated/nearai-cloud';
 import { config } from '../config';
 import { Signature, SigningAlgo } from '../types/privatellm-api-client';
 

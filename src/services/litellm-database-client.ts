@@ -1,4 +1,4 @@
-import { PrismaClient } from '../../.prisma/litellm';
+import { PrismaClient } from '../../.prisma/generated/litellm';
 import { config } from '../config';
 import { litellmDecryptValue } from '../utils/crypto';
 import * as v from 'valibot';
