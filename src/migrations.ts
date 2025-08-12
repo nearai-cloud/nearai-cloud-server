@@ -8,11 +8,9 @@ export function runMigrations() {
 
   const isUpToDate = migrateStatus();
 
-  if (isUpToDate) {
-    return;
+  if (!isUpToDate) {
+    migrateDeploy();
   }
-
-  migrateDeploy();
 
   logger.info(`${'-'.repeat(40)} End running migrations    ${'-'.repeat(40)}`);
 }
