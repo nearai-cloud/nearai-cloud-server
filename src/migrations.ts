@@ -34,7 +34,7 @@ function migrateStatus(): boolean {
   }
 
   if (command.stdout.byteLength > 0) {
-    logger.info(`\n${command.stdout.toString()}`);
+    logger.info(command.stdout.toString());
   }
 
   return command.status === 0;
@@ -57,6 +57,6 @@ function migrateDeploy() {
   }
 
   if (command.stdout.byteLength > 0) {
-    logger.info(`\n${command.stdout.toString()}`);
+    logger.info(command.stdout.toString());
   }
 }
