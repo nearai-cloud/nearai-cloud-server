@@ -105,3 +105,5 @@ export function createLitellmDatabaseClient(
 ): LitellmDatabaseClient {
   return new LitellmDatabaseClient(datasourceUrl);
 }
+
+export const litellmDatabaseClient = createLitellmDatabaseClient();

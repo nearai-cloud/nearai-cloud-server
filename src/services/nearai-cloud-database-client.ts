@@ -58,3 +58,5 @@ export function createNearAiCloudDatabaseClient(
 ): NearAiCloudDatabaseClient {
   return new NearAiCloudDatabaseClient(datasourceUrl);
 }
+
+export const nearAiCloudDatabaseClient = createNearAiCloudDatabaseClient();

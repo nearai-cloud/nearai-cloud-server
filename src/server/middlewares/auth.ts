@@ -141,7 +141,7 @@ async function authorizeKey(authorization?: string): Promise<KeyAuth> {
 
   const token = authorization.slice(BEARER_TOKEN_PREFIX.length);
 
-  const litellmApiClient = await createLitellmApiClient(token);
+  const litellmApiClient = createLitellmApiClient(token);
 
   let key: Key | null;
 
@@ -185,7 +185,7 @@ export async function authorizeLitellmServiceAccount(authorization?: string) {
 
   const token = authorization.slice(BEARER_TOKEN_PREFIX.length);
 
-  const client = await createLitellmApiClient(token);
+  const client = createLitellmApiClient(token);
 
   const key = await client.getKey({
     keyOrKeyHash: token,

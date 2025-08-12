@@ -2,12 +2,12 @@ import { createRouteResolver } from '../../middlewares/route-resolver';
 import { keyAuthMiddleware } from '../../middlewares/auth';
 import * as v from 'valibot';
 import * as ctx from 'express-http-context';
-import { createLitellmDatabaseClient } from '../../../services/litellm-database-client';
+import { litellmDatabaseClient } from '../../../services/litellm-database-client';
 import { createOpenAiHttpError } from '../../../utils/error';
 import { STATUS_CODES } from '../../../utils/consts';
 import { createPrivateLlmApiClient } from '../../../services/private-llm-api-client';
 import { InternalModelParams } from '../../../types/litellm-database-client';
-import { createNearAiCloudDatabaseClient } from '../../../services/nearai-cloud-database-client';
+import { nearAiCloudDatabaseClient } from '../../../services/nearai-cloud-database-client';
 import { logger } from '../../../services/logger';
 
 const paramsInputSchema = v.object({
@@ -35,8 +35,6 @@ export const signature = createRouteResolver({
   middlewares: [
     keyAuthMiddleware,
     async (req, res, next, { query }) => {
-      const litellmDatabaseClient = await createLitellmDatabaseClient();
-
       const modelParams = await litellmDatabaseClient.getInternalModelParams(
         query.model,
       );
@@ -54,8 +52,6 @@ export const signature = createRouteResolver({
     },
   ],
   resolve: async ({ inputs: { params, query } }) => {
-    const nearAiCloudDatabaseClient = createNearAiCloudDatabaseClient();
-
     const modelParams: InternalModelParams = ctx.get('modelParams');
 
     const cache = await nearAiCloudDatabaseClient.getSignature(
