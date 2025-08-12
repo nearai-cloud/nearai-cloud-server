@@ -12,12 +12,14 @@ export class NearAiCloudDatabaseClient {
   }
 
   async getSignature(
+    modelId: string,
     chatId: string,
     signingAlgo: SigningAlgo,
   ): Promise<Signature | null> {
     const signature = await this.client.nearAi_MessageSignatures.findUnique({
       where: {
-        chat_id_signing_algo: {
+        model_id_chat_id_signing_algo: {
+          model_id: modelId,
           chat_id: chatId,
           signing_algo: signingAlgo,
         },

@@ -55,6 +55,7 @@ export const signature = createRouteResolver({
     const modelParams: InternalModelParams = ctx.get('modelParams');
 
     const cache = await nearAiCloudDatabaseClient.getSignature(
+      modelParams.modelId,
       params.chat_id,
       query.signing_algo,
     );

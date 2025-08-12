@@ -20,5 +20,5 @@ model NearAi_MessageSignatures {
   created_at        DateTime    @db.Timestamptz @default(now())
   updated_at        DateTime    @db.Timestamptz @default(now()) @updatedAt
 
-  @@id([chat_id, signing_algo])
+  @@id([model_id, chat_id, signing_algo])
 }
