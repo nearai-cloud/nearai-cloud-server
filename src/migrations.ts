@@ -14,7 +14,7 @@ export function runMigrations() {
 
   migrateDeploy();
 
-  logger.info(`${'-'.repeat(40)} End running migrations ${'-'.repeat(42)}`);
+  logger.info(`${'-'.repeat(40)} End running migrations    ${'-'.repeat(40)}`);
 }
 
 function migrateStatus(): boolean {
