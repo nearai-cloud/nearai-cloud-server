@@ -1,5 +1,4 @@
 import { PrismaClient } from '../../.prisma/generated/litellm';
-import { config } from '../config';
 import { litellmDecryptValue } from '../utils/crypto';
 import * as v from 'valibot';
 import {
@@ -10,10 +9,8 @@ import {
 export class LitellmDatabaseClient {
   private client: PrismaClient;
 
-  constructor(datasourceUrl: string) {
-    this.client = new PrismaClient({
-      datasourceUrl,
-    });
+  constructor() {
+    this.client = new PrismaClient();
   }
 
   async getInternalModelParams(
@@ -100,10 +97,8 @@ export class LitellmDatabaseClient {
   }
 }
 
-export function createLitellmDatabaseClient(
-  datasourceUrl = config.litellm.databaseUrl,
-): LitellmDatabaseClient {
-  return new LitellmDatabaseClient(datasourceUrl);
+export function createLitellmDatabaseClient(): LitellmDatabaseClient {
+  return new LitellmDatabaseClient();
 }
 
 export const litellmDatabaseClient = createLitellmDatabaseClient();

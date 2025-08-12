@@ -5,7 +5,7 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url       = ""
+  url       = env("LITELLM_DB_URL")
   directUrl = env("LITELLM_DB_DIRECT_URL")
 }
 

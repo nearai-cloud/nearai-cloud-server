@@ -1,14 +1,11 @@
 import { PrismaClient } from '../../.prisma/generated/nearai-cloud';
-import { config } from '../config';
 import { Signature, SigningAlgo } from '../types/privatellm-api-client';
 
 export class NearAiCloudDatabaseClient {
   private client: PrismaClient;
 
-  constructor(datasourceUrl: string) {
-    this.client = new PrismaClient({
-      datasourceUrl,
-    });
+  constructor() {
+    this.client = new PrismaClient();
   }
 
   async getSignature(
@@ -55,10 +52,8 @@ export class NearAiCloudDatabaseClient {
   }
 }
 
-export function createNearAiCloudDatabaseClient(
-  datasourceUrl = config.nearAiCloud.databaseUrl,
-): NearAiCloudDatabaseClient {
-  return new NearAiCloudDatabaseClient(datasourceUrl);
+export function createNearAiCloudDatabaseClient(): NearAiCloudDatabaseClient {
+  return new NearAiCloudDatabaseClient();
 }
 
 export const nearAiCloudDatabaseClient = createNearAiCloudDatabaseClient();

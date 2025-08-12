@@ -8,10 +8,6 @@ export type Config = {
     apiUrl: string;
     adminKey: string;
     signingKey: string;
-    databaseUrl: string;
-  };
-  nearAiCloud: {
-    databaseUrl: string;
   };
   log: {
     level: 'debug' | 'info';

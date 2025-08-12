@@ -5,7 +5,7 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url       = ""
+  url       = env("NEAR_AI_CLOUD_DB_URL")
   directUrl = env("NEAR_AI_CLOUD_DB_DIRECT_URL")
 }
 
