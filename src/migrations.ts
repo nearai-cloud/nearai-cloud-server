@@ -9,12 +9,14 @@ export async function runMigrations() {
 
   const isUpToDate = migrateStatus();
 
-  if (!isUpToDate) {
-    if (config.isDev) {
-      migrateDev();
-    } else {
-      migrateDeploy();
-    }
+  if (isUpToDate) {
+    return;
+  }
+
+  if (config.isDev) {
+    migrateDev();
+  } else {
+    migrateDeploy();
   }
 
   logger.info(`${'-'.repeat(40)} End run migrations ${'-'.repeat(42)}`);
