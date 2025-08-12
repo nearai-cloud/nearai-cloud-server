@@ -39,7 +39,7 @@ RUN groupmod -g 1001 node \
 COPY --chown=node:node --from=dev /app/node_modules node_modules
 COPY --chown=node:node --from=dev /app/dist dist
 COPY --chown=node:node --from=dev /app/package.json package.json
-COPY --chown=node:node . .
+COPY --chown=node:node --from=dev /app/.prisma .prisma
 
 USER node
 EXPOSE 3000
