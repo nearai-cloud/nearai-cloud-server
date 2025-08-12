@@ -8,6 +8,7 @@ import { STATUS_CODES } from '../../../utils/consts';
 import { createPrivateLlmApiClient } from '../../../services/private-llm-api-client';
 import { InternalModelParams } from '../../../types/litellm-database-client';
 import { createNearAiCloudDatabaseClient } from '../../../services/nearai-cloud-database-client';
+import { logger } from '../../../services/logger';
 
 const paramsInputSchema = v.object({
   chat_id: v.string(),
@@ -77,12 +78,16 @@ export const signature = createRouteResolver({
       signing_algo: query.signing_algo,
     });
 
-    await nearAiCloudDatabaseClient.setSignature(
-      modelParams.modelId,
-      params.chat_id,
-      modelParams.model,
-      signature,
-    );
+    nearAiCloudDatabaseClient
+      .setSignature(
+        modelParams.modelId,
+        params.chat_id,
+        modelParams.model,
+        signature,
+      )
+      .catch((reason) => {
+        logger.error(`Failed to set chat message signature: ${reason}`);
+      });
 
     return signature;
   },
