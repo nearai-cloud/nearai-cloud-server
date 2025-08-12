@@ -3,9 +3,9 @@ import { sendSlackInfo } from './services/slack';
 import { runMigrations } from './migrations';
 
 async function main() {
-  await runMigrations();
-
+  runMigrations();
   runServer();
+
   await sendSlackInfo('Server started');
 }
 
