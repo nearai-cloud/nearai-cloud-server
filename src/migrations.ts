@@ -4,7 +4,7 @@ import { logger } from './services/logger';
 const SCHEMA_FILE_PATH = '.prisma/nearai-cloud.schema.prisma';
 
 export function runMigrations() {
-  logger.info(`${'-'.repeat(40)} Start run migrations ${'-'.repeat(40)}`);
+  logger.info(`${'-'.repeat(40)} Start running migrations ${'-'.repeat(40)}`);
 
   const isUpToDate = migrateStatus();
 
@@ -14,7 +14,7 @@ export function runMigrations() {
 
   migrateDeploy();
 
-  logger.info(`${'-'.repeat(40)} End run migrations ${'-'.repeat(42)}`);
+  logger.info(`${'-'.repeat(40)} End running migrations ${'-'.repeat(42)}`);
 }
 
 function migrateStatus(): boolean {
