@@ -1,7 +1,6 @@
 import { SupabaseClient, createClient } from '@supabase/supabase-js';
-import { getConfig } from '../config';
+import { config } from '../config';
 
-export async function createSupabaseClient(): Promise<SupabaseClient> {
-  const config = await getConfig();
+export function createSupabaseClient(): SupabaseClient {
   return createClient(config.supabase.apiUrl, config.supabase.anonKey);
 }

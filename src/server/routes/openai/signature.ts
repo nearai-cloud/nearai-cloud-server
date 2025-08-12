@@ -53,7 +53,7 @@ export const signature = createRouteResolver({
     },
   ],
   resolve: async ({ inputs: { params, query } }) => {
-    const nearAiCloudDatabaseClient = await createNearAiCloudDatabaseClient();
+    const nearAiCloudDatabaseClient = createNearAiCloudDatabaseClient();
 
     const modelParams: InternalModelParams = ctx.get('modelParams');
 

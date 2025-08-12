@@ -1,6 +1,6 @@
 import ctx from 'express-http-context';
 import * as v from 'valibot';
-import { getAdminLitellmApiClient } from '../../../services/litellm-api-client';
+import { adminLitellmApiClient } from '../../../services/litellm-api-client';
 import { CTX_GLOBAL_KEYS } from '../../../utils/consts';
 import { Auth, authMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
@@ -36,8 +36,6 @@ export const getSpendLogs = createRouteResolver({
   middlewares: [authMiddleware],
   resolve: async ({ inputs: { query } }) => {
     const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
-
-    const adminLitellmApiClient = await getAdminLitellmApiClient();
 
     const logs = await adminLitellmApiClient.getSpendLogs({
       userId: user.userId,

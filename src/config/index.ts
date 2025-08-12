@@ -1,7 +1,17 @@
 import { Config } from '../types/config';
 import { ENV } from '../utils/envs';
+import devConfig from './dev';
+import prdConfig from './prd';
 
-export async function getConfig(): Promise<Config> {
-  const module = await import(`./${ENV}.ts`);
-  return module.default;
+function getConfig(): Config {
+  switch (ENV) {
+    case 'dev':
+      return devConfig;
+    case 'prd':
+      return prdConfig;
+    default:
+      throw new Error(`Unknown environment: ${ENV}`);
+  }
 }
+
+export const config = getConfig();

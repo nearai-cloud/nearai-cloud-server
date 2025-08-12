@@ -1,15 +1,11 @@
 import { createHash } from 'crypto';
 import nacl from 'tweetnacl';
-import { getConfig } from '../config';
+import { config } from '../config';
 
-export async function litellmDecryptValue(
+export function litellmDecryptValue(
   valueBase64: string,
-  signingKey?: string,
-): Promise<string> {
-  const config = await getConfig();
-
-  signingKey = signingKey ?? config.litellm.signingKey;
-
+  signingKey = config.litellm.signingKey,
+): string {
   const value = Buffer.from(valueBase64, 'base64');
 
   if (value.length === 0) {

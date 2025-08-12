@@ -2,7 +2,7 @@ import { runServer } from './server/app';
 import { sendSlackInfo } from './services/slack';
 
 async function main() {
-  await runServer();
+  runServer();
   await sendSlackInfo('Server started');
 }
 

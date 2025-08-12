@@ -33,7 +33,7 @@ export const attestationReport = createRouteResolver({
   middlewares: [
     keyAuthMiddleware,
     async (req, res, next, { query }) => {
-      const litellmDatabaseClient = await createLitellmDatabaseClient();
+      const litellmDatabaseClient = createLitellmDatabaseClient();
 
       const modelParams = await litellmDatabaseClient.getInternalModelParams(
         query.model,

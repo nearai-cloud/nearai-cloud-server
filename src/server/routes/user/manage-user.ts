@@ -1,7 +1,7 @@
 import * as v from 'valibot';
 import { litellmServiceAccountAuthMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
-import { getAdminLitellmApiClient } from '../../../services/litellm-api-client';
+import { adminLitellmApiClient } from '../../../services/litellm-api-client';
 
 const inputSchema = v.object({
   userId: v.string(),
@@ -14,7 +14,6 @@ export const manageUser = createRouteResolver({
   },
   middlewares: [litellmServiceAccountAuthMiddleware],
   resolve: async ({ inputs: { body } }) => {
-    const adminLitellmApiClient = await getAdminLitellmApiClient();
     await adminLitellmApiClient.manageUser({
       userId: body.userId,
       maxBudget: body.maxBudget,
