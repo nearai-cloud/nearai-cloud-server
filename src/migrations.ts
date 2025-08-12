@@ -1,21 +1,26 @@
 import { spawnSync } from 'node:child_process';
 import { logger } from './services/logger';
+import { config } from './config';
 
 const SCHEMA_FILE_PATH = 'schema.nearai-cloud.prisma';
 
 export async function runMigrations() {
   logger.info(`${'-'.repeat(40)} Start run migrations ${'-'.repeat(40)}`);
 
-  const isUpToDate = checkMigrations();
+  const isUpToDate = migrateStatus();
 
   if (!isUpToDate) {
-    await deployMigrations();
+    if (config.isDev) {
+      migrateDev();
+    } else {
+      migrateDeploy();
+    }
   }
 
   logger.info(`${'-'.repeat(40)} End run migrations ${'-'.repeat(42)}`);
 }
 
-function checkMigrations(): boolean {
+function migrateStatus(): boolean {
   const command = spawnSync('prisma', [
     'migrate',
     'status',
@@ -38,7 +43,28 @@ function checkMigrations(): boolean {
   return command.status === 0;
 }
 
-async function deployMigrations() {
+function migrateDev() {
+  const command = spawnSync('prisma', [
+    'migrate',
+    'dev',
+    '--schema',
+    SCHEMA_FILE_PATH,
+  ]);
+
+  if (command.error) {
+    throw command.error;
+  }
+
+  if (command.stderr.byteLength > 0) {
+    throw new Error(command.stderr.toString());
+  }
+
+  if (command.stdout.byteLength > 0) {
+    logger.info(`\n${command.stdout.toString()}`);
+  }
+}
+
+function migrateDeploy() {
   const command = spawnSync('prisma', [
     'migrate',
     'deploy',
