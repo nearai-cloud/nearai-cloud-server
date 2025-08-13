@@ -3,9 +3,10 @@ name: Build, Push & Deploy to Phala Cloud
 on:
   push:
     branches:
-      - main
+      - feat/docker-compose
     paths:
       - "./Dockerfile"
+      - "./test.txt"
   workflow_dispatch:
 
 jobs:
