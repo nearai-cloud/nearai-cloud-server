@@ -7,7 +7,8 @@
   "scripts": {
     "generate:litellm": "rm -rf .prisma/generated/litellm && prisma generate --schema .prisma/litellm.schema.prisma",
     "generate:nearai-cloud": "rm -rf .prisma/generated/nearai-cloud && prisma generate --schema .prisma/nearai-cloud.schema.prisma",
-    "build": "rm -rf dist && pnpm generate:litellm && pnpm generate:nearai-cloud && tsup",
+    "generate": "pnpm generate:litellm && pnpm generate:nearai-cloud",
+    "build": "rm -rf dist && pnpm generate && tsup",
     "preview": "tsx src/main.ts",
     "start": "node dist/main.js",
     "lint": "eslint 'src/**/*.ts' '*.mjs' --fix",
