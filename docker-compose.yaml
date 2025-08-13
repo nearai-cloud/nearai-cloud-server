@@ -24,7 +24,7 @@ services:
 
   # NEAR AI Cloud server
   nearai-cloud-server:
-    image: robortyan/nearai-cloud-server:latest
+    image: ${NEAR_AI_CLOUD_SERVER_DOCKER_IMAGE}:latest
     ports:
       - "3000:3000"
     environment:

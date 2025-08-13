@@ -1,0 +1,60 @@
+name: Build, Push & Deploy to Phala Cloud
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "./Dockerfile"
+
+jobs:
+  build-and-push:
+    permissions:
+      contents: read
+      packages: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
+          password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+
+      - name: Build and Push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_IMAGE }}:latest
+            ${{ secrets.DOCKER_IMAGE }}:${{ github.sha }}
+
+      - name: Deploy to Phala Cloud
+        uses: Leechael/phala-deploy-action@v2
+        with:
+          # Required parameters
+          phala-api-key: ${{ secrets.PHALA_CLOUD_API_KEY }}
+
+          # Optional parameters (with defaults)
+          cvm-name: ""
+          compose-file: "./docker-compose.yaml"
+          vcpu: "4"
+          memory: "4096"
+          disk-size: "10"
+          envs: |
+            NEAR_AI_CLOUD_SERVER_DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE }}
+            LITELLM_DATABASE_URL: ${{ secrets.LITELLM_DATABASE_URL }}
+            LITELLM_MASTER_KEY: ${{ secrets.LITELLM_MASTER_KEY }}
+            LITELLM_SALT_KEY: ${{ secrets.LITELLM_SALT_KEY }}
+            NEAR_AI_CLOUD_DB_URL: ${{ secrets.NEAR_AI_CLOUD_DB_URL }}
+            NEAR_AI_CLOUD_DB_DIRECT_URL: ${{ secrets.NEAR_AI_CLOUD_DB_DIRECT_URL }}
+            SUPABASE_API_URL: ${{ secrets.SUPABASE_API_URL }}
+            SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+            SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          app-id: ""
+          node-id: ""
+          base-image: ""
