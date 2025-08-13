@@ -92,6 +92,6 @@ The migration step is:
 
 Now your `dev` database is synced
 
-Don't forget to commit the migration history file!
+Don't forget to commit the new migration history file!
 
-For `stg` and `prd` migrations, the history will automatically apply when you run the project
+For `stg` and `prd` environment, the new migration history will automatically apply when you run the project
