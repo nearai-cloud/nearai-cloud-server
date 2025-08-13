@@ -4,10 +4,6 @@ on:
   push:
     branches:
       - feat/docker-compose
-    paths:
-      - "./Dockerfile"
-      - "./test.txt"
-  workflow_dispatch:
 
 jobs:
   build-and-push:
