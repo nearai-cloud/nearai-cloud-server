@@ -1,12 +1,12 @@
 import ctx from 'express-http-context';
 import * as v from 'valibot';
 import { adminLitellmApiClient } from '../../../services/litellm-api-client';
-import { CTX_GLOBAL_KEYS } from '../../../utils/consts';
+import { CTX_GLOBAL_KEYS, INPUT_LIMITS } from '../../../utils/consts';
 import { Auth, authMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 
 const inputSchema = v.object({
-  keyHash: v.pipe(v.string(), v.hash(['sha256'])),
+  keyHash: v.pipe(v.string(), v.hash([INPUT_LIMITS.KEY_HASH_TYPE])),
   startDate: v.optional(v.pipe(v.string(), v.isoDate())),
   endDate: v.optional(v.pipe(v.string(), v.isoDate())),
 });

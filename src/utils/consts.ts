@@ -5,6 +5,7 @@ export const BEARER_TOKEN_PREFIX = 'Bearer ';
 export const LITELLM_KEY_PREFIX = 'sk-';
 
 export const INPUT_LIMITS = {
+  KEY_HASH_TYPE: 'sha256',
   KEY_ALIAS_MAX_LENGTH: 256,
   MIN_PAGE: 1,
   MIN_PAGE_SIZE: 1,

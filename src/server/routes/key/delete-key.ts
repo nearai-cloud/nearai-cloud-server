@@ -1,14 +1,18 @@
 import ctx from 'express-http-context';
 import * as v from 'valibot';
 import { adminLitellmApiClient } from '../../../services/litellm-api-client';
-import { CTX_GLOBAL_KEYS, STATUS_CODES } from '../../../utils/consts';
+import {
+  CTX_GLOBAL_KEYS,
+  INPUT_LIMITS,
+  STATUS_CODES,
+} from '../../../utils/consts';
 import { Auth, authMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 import { createOpenAiHttpError } from '../../../utils/error';
 import { Key } from '../../../types/litellm-api-client';
 
 const inputSchema = v.object({
-  keyHash: v.pipe(v.string(), v.hash(['sha256'])),
+  keyHash: v.pipe(v.string(), v.hash([INPUT_LIMITS.KEY_HASH_TYPE])),
 });
 
 export const deleteKey = createRouteResolver({
