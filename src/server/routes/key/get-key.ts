@@ -12,12 +12,22 @@ import { createRouteResolver } from '../../middlewares/route-resolver';
 import { Key } from '../../../types/litellm-api-client';
 import { toShortKeyAlias } from '../../../utils/common';
 
+/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
 const inputSchema = v.object({
   keyHash: v.pipe(v.string(), v.hash([INPUT_LIMITS.KEY_HASH_TYPE])),
 });
 
+/**
+ * @deprecated
+ */
+const inputSchemaLegacy = v.object({
+  keyOrKeyHash: v.optional(v.string()),
+  keyHash: v.optional(v.pipe(v.string(), v.hash([INPUT_LIMITS.KEY_HASH_TYPE]))),
+});
+
 const outputSchema = v.nullable(
   v.object({
+    keyOrKeyHash: v.string(),
     keyHash: v.string(),
     keyName: v.string(),
     keyAlias: v.nullable(v.string()),
@@ -38,7 +48,7 @@ const outputSchema = v.nullable(
 
 export const getKey = createRouteResolver({
   inputs: {
-    query: inputSchema,
+    query: inputSchemaLegacy,
   },
   output: outputSchema,
   middlewares: [
@@ -46,8 +56,15 @@ export const getKey = createRouteResolver({
     async (req, res, next, { query }) => {
       const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
 
+      if (!query.keyHash && !query.keyOrKeyHash) {
+        throw createOpenAiHttpError({
+          status: STATUS_CODES.BAD_REQUEST,
+          message: 'Missing keyHash',
+        });
+      }
+
       const key = await adminLitellmApiClient.getKey({
-        keyOrKeyHash: query.keyHash,
+        keyOrKeyHash: query.keyHash ?? query.keyOrKeyHash!,
       });
 
       if (key && key.userId !== user.userId) {
@@ -70,6 +87,7 @@ export const getKey = createRouteResolver({
       return null;
     } else {
       return {
+        keyOrKeyHash: key.keyHash,
         keyHash: key.keyHash,
         keyName: key.keyName,
         keyAlias:
