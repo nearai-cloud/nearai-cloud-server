@@ -10,8 +10,8 @@ const inputSchema = v.object({
 const outputSchema = v.nullable(
   v.object({
     model: v.string(),
-    internalModel: v.string(),
-    internalModelProvider: v.string(),
+    providerModelName: v.string(),
+    providerName: v.string(),
     credentialName: v.string(),
     inputCostPerToken: v.number(),
     outputCostPerToken: v.number(),

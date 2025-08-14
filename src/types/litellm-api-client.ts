@@ -115,8 +115,8 @@ export type SpendLog = {
 
 export type CreateModelParams = {
   model: string;
-  internalModel: string;
-  internalModelProvider: string;
+  providerModelName: string;
+  providerName: string;
   credentialName: string;
   inputCostPerToken?: number;
   outputCostPerToken?: number;
@@ -131,8 +131,8 @@ export type CreateModelParams = {
 
 export type UpdateModelParams = {
   model: string;
-  internalModel?: string;
-  internalModelProvider?: string;
+  providerModelName?: string;
+  providerName?: string;
   credentialName?: string;
   inputCostPerToken?: number;
   outputCostPerToken?: number;
@@ -155,8 +155,8 @@ export type GetModelParams = {
 
 export type Model = {
   model: string;
-  internalModel: string;
-  internalModelProvider: string;
+  providerModelName: string;
+  providerName: string;
   credentialName: string;
   inputCostPerToken: number;
   outputCostPerToken: number;

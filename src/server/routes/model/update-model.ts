@@ -5,8 +5,8 @@ import { adminLitellmApiClient } from '../../../services/litellm-api-client';
 
 const inputSchema = v.object({
   model: v.string(),
-  internalModel: v.optional(v.string()),
-  internalModelProvider: v.optional(v.string()),
+  providerModelName: v.optional(v.string()),
+  providerName: v.optional(v.string()),
   credentialName: v.optional(v.string()),
   inputCostPerToken: v.optional(v.number()),
   outputCostPerToken: v.optional(v.number()),
@@ -29,8 +29,8 @@ export const updateModel = createRouteResolver({
   resolve: async ({ inputs: { body } }) => {
     await adminLitellmApiClient.updateModel({
       model: body.model,
-      internalModel: body.internalModel,
-      internalModelProvider: body.internalModelProvider,
+      providerModelName: body.providerModelName,
+      providerName: body.providerName,
       credentialName: body.credentialName,
       inputCostPerToken: body.inputCostPerToken,
       outputCostPerToken: body.outputCostPerToken,

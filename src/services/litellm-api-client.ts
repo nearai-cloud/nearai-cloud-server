@@ -413,8 +413,8 @@ export class LitellmApiClient extends ApiClient {
 
   async createModel({
     model,
-    internalModel,
-    internalModelProvider,
+    providerModelName,
+    providerName,
     credentialName,
     inputCostPerToken,
     outputCostPerToken,
@@ -446,8 +446,8 @@ export class LitellmApiClient extends ApiClient {
       body: {
         model_name: model,
         litellm_params: {
-          model: internalModel,
-          custom_llm_provider: internalModelProvider,
+          model: providerModelName,
+          custom_llm_provider: providerName,
           litellm_credential_name: credentialName,
           input_cost_per_token: inputCostPerToken,
           output_cost_per_token: outputCostPerToken,
@@ -467,8 +467,8 @@ export class LitellmApiClient extends ApiClient {
 
   async updateModel({
     model,
-    internalModel,
-    internalModelProvider,
+    providerModelName,
+    providerName,
     credentialName,
     inputCostPerToken,
     outputCostPerToken,
@@ -500,8 +500,8 @@ export class LitellmApiClient extends ApiClient {
       body: {
         model_name: model,
         litellm_params: {
-          model: internalModel,
-          custom_llm_provider: internalModelProvider,
+          model: providerModelName,
+          custom_llm_provider: providerName,
           litellm_credential_name: credentialName,
           input_cost_per_token: inputCostPerToken,
           output_cost_per_token: outputCostPerToken,
@@ -557,8 +557,8 @@ export class LitellmApiClient extends ApiClient {
       return models.map((model) => {
         return {
           model: model.model_name,
-          internalModel: model.litellm_params.model,
-          internalModelProvider: model.litellm_params.custom_llm_provider,
+          providerModelName: model.litellm_params.model,
+          providerName: model.litellm_params.custom_llm_provider,
           credentialName: model.litellm_params.litellm_credential_name,
           inputCostPerToken: model.litellm_params.input_cost_per_token,
           outputCostPerToken: model.litellm_params.output_cost_per_token,
