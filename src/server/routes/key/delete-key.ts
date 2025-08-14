@@ -8,7 +8,7 @@ import { createOpenAiHttpError } from '../../../utils/error';
 import { Key } from '../../../types/litellm-api-client';
 
 const inputSchema = v.object({
-  keyHash: v.string(),
+  keyHash: v.pipe(v.string(), v.hash(['sha256'])),
 });
 
 export const deleteKey = createRouteResolver({

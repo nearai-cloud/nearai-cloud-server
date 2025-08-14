@@ -9,7 +9,7 @@ import { Key } from '../../../types/litellm-api-client';
 import { toShortKeyAlias } from '../../../utils/common';
 
 const inputSchema = v.object({
-  keyHash: v.string(),
+  keyHash: v.pipe(v.string(), v.hash(['sha256'])),
 });
 
 const outputSchema = v.nullable(
