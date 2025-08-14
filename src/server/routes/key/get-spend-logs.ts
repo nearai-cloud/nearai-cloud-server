@@ -6,7 +6,7 @@ import { Auth, authMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 
 const inputSchema = v.object({
-  keyOrKeyHash: v.string(),
+  keyHash: v.string(),
   startDate: v.optional(v.pipe(v.string(), v.isoDate())),
   endDate: v.optional(v.pipe(v.string(), v.isoDate())),
 });
@@ -39,7 +39,7 @@ export const getSpendLogs = createRouteResolver({
 
     const logs = await adminLitellmApiClient.getSpendLogs({
       userId: user.userId,
-      keyOrKeyHash: query.keyOrKeyHash,
+      keyOrKeyHash: query.keyHash,
       startDate: query.startDate,
       endDate: query.endDate,
     });

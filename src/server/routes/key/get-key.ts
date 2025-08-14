@@ -9,12 +9,12 @@ import { Key } from '../../../types/litellm-api-client';
 import { toShortKeyAlias } from '../../../utils/common';
 
 const inputSchema = v.object({
-  keyOrKeyHash: v.string(),
+  keyHash: v.string(),
 });
 
 const outputSchema = v.nullable(
   v.object({
-    keyOrKeyHash: v.string(),
+    keyHash: v.string(),
     keyName: v.string(),
     keyAlias: v.nullable(v.string()),
     spend: v.number(),
@@ -43,7 +43,7 @@ export const getKey = createRouteResolver({
       const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
 
       const key = await adminLitellmApiClient.getKey({
-        keyOrKeyHash: query.keyOrKeyHash,
+        keyOrKeyHash: query.keyHash,
       });
 
       if (key && key.userId !== user.userId) {
@@ -66,7 +66,7 @@ export const getKey = createRouteResolver({
       return null;
     } else {
       return {
-        keyOrKeyHash: key.keyOrKeyHash,
+        keyHash: key.keyHash,
         keyName: key.keyName,
         keyAlias:
           key.userId && key.keyAlias

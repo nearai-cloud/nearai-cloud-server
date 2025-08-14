@@ -12,7 +12,7 @@ import { createOpenAiHttpError } from '../../../utils/error';
 import { toFullKeyAlias } from '../../../utils/common';
 
 const inputSchema = v.object({
-  keyOrKeyHash: v.string(),
+  keyHash: v.string(),
   keyAlias: v.optional(
     v.pipe(v.string(), v.maxLength(INPUT_LIMITS.KEY_ALIAS_MAX_LENGTH)),
   ),
@@ -30,7 +30,7 @@ export const updateKey = createRouteResolver({
       const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
 
       const key = await adminLitellmApiClient.getKey({
-        keyOrKeyHash: body.keyOrKeyHash,
+        keyOrKeyHash: body.keyHash,
       });
 
       if (!key) {
@@ -55,7 +55,7 @@ export const updateKey = createRouteResolver({
     const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
 
     await adminLitellmApiClient.updateKey({
-      keyOrKeyHash: body.keyOrKeyHash,
+      keyOrKeyHash: body.keyHash,
       keyAlias: body.keyAlias
         ? toFullKeyAlias(user.userId, body.keyAlias)
         : undefined,

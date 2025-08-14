@@ -29,7 +29,7 @@ const inputSchema = v.object({
 const outputSchema = v.object({
   keys: v.array(
     v.object({
-      keyOrKeyHash: v.string(),
+      keyHash: v.string(),
       keyName: v.string(),
       keyAlias: v.nullable(v.string()),
       spend: v.number(),

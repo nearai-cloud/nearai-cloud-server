@@ -8,7 +8,7 @@ import { createOpenAiHttpError } from '../../../utils/error';
 import { Key } from '../../../types/litellm-api-client';
 
 const inputSchema = v.object({
-  keyOrKeyHash: v.string(),
+  keyHash: v.string(),
 });
 
 export const deleteKey = createRouteResolver({
@@ -21,7 +21,7 @@ export const deleteKey = createRouteResolver({
       const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
 
       const key = await adminLitellmApiClient.getKey({
-        keyOrKeyHash: body.keyOrKeyHash,
+        keyOrKeyHash: body.keyHash,
       });
 
       if (key && key.userId !== user.userId) {
@@ -42,7 +42,7 @@ export const deleteKey = createRouteResolver({
 
     if (key) {
       await adminLitellmApiClient.deleteKey({
-        keyOrKeyHashes: [key.keyOrKeyHash],
+        keyOrKeyHashes: [key.keyHash],
       });
     }
   },
