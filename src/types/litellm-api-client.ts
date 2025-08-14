@@ -112,3 +112,59 @@ export type SpendLog = {
   startTime: string;
   endTime: string;
 };
+
+export type CreateModelParams = {
+  model: string;
+  internalModel: string;
+  internalModelProvider: string;
+  credentialName: string;
+  inputCostPerToken?: number;
+  outputCostPerToken?: number;
+  metadata: {
+    verifiable: boolean;
+    contextLength: number;
+    modelFullName: string;
+    modelDescription: string;
+    modelIcon: string;
+  };
+};
+
+export type UpdateModelParams = {
+  model: string;
+  internalModel?: string;
+  internalModelProvider?: string;
+  credentialName?: string;
+  inputCostPerToken?: number;
+  outputCostPerToken?: number;
+  metadata?: {
+    verifiable?: boolean;
+    contextLength?: number;
+    modelFullName?: string;
+    modelDescription?: string;
+    modelIcon?: string;
+  };
+};
+
+export type ListModelsParams = {
+  modelId?: string;
+};
+
+export type GetModelParams = {
+  modelId: string;
+};
+
+export type Model = {
+  model: string;
+  internalModel: string;
+  internalModelProvider: string;
+  credentialName: string;
+  inputCostPerToken: number;
+  outputCostPerToken: number;
+  metadata: {
+    verifiable: boolean;
+    contextLength: number;
+    modelFullName: string;
+    modelDescription: string;
+    modelIcon: string;
+  };
+};

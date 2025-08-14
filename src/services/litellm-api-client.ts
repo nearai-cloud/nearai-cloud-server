@@ -14,6 +14,11 @@ import {
   GetKeyParams,
   ManageUserParams,
   KeyMetadata,
+  CreateModelParams,
+  UpdateModelParams,
+  ListModelsParams,
+  Model,
+  GetModelParams,
 } from '../types/litellm-api-client';
 import { OpenAI } from 'openai/client';
 import stream from 'node:stream';
@@ -404,6 +409,181 @@ export class LitellmApiClient extends ApiClient {
     return this.get({
       path: '/models',
     });
+  }
+
+  async createModel({
+    model,
+    internalModel,
+    internalModelProvider,
+    credentialName,
+    inputCostPerToken,
+    outputCostPerToken,
+    metadata,
+  }: CreateModelParams) {
+    await this.post<
+      void,
+      {
+        model_name: string;
+        litellm_params: {
+          model: string;
+          custom_llm_provider: string;
+          litellm_credential_name: string;
+          input_cost_per_token?: number;
+          output_cost_per_token?: number;
+        };
+        model_info: {
+          nearai_metadata: {
+            verifiable: boolean;
+            context_length: number;
+            model_full_name: string;
+            model_description: string;
+            model_icon: string;
+          };
+        };
+      }
+    >({
+      path: '/model/new',
+      body: {
+        model_name: model,
+        litellm_params: {
+          model: internalModel,
+          custom_llm_provider: internalModelProvider,
+          litellm_credential_name: credentialName,
+          input_cost_per_token: inputCostPerToken,
+          output_cost_per_token: outputCostPerToken,
+        },
+        model_info: {
+          nearai_metadata: {
+            verifiable: metadata.verifiable,
+            context_length: metadata.contextLength,
+            model_full_name: metadata.modelFullName,
+            model_description: metadata.modelDescription,
+            model_icon: metadata.modelIcon,
+          },
+        },
+      },
+    });
+  }
+
+  async updateModel({
+    model,
+    internalModel,
+    internalModelProvider,
+    credentialName,
+    inputCostPerToken,
+    outputCostPerToken,
+    metadata,
+  }: UpdateModelParams) {
+    await this.post<
+      void,
+      {
+        model_name?: string;
+        litellm_params?: {
+          model?: string;
+          custom_llm_provider?: string;
+          litellm_credential_name?: string;
+          input_cost_per_token?: number;
+          output_cost_per_token?: number;
+        };
+        model_info?: {
+          nearai_metadata?: {
+            verifiable?: boolean;
+            context_length?: number;
+            model_full_name?: string;
+            model_description?: string;
+            model_icon?: string;
+          };
+        };
+      }
+    >({
+      path: 'model/update',
+      body: {
+        model_name: model,
+        litellm_params: {
+          model: internalModel,
+          custom_llm_provider: internalModelProvider,
+          litellm_credential_name: credentialName,
+          input_cost_per_token: inputCostPerToken,
+          output_cost_per_token: outputCostPerToken,
+        },
+        model_info: {
+          nearai_metadata: {
+            verifiable: metadata?.verifiable,
+            context_length: metadata?.contextLength,
+            model_full_name: metadata?.modelFullName,
+            model_description: metadata?.modelDescription,
+            model_icon: metadata?.modelIcon,
+          },
+        },
+      },
+    });
+  }
+
+  async listModels({ modelId }: ListModelsParams = {}): Promise<Model[]> {
+    try {
+      const { data: models } = await this.get<
+        {
+          data: {
+            model_name: string;
+            litellm_params: {
+              model: string;
+              custom_llm_provider: string;
+              litellm_credential_name: string;
+              input_cost_per_token: number;
+              output_cost_per_token: number;
+            };
+            model_info: {
+              id: string;
+              nearai_metadata: {
+                verifiable: boolean;
+                context_length: 163000;
+                model_icon: string;
+                model_full_name: string;
+                model_description: string;
+              };
+            };
+          }[];
+        },
+        {
+          litellm_model_id?: string;
+        }
+      >({
+        path: '/model/info',
+        query: {
+          litellm_model_id: modelId,
+        },
+      });
+
+      return models.map((model) => {
+        return {
+          model: model.model_name,
+          internalModel: model.litellm_params.model,
+          internalModelProvider: model.litellm_params.custom_llm_provider,
+          credentialName: model.litellm_params.litellm_credential_name,
+          inputCostPerToken: model.litellm_params.input_cost_per_token,
+          outputCostPerToken: model.litellm_params.output_cost_per_token,
+          metadata: {
+            verifiable: model.model_info.nearai_metadata.verifiable,
+            contextLength: model.model_info.nearai_metadata.context_length,
+            modelFullName: model.model_info.nearai_metadata.model_full_name,
+            modelDescription:
+              model.model_info.nearai_metadata.model_description,
+            modelIcon: model.model_info.nearai_metadata.model_icon,
+          },
+        };
+      });
+    } catch (e: unknown) {
+      if (e instanceof ApiError && e.status === STATUS_CODES.BAD_REQUEST) {
+        return []; // Model id not found
+      }
+
+      throw e;
+    }
+  }
+
+  async getModel({ modelId }: GetModelParams): Promise<Model | null> {
+    const models = await this.listModels({ modelId });
+    return models[0] ?? null;
   }
 }
 
