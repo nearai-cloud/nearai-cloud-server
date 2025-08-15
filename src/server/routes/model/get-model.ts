@@ -54,6 +54,8 @@ export const getModel = createRouteResolver({
       }
 
       ctx.set('modelId', modelId);
+
+      next();
     },
   ],
   resolve: async () => {
