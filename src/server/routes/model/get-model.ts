@@ -16,11 +16,11 @@ const outputSchema = v.nullable(
     inputCostPerToken: v.number(),
     outputCostPerToken: v.number(),
     metadata: v.object({
-      verifiable: v.boolean(),
-      contextLength: v.number(),
-      modelFullName: v.string(),
-      modelDescription: v.string(),
-      modelIcon: v.string(),
+      verifiable: v.nullable(v.boolean()),
+      contextLength: v.nullable(v.number()),
+      modelFullName: v.nullable(v.string()),
+      modelDescription: v.nullable(v.string()),
+      modelIcon: v.nullable(v.string()),
     }),
   }),
 );

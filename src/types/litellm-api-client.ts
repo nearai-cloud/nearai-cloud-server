@@ -168,6 +168,7 @@ export type GetModelParams = {
 };
 
 export type Model = {
+  modelId: string;
   model: string;
   providerModelName: string;
   providerName: string;
@@ -175,10 +176,10 @@ export type Model = {
   inputCostPerToken: number;
   outputCostPerToken: number;
   metadata: {
-    verifiable: boolean;
-    contextLength: number;
-    modelFullName: string;
-    modelDescription: string;
-    modelIcon: string;
+    verifiable: boolean | null;
+    contextLength: number | null;
+    modelFullName: string | null;
+    modelDescription: string | null;
+    modelIcon: string | null;
   };
 };

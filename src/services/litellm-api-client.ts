@@ -567,12 +567,12 @@ export class LitellmApiClient extends ApiClient {
             };
             model_info: {
               id: string;
-              nearai_metadata: {
-                verifiable: boolean;
-                context_length: 163000;
-                model_icon: string;
-                model_full_name: string;
-                model_description: string;
+              nearai_metadata?: {
+                verifiable?: boolean;
+                context_length?: 163000;
+                model_icon?: string;
+                model_full_name?: string;
+                model_description?: string;
               };
             };
           }[];
@@ -589,6 +589,7 @@ export class LitellmApiClient extends ApiClient {
 
       return models.map((model) => {
         return {
+          modelId: model.model_info.id,
           model: model.model_name,
           providerModelName: model.litellm_params.model,
           providerName: model.litellm_params.custom_llm_provider,
@@ -596,12 +597,14 @@ export class LitellmApiClient extends ApiClient {
           inputCostPerToken: model.litellm_params.input_cost_per_token,
           outputCostPerToken: model.litellm_params.output_cost_per_token,
           metadata: {
-            verifiable: model.model_info.nearai_metadata.verifiable,
-            contextLength: model.model_info.nearai_metadata.context_length,
-            modelFullName: model.model_info.nearai_metadata.model_full_name,
+            verifiable: model.model_info.nearai_metadata?.verifiable ?? null,
+            contextLength:
+              model.model_info.nearai_metadata?.context_length ?? null,
+            modelFullName:
+              model.model_info.nearai_metadata?.model_full_name ?? null,
             modelDescription:
-              model.model_info.nearai_metadata.model_description,
-            modelIcon: model.model_info.nearai_metadata.model_icon,
+              model.model_info.nearai_metadata?.model_description ?? null,
+            modelIcon: model.model_info.nearai_metadata?.model_icon ?? null,
           },
         };
       });

@@ -5,6 +5,7 @@ import { adminLitellmApiClient } from '../../../services/litellm-api-client';
 
 const outputSchema = v.array(
   v.object({
+    modelId: v.string(),
     model: v.string(),
     providerModelName: v.string(),
     providerName: v.string(),
@@ -12,11 +13,11 @@ const outputSchema = v.array(
     inputCostPerToken: v.number(),
     outputCostPerToken: v.number(),
     metadata: v.object({
-      verifiable: v.boolean(),
-      contextLength: v.number(),
-      modelFullName: v.string(),
-      modelDescription: v.string(),
-      modelIcon: v.string(),
+      verifiable: v.nullable(v.boolean()),
+      contextLength: v.nullable(v.number()),
+      modelFullName: v.nullable(v.string()),
+      modelDescription: v.nullable(v.string()),
+      modelIcon: v.nullable(v.string()),
     }),
   }),
 );
