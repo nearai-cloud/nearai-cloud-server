@@ -21,7 +21,21 @@ export type User = {
 };
 
 export type GenerateKeyParams = {
-  userId: string;
+  keyType?: 'default' | 'llm_api' | 'management';
+  userId?: string;
+  teamId?: string;
+  keyAlias?: string;
+  keyDuration?: string; // e.g. 30s 30m 30h 30d
+  models?: string[];
+  maxBudget?: number;
+  rpmLimit?: number;
+  tpmLimit?: number;
+  metadata?: KeyMetadata;
+};
+
+export type GenerateServiceAccountParams = {
+  keyType?: 'default' | 'llm_api' | 'management';
+  serviceAccountId: string;
   teamId?: string;
   keyAlias?: string;
   keyDuration?: string; // e.g. 30s 30m 30h 30d
@@ -111,4 +125,62 @@ export type SpendLog = {
   model: string;
   startTime: string;
   endTime: string;
+};
+
+export type CreateModelParams = {
+  model: string;
+  providerModelName: string;
+  providerName: string;
+  credentialName: string;
+  inputCostPerToken?: number;
+  outputCostPerToken?: number;
+  metadata: {
+    verifiable: boolean;
+    contextLength: number;
+    modelFullName: string;
+    modelDescription: string;
+    modelIcon: string;
+  };
+};
+
+export type UpdateModelParams = {
+  modelId: string;
+  model?: string;
+  providerModelName?: string;
+  providerName?: string;
+  credentialName?: string;
+  inputCostPerToken?: number;
+  outputCostPerToken?: number;
+  metadata?: {
+    verifiable?: boolean;
+    contextLength?: number;
+    modelFullName?: string;
+    modelDescription?: string;
+    modelIcon?: string;
+  };
+};
+
+export type ListModelsParams = {
+  modelId?: string;
+};
+
+export type GetModelParams = {
+  modelId: string;
+};
+
+export type Model = {
+  modelId: string;
+  model: string;
+  providerModelName: string;
+  providerName: string;
+  credentialName: string;
+  inputCostPerToken: number;
+  outputCostPerToken: number;
+  metadata: {
+    verifiable: boolean | null;
+    contextLength: number | null;
+    modelFullName: string | null;
+    modelDescription: string | null;
+    modelIcon: string | null;
+  };
 };

@@ -14,6 +14,12 @@ import {
   GetKeyParams,
   ManageUserParams,
   KeyMetadata,
+  CreateModelParams,
+  UpdateModelParams,
+  ListModelsParams,
+  Model,
+  GetModelParams,
+  GenerateServiceAccountParams,
 } from '../types/litellm-api-client';
 import { OpenAI } from 'openai/client';
 import stream from 'stream';
@@ -102,6 +108,7 @@ export class LitellmApiClient extends ApiClient {
   }
 
   async generateKey({
+    keyType,
     userId,
     teamId,
     keyAlias,
@@ -110,6 +117,7 @@ export class LitellmApiClient extends ApiClient {
     maxBudget,
     rpmLimit,
     tpmLimit,
+    metadata,
   }: GenerateKeyParams): Promise<GenerateKeyResponse> {
     const { key, expires } = await this.post<
       {
@@ -117,6 +125,7 @@ export class LitellmApiClient extends ApiClient {
         expires: string | null;
       },
       {
+        key_type?: string;
         user_id?: string;
         team_id?: string;
         key_alias?: string;
@@ -125,18 +134,21 @@ export class LitellmApiClient extends ApiClient {
         max_budget?: number;
         rpm_limit?: number;
         tpm_limit?: number;
+        metadata?: Record<string, unknown>;
       }
     >({
       path: '/key/generate',
       body: {
+        key_type: keyType,
         user_id: userId,
         team_id: teamId,
         key_alias: keyAlias,
         duration: keyDuration,
-        models: models,
+        models,
         max_budget: maxBudget,
         rpm_limit: rpmLimit,
         tpm_limit: tpmLimit,
+        metadata,
       },
     });
 
@@ -144,6 +156,32 @@ export class LitellmApiClient extends ApiClient {
       key,
       expires,
     };
+  }
+
+  async generateServiceAccount({
+    keyType,
+    serviceAccountId,
+    teamId,
+    keyAlias,
+    keyDuration,
+    models,
+    maxBudget,
+    rpmLimit,
+    tpmLimit,
+  }: GenerateServiceAccountParams): Promise<GenerateKeyResponse> {
+    return this.generateKey({
+      keyType,
+      teamId,
+      keyAlias,
+      keyDuration,
+      models,
+      maxBudget,
+      rpmLimit,
+      tpmLimit,
+      metadata: {
+        service_account_id: serviceAccountId,
+      },
+    });
   }
 
   async updateKey({
@@ -407,6 +445,200 @@ export class LitellmApiClient extends ApiClient {
     return this.get({
       path: '/models',
     });
+  }
+
+  async createModel({
+    model,
+    providerModelName,
+    providerName,
+    credentialName,
+    inputCostPerToken,
+    outputCostPerToken,
+    metadata,
+  }: CreateModelParams) {
+    await this.post<
+      void,
+      {
+        model_name: string;
+        litellm_params: {
+          model: string;
+          custom_llm_provider: string;
+          litellm_credential_name: string;
+          input_cost_per_token?: number;
+          output_cost_per_token?: number;
+        };
+        model_info: {
+          nearai_metadata: {
+            verifiable: boolean;
+            context_length: number;
+            model_full_name: string;
+            model_description: string;
+            model_icon: string;
+          };
+        };
+      }
+    >({
+      path: '/model/new',
+      body: {
+        model_name: model,
+        litellm_params: {
+          model: providerModelName,
+          custom_llm_provider: providerName,
+          litellm_credential_name: credentialName,
+          input_cost_per_token: inputCostPerToken,
+          output_cost_per_token: outputCostPerToken,
+        },
+        model_info: {
+          nearai_metadata: {
+            verifiable: metadata.verifiable,
+            context_length: metadata.contextLength,
+            model_full_name: metadata.modelFullName,
+            model_description: metadata.modelDescription,
+            model_icon: metadata.modelIcon,
+          },
+        },
+      },
+    });
+  }
+
+  async updateModel({
+    modelId,
+    model,
+    providerModelName,
+    providerName,
+    credentialName,
+    inputCostPerToken,
+    outputCostPerToken,
+    metadata,
+  }: UpdateModelParams) {
+    if (metadata && Object.keys(metadata).length > 0) {
+      const model = await this.getModel({ modelId });
+
+      if (!model) {
+        throw new ApiError({
+          status: STATUS_CODES.BAD_REQUEST,
+          message: 'Model not found',
+        });
+      }
+
+      metadata = Object.assign(model.metadata, metadata);
+    }
+
+    await this.patch<
+      void,
+      {
+        model_name?: string;
+        litellm_params?: {
+          model?: string;
+          custom_llm_provider?: string;
+          litellm_credential_name?: string;
+          input_cost_per_token?: number;
+          output_cost_per_token?: number;
+        };
+        model_info: {
+          nearai_metadata?: {
+            verifiable?: boolean;
+            context_length?: number;
+            model_full_name?: string;
+            model_description?: string;
+            model_icon?: string;
+          };
+        };
+      }
+    >({
+      path: `/model/${modelId}/update`,
+      body: {
+        model_name: model,
+        litellm_params: {
+          model: providerModelName,
+          custom_llm_provider: providerName,
+          litellm_credential_name: credentialName,
+          input_cost_per_token: inputCostPerToken,
+          output_cost_per_token: outputCostPerToken,
+        },
+        model_info: {
+          nearai_metadata: metadata
+            ? {
+                verifiable: metadata.verifiable,
+                context_length: metadata.contextLength,
+                model_full_name: metadata.modelFullName,
+                model_description: metadata.modelDescription,
+                model_icon: metadata.modelIcon,
+              }
+            : undefined,
+        },
+      },
+    });
+  }
+
+  async listModels({ modelId }: ListModelsParams = {}): Promise<Model[]> {
+    try {
+      const { data: models } = await this.get<
+        {
+          data: {
+            model_name: string;
+            litellm_params: {
+              model: string;
+              custom_llm_provider: string;
+              litellm_credential_name: string;
+              input_cost_per_token: number;
+              output_cost_per_token: number;
+            };
+            model_info: {
+              id: string;
+              nearai_metadata?: {
+                verifiable?: boolean;
+                context_length?: 163000;
+                model_icon?: string;
+                model_full_name?: string;
+                model_description?: string;
+              };
+            };
+          }[];
+        },
+        {
+          litellm_model_id?: string;
+        }
+      >({
+        path: '/model/info',
+        query: {
+          litellm_model_id: modelId,
+        },
+      });
+
+      return models.map((model) => {
+        return {
+          modelId: model.model_info.id,
+          model: model.model_name,
+          providerModelName: model.litellm_params.model,
+          providerName: model.litellm_params.custom_llm_provider,
+          credentialName: model.litellm_params.litellm_credential_name,
+          inputCostPerToken: model.litellm_params.input_cost_per_token,
+          outputCostPerToken: model.litellm_params.output_cost_per_token,
+          metadata: {
+            verifiable: model.model_info.nearai_metadata?.verifiable ?? null,
+            contextLength:
+              model.model_info.nearai_metadata?.context_length ?? null,
+            modelFullName:
+              model.model_info.nearai_metadata?.model_full_name ?? null,
+            modelDescription:
+              model.model_info.nearai_metadata?.model_description ?? null,
+            modelIcon: model.model_info.nearai_metadata?.model_icon ?? null,
+          },
+        };
+      });
+    } catch (e: unknown) {
+      if (e instanceof ApiError && e.status === STATUS_CODES.BAD_REQUEST) {
+        return []; // Model id not found
+      }
+
+      throw e;
+    }
+  }
+
+  async getModel({ modelId }: GetModelParams): Promise<Model | null> {
+    const models = await this.listModels({ modelId });
+    return models[0] ?? null;
   }
 }
 
