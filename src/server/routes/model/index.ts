@@ -8,5 +8,5 @@ export const modelRouter = express.Router();
 
 modelRouter.post('/new', createModel);
 modelRouter.post('/update', updateModel);
-modelRouter.get('/info', getModel);
+modelRouter.get('/details', getModel);
 modelRouter.get('/list', listModels);
