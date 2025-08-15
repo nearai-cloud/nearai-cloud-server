@@ -14,6 +14,7 @@ const inputSchema = v.object({
 
 const outputSchema = v.nullable(
   v.object({
+    modelId: v.string(),
     model: v.string(),
     providerModelName: v.string(),
     providerName: v.string(),
