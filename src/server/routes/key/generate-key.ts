@@ -28,6 +28,7 @@ export const generateKey = createRouteResolver({
     const { user }: Auth = ctx.get(CTX_GLOBAL_KEYS.AUTH);
 
     const { key, expires } = await adminLitellmApiClient.generateKey({
+      keyType: 'llm_api',
       userId: user.userId,
       keyAlias: body.keyAlias
         ? toFullKeyAlias(user.userId, body.keyAlias)

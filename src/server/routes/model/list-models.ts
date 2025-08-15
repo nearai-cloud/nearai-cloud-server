@@ -1,6 +1,6 @@
 import { createRouteResolver } from '../../middlewares/route-resolver';
 import * as v from 'valibot';
-import { supabaseAuthMiddleware } from '../../middlewares/auth';
+import { authMiddleware } from '../../middlewares/auth';
 import { adminLitellmApiClient } from '../../../services/litellm-api-client';
 
 const outputSchema = v.array(
@@ -23,7 +23,7 @@ const outputSchema = v.array(
 
 export const listModels = createRouteResolver({
   output: outputSchema,
-  middlewares: [supabaseAuthMiddleware],
+  middlewares: [authMiddleware],
   resolve: async () => {
     return adminLitellmApiClient.listModels();
   },

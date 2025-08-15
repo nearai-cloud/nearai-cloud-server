@@ -21,7 +21,21 @@ export type User = {
 };
 
 export type GenerateKeyParams = {
-  userId: string;
+  keyType?: 'default' | 'llm_api' | 'management';
+  userId?: string;
+  teamId?: string;
+  keyAlias?: string;
+  keyDuration?: string; // e.g. 30s 30m 30h 30d
+  models?: string[];
+  maxBudget?: number;
+  rpmLimit?: number;
+  tpmLimit?: number;
+  metadata?: KeyMetadata;
+};
+
+export type GenerateServiceAccountParams = {
+  keyType?: 'default' | 'llm_api' | 'management';
+  serviceAccountId: string;
   teamId?: string;
   keyAlias?: string;
   keyDuration?: string; // e.g. 30s 30m 30h 30d

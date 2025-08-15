@@ -19,6 +19,7 @@ import {
   ListModelsParams,
   Model,
   GetModelParams,
+  GenerateServiceAccountParams,
 } from '../types/litellm-api-client';
 import { OpenAI } from 'openai/client';
 import stream from 'node:stream';
@@ -106,6 +107,7 @@ export class LitellmApiClient extends ApiClient {
   }
 
   async generateKey({
+    keyType,
     userId,
     teamId,
     keyAlias,
@@ -114,6 +116,7 @@ export class LitellmApiClient extends ApiClient {
     maxBudget,
     rpmLimit,
     tpmLimit,
+    metadata,
   }: GenerateKeyParams): Promise<GenerateKeyResponse> {
     const { key, expires } = await this.post<
       {
@@ -121,6 +124,7 @@ export class LitellmApiClient extends ApiClient {
         expires: string | null;
       },
       {
+        key_type?: string;
         user_id?: string;
         team_id?: string;
         key_alias?: string;
@@ -129,18 +133,21 @@ export class LitellmApiClient extends ApiClient {
         max_budget?: number;
         rpm_limit?: number;
         tpm_limit?: number;
+        metadata?: Record<string, unknown>;
       }
     >({
       path: '/key/generate',
       body: {
+        key_type: keyType,
         user_id: userId,
         team_id: teamId,
         key_alias: keyAlias,
         duration: keyDuration,
-        models: models,
+        models,
         max_budget: maxBudget,
         rpm_limit: rpmLimit,
         tpm_limit: tpmLimit,
+        metadata,
       },
     });
 
@@ -148,6 +155,32 @@ export class LitellmApiClient extends ApiClient {
       key,
       expires,
     };
+  }
+
+  async generateServiceAccount({
+    keyType,
+    serviceAccountId,
+    teamId,
+    keyAlias,
+    keyDuration,
+    models,
+    maxBudget,
+    rpmLimit,
+    tpmLimit,
+  }: GenerateServiceAccountParams): Promise<GenerateKeyResponse> {
+    return this.generateKey({
+      keyType,
+      teamId,
+      keyAlias,
+      keyDuration,
+      models,
+      maxBudget,
+      rpmLimit,
+      tpmLimit,
+      metadata: {
+        service_account_id: serviceAccountId,
+      },
+    });
   }
 
   async updateKey({
