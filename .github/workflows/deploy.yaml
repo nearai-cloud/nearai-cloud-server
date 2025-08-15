@@ -1,9 +1,9 @@
 name: Build, Push & Deploy to Phala Cloud
 
-#on:
-#  push:
-#    branches:
-#      - feat/docker-compose
+on:
+  push:
+    branches:
+      - feat/docker-compose
 
 jobs:
   build-and-push:
