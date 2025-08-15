@@ -95,6 +95,20 @@ export class LitellmDatabaseClient {
       apiKey: litellmDecryptValue(credentialValues.api_key),
     };
   }
+
+  async getModelIdByName(modelName: string): Promise<string | null> {
+    const proxyModel = await this.client.liteLLM_ProxyModelTable.findFirst({
+      where: {
+        model_name: modelName,
+      },
+    });
+
+    if (!proxyModel) {
+      return null;
+    }
+
+    return proxyModel.model_id;
+  }
 }
 
 export function createLitellmDatabaseClient(): LitellmDatabaseClient {
