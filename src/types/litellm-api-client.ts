@@ -144,7 +144,8 @@ export type CreateModelParams = {
 };
 
 export type UpdateModelParams = {
-  model: string;
+  modelId: string;
+  model?: string;
   providerModelName?: string;
   providerName?: string;
   credentialName?: string;

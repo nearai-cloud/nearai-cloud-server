@@ -4,7 +4,8 @@ import { litellmServiceAccountAuthMiddleware } from '../../middlewares/auth';
 import { adminLitellmApiClient } from '../../../services/litellm-api-client';
 
 const inputSchema = v.object({
-  model: v.string(),
+  modelId: v.string(),
+  model: v.optional(v.string()),
   providerModelName: v.optional(v.string()),
   providerName: v.optional(v.string()),
   credentialName: v.optional(v.string()),
@@ -28,6 +29,7 @@ export const updateModel = createRouteResolver({
   middlewares: [litellmServiceAccountAuthMiddleware],
   resolve: async ({ inputs: { body } }) => {
     await adminLitellmApiClient.updateModel({
+      modelId: body.modelId,
       model: body.model,
       providerModelName: body.providerModelName,
       providerName: body.providerName,

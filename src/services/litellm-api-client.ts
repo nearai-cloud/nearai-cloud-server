@@ -502,6 +502,7 @@ export class LitellmApiClient extends ApiClient {
   }
 
   async updateModel({
+    modelId,
     model,
     providerModelName,
     providerName,
@@ -510,7 +511,20 @@ export class LitellmApiClient extends ApiClient {
     outputCostPerToken,
     metadata,
   }: UpdateModelParams) {
-    await this.post<
+    if (metadata && Object.keys(metadata).length > 0) {
+      const model = await this.getModel({ modelId });
+
+      if (!model) {
+        throw new ApiError({
+          status: STATUS_CODES.BAD_REQUEST,
+          message: 'Model not found',
+        });
+      }
+
+      metadata = Object.assign(model.metadata, metadata);
+    }
+
+    await this.patch<
       void,
       {
         model_name?: string;
@@ -521,7 +535,7 @@ export class LitellmApiClient extends ApiClient {
           input_cost_per_token?: number;
           output_cost_per_token?: number;
         };
-        model_info?: {
+        model_info: {
           nearai_metadata?: {
             verifiable?: boolean;
             context_length?: number;
@@ -532,7 +546,7 @@ export class LitellmApiClient extends ApiClient {
         };
       }
     >({
-      path: 'model/update',
+      path: `/model/${modelId}/update`,
       body: {
         model_name: model,
         litellm_params: {
@@ -543,13 +557,15 @@ export class LitellmApiClient extends ApiClient {
           output_cost_per_token: outputCostPerToken,
         },
         model_info: {
-          nearai_metadata: {
-            verifiable: metadata?.verifiable,
-            context_length: metadata?.contextLength,
-            model_full_name: metadata?.modelFullName,
-            model_description: metadata?.modelDescription,
-            model_icon: metadata?.modelIcon,
-          },
+          nearai_metadata: metadata
+            ? {
+                verifiable: metadata.verifiable,
+                context_length: metadata.contextLength,
+                model_full_name: metadata.modelFullName,
+                model_description: metadata.modelDescription,
+                model_icon: metadata.modelIcon,
+              }
+            : undefined,
         },
       },
     });
