@@ -22,7 +22,7 @@ const inputSchema = v.object({
  */
 const inputSchemaLegacy = v.object({
   keyOrKeyHash: v.optional(v.string()),
-  keyHash: v.pipe(v.string(), v.hash([INPUT_LIMITS.KEY_HASH_TYPE])),
+  keyHash: v.optional(v.pipe(v.string(), v.hash([INPUT_LIMITS.KEY_HASH_TYPE]))),
   startDate: v.optional(v.pipe(v.string(), v.isoDate())),
   endDate: v.optional(v.pipe(v.string(), v.isoDate())),
 });
