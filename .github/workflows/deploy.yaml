@@ -1,9 +1,9 @@
 name: Build, Push & Deploy to Phala Cloud
-#
-on:
-  push:
-    branches:
-      - feat/docker-compose
+
+#on:
+#  push:
+#    branches:
+#      - feat/docker-compose
 
 jobs:
   build-and-push:
@@ -15,13 +15,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Log in to GitHub Container Registry
+      - name: Log in to Docker Registry
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
           password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
 
-      - name: Build and Push Docker image
+      - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -37,8 +37,7 @@ jobs:
           # Required parameters
           phala-api-key: ${{ secrets.PHALA_CLOUD_API_KEY }}
 
-          # Optional parameters (with defaults)
-          cvm-name: ""
+          # Optional parameters
           compose-file: "./docker-compose.yaml"
           vcpu: "4"
           memory: "4096"
@@ -53,6 +52,7 @@ jobs:
             SUPABASE_API_URL: ${{ secrets.SUPABASE_API_URL }}
             SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
             SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          cvm-name: ""
           app-id: ""
           node-id: ""
           base-image: ""
