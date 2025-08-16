@@ -24,7 +24,7 @@ services:
 
   # NEAR AI Cloud server
   nearai-cloud-server:
-    image: ${NEAR_AI_CLOUD_SERVER_DOCKER_IMAGE}:latest
+    image: robortyan/nearai-cloud-server:latest@sha256:a6f695e734f3d41eb02aca0ab067a5e3b6fd665da7fcec59262e8252408682f1
     ports:
       - "3000:3000"
     environment:
@@ -55,7 +55,7 @@ services:
       - "443:443"
     environment:
       - DOMAIN=${NEAR_AI_CLOUD_API_DOMAIN}
-      - TARGET_ENDPOINT=http://near-cloud-server:3000
+      - TARGET_ENDPOINT=http://nearai-cloud-server:3000
       - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
       - GATEWAY_DOMAIN=_.${DSTACK_GATEWAY_DOMAIN}
       - CERTBOT_EMAIL=${CERTBOT_EMAIL}
