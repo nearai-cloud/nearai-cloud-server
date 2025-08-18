@@ -184,3 +184,24 @@ export type Model = {
     modelIcon: string | null;
   };
 };
+
+export type CreateCredentialParams = {
+  credentialName: string;
+  providerName: string;
+  providerApiUrl: string;
+  providerApiKey: string;
+};
+
+export type Credential = {
+  credentialName: string;
+  providerName: string;
+  providerApiUrl: string;
+  providerApiKey: string;
+};
+
+export type UpdateCredentialParams = {
+  credentialName: string;
+  providerName?: string;
+  providerApiUrl?: string;
+  providerApiKey?: string;
+};

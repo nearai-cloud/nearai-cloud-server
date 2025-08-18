@@ -20,6 +20,9 @@ import {
   Model,
   GetModelParams,
   GenerateServiceAccountParams,
+  CreateCredentialParams,
+  Credential,
+  UpdateCredentialParams,
 } from '../types/litellm-api-client';
 import { OpenAI } from 'openai/client';
 import stream from 'stream';
@@ -639,6 +642,99 @@ export class LitellmApiClient extends ApiClient {
   async getModel({ modelId }: GetModelParams): Promise<Model | null> {
     const models = await this.listModels({ modelId });
     return models[0] ?? null;
+  }
+
+  async createCredential({
+    credentialName,
+    providerName,
+    providerApiUrl,
+    providerApiKey,
+  }: CreateCredentialParams) {
+    await this.post<
+      void,
+      {
+        credential_name: string;
+        credential_info: {
+          custom_llm_provider: string;
+        };
+        credential_values: {
+          api_base: string;
+          api_key: string;
+        };
+      }
+    >({
+      path: '/credentials',
+      body: {
+        credential_name: credentialName,
+        credential_info: {
+          custom_llm_provider: providerName,
+        },
+        credential_values: {
+          api_base: providerApiUrl,
+          api_key: providerApiKey,
+        },
+      },
+    });
+  }
+
+  async listCredential(): Promise<Credential[]> {
+    const { credentials } = await this.get<
+      {
+        credentials: {
+          credential_name: string;
+          credential_info: {
+            custom_llm_provider: string;
+          };
+          credential_values: {
+            api_base: string;
+            api_key: string;
+          };
+        }[];
+      },
+      void
+    >({
+      path: '/credentials',
+    });
+
+    return credentials.map((credential) => {
+      return {
+        credentialName: credential.credential_name,
+        providerName: credential.credential_info.custom_llm_provider,
+        providerApiUrl: credential.credential_values.api_base,
+        providerApiKey: credential.credential_values.api_key,
+      };
+    });
+  }
+
+  async updateCredential({
+    credentialName,
+    providerName,
+    providerApiUrl,
+    providerApiKey,
+  }: UpdateCredentialParams) {
+    await this.patch<
+      void,
+      {
+        credential_info?: {
+          custom_llm_provider?: string;
+        };
+        credential_values?: {
+          api_base?: string;
+          api_key?: string;
+        };
+      }
+    >({
+      path: `/credentials/${credentialName}`,
+      body: {
+        credential_info: {
+          custom_llm_provider: providerName,
+        },
+        credential_values: {
+          api_base: providerApiUrl,
+          api_key: providerApiKey,
+        },
+      },
+    });
   }
 }
 
