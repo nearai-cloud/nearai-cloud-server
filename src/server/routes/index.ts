@@ -17,6 +17,6 @@ router.get('/', ping);
 router.use('/user', userRouter);
 router.use('/key', keyRouter);
 router.use('/model', modelRouter);
-router.use('credential', credentialRouter);
+router.use('/credential', credentialRouter);
 
 router.use(notFoundMiddleware);
