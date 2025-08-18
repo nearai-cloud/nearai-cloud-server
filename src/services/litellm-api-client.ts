@@ -96,9 +96,9 @@ export class LitellmApiClient extends ApiClient {
 
   async listUsers({
     page,
-    pageSize,
-    sortBy,
-    sortOrder,
+    pageSize = 10,
+    sortBy = 'created_at',
+    sortOrder = 'desc',
   }: ListUsersParams): Promise<ListUsersResponse> {
     const {
       users,

@@ -49,8 +49,6 @@ export const listUsers = createRouteResolver({
     return adminLitellmApiClient.listUsers({
       page: query.page,
       pageSize: query.pageSize,
-      sortBy: 'created_at',
-      sortOrder: 'desc',
     });
   },
 });
