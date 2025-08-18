@@ -4,7 +4,7 @@ import { litellmServiceAccountAuthMiddleware } from '../../middlewares/auth';
 import { adminLitellmApiClient } from '../../../services/litellm-api-client';
 
 const inputSchema = v.object({
-  model: v.string(),
+  model: v.pipe(v.string(), v.regex(/[a-zA-Z0-9_-]+/)),
   providerModelName: v.string(),
   providerName: v.string(),
   credentialName: v.string(),
