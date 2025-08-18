@@ -66,8 +66,6 @@ export const listKeys = createRouteResolver({
       userId: user.userId,
       page: query.page,
       pageSize: query.pageSize,
-      sortBy: 'created_at',
-      sortOrder: 'desc',
     });
 
     return {

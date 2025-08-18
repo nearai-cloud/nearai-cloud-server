@@ -25,6 +25,7 @@ import {
   UpdateCredentialParams,
   ListUsersParams,
   ListUsersResponse,
+  GetUserDailyActivityParams,
 } from '../types/litellm-api-client';
 import { OpenAI } from 'openai/client';
 import stream from 'stream';
@@ -165,6 +166,31 @@ export class LitellmApiClient extends ApiClient {
       body: {
         user_id: userId,
         max_budget: maxBudget,
+      },
+    });
+  }
+
+  async getUserDailyActivity({
+    startDate,
+    endDate,
+    page,
+    pageSize = 10,
+  }: GetUserDailyActivityParams): Promise<unknown> {
+    return this.get<
+      unknown,
+      {
+        start_date: string;
+        end_date: string;
+        page?: number;
+        page_size?: number;
+      }
+    >({
+      path: '/user/daily/activity',
+      query: {
+        start_date: startDate,
+        end_date: endDate,
+        page,
+        page_size: pageSize,
       },
     });
   }

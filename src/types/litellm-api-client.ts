@@ -28,6 +28,13 @@ export type ManageUserParams = {
   maxBudget: number | null; // null means unlimited
 };
 
+export type GetUserDailyActivityParams = {
+  startDate: string;
+  endDate: string;
+  page?: number; // Min: 1
+  pageSize?: number; // Min: 1 Max: 1000
+};
+
 export type User = {
   userId: string;
   userEmail: string | null;
