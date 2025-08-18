@@ -800,6 +800,7 @@ export class LitellmApiClient extends ApiClient {
     await this.patch<
       void,
       {
+        credential_name: string;
         credential_info?: {
           custom_llm_provider?: string;
         };
@@ -811,6 +812,7 @@ export class LitellmApiClient extends ApiClient {
     >({
       path: `/credentials/${credentialName}`,
       body: {
+        credential_name: credentialName,
         credential_info: {
           custom_llm_provider: providerName,
         },
