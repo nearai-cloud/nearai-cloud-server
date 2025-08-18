@@ -7,4 +7,4 @@ export const credentialRouter = express.Router();
 
 credentialRouter.post('/new', createCredential);
 credentialRouter.post('/update', updateCredential);
-credentialRouter.post('/list', listCredentials);
+credentialRouter.get('/list', listCredentials);
