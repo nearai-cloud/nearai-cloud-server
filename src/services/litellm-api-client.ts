@@ -23,6 +23,8 @@ import {
   CreateCredentialParams,
   Credential,
   UpdateCredentialParams,
+  ListUsersParams,
+  ListUsersResponse,
 } from '../types/litellm-api-client';
 import { OpenAI } from 'openai/client';
 import stream from 'stream';
@@ -88,6 +90,63 @@ export class LitellmApiClient extends ApiClient {
       userEmail: user_info.user_email,
       maxBudget: user_info.max_budget,
       spend: user_info.spend,
+    };
+  }
+
+  async listUsers({
+    page,
+    pageSize,
+    sortBy,
+    sortOrder,
+  }: ListUsersParams): Promise<ListUsersResponse> {
+    const {
+      users,
+      total,
+      page: current_page,
+      page_size,
+      total_pages,
+    } = await this.get<
+      {
+        users: {
+          user_id: string;
+          user_email: string | null;
+          max_budget: number | null;
+          spend: number;
+        }[];
+        total: number;
+        page: number;
+        page_size: number;
+        total_pages: number;
+      },
+      {
+        page?: number;
+        page_size?: number;
+        sort_by?: string;
+        sort_order?: 'asc' | 'desc';
+      }
+    >({
+      path: '/user/list',
+      query: {
+        page,
+        page_size: pageSize,
+        sort_by: sortBy,
+        sort_order: sortOrder,
+      },
+    });
+
+    return {
+      users: users.map((user) => {
+        return {
+          userId: user.user_id,
+          userEmail: user.user_email,
+          maxBudget: user.max_budget,
+          spend: user.spend,
+        };
+      }),
+      totalUsers: total,
+      page: current_page,
+      pageSize: page_size,
+      totalPages: total_pages,
     };
   }
 

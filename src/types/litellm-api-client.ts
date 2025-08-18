@@ -8,6 +8,21 @@ export type GetUserParams = {
   userId: string;
 };
 
+export type ListUsersParams = {
+  page?: number; // Min: 1
+  pageSize?: number; // Min: 1 Max: 100
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+};
+
+export type ListUsersResponse = {
+  users: User[];
+  totalUsers: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+};
+
 export type ManageUserParams = {
   userId: string;
   maxBudget: number | null; // null means unlimited
