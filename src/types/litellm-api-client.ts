@@ -35,6 +35,14 @@ export type GetUserDailyActivityParams = {
   pageSize?: number; // Min: 1 Max: 1000
 };
 
+export type GetTagDailyActivityParams = {
+  tags?: string;
+  startDate: string;
+  endDate: string;
+  page?: number; // Min: 1
+  pageSize?: number; // Min: 1 Max: 1000
+};
+
 export type User = {
   userId: string;
   userEmail: string | null;
