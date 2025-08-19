@@ -190,6 +190,10 @@ export type UpdateModelParams = {
   };
 };
 
+export type DeleteModelParams = {
+  modelId: string;
+};
+
 export type ListModelsParams = {
   modelId?: string;
 };

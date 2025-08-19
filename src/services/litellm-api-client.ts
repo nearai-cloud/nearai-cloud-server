@@ -27,6 +27,7 @@ import {
   ListUsersResponse,
   GetUserDailyActivityParams,
   GetTagDailyActivityParams,
+  DeleteModelParams,
 } from '../types/litellm-api-client';
 import { OpenAI } from 'openai/client';
 import stream from 'stream';
@@ -684,6 +685,20 @@ export class LitellmApiClient extends ApiClient {
               }
             : undefined,
         },
+      },
+    });
+  }
+
+  async deleteModel({ modelId }: DeleteModelParams) {
+    await this.post<
+      void,
+      {
+        id: string;
+      }
+    >({
+      path: '/model/delete',
+      body: {
+        id: modelId,
       },
     });
   }
