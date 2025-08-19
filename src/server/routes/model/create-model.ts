@@ -5,17 +5,17 @@ import { adminLitellmApiClient } from '../../../services/litellm-api-client';
 
 const inputSchema = v.object({
   model: v.pipe(v.string(), v.regex(/[a-zA-Z0-9_-]+/)),
-  providerModelName: v.string(),
-  providerName: v.string(),
-  credentialName: v.string(),
+  providerModelName: v.pipe(v.string(), v.nonEmpty()),
+  providerName: v.pipe(v.string(), v.nonEmpty()),
+  credentialName: v.pipe(v.string(), v.nonEmpty()),
   inputCostPerToken: v.optional(v.number()),
   outputCostPerToken: v.optional(v.number()),
   metadata: v.object({
     verifiable: v.boolean(),
     contextLength: v.number(),
-    modelFullName: v.string(),
-    modelDescription: v.string(),
-    modelIcon: v.string(),
+    modelFullName: v.pipe(v.string(), v.nonEmpty()),
+    modelDescription: v.pipe(v.string(), v.nonEmpty()),
+    modelIcon: v.pipe(v.string(), v.nonEmpty()),
   }),
 });
 

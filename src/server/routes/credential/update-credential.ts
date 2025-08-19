@@ -5,9 +5,9 @@ import { adminLitellmApiClient } from '../../../services/litellm-api-client';
 
 const inputSchema = v.object({
   credentialName: v.string(),
-  providerName: v.optional(v.string()),
-  providerApiUrl: v.optional(v.string()),
-  providerApiKey: v.optional(v.string()),
+  providerName: v.optional(v.pipe(v.string(), v.nonEmpty())),
+  providerApiUrl: v.optional(v.pipe(v.string(), v.url())),
+  providerApiKey: v.optional(v.pipe(v.string(), v.nonEmpty())),
 });
 
 export const updateCredential = createRouteResolver({

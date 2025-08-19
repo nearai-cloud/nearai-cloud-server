@@ -4,10 +4,10 @@ import * as v from 'valibot';
 import { adminLitellmApiClient } from '../../../services/litellm-api-client';
 
 const inputSchema = v.object({
-  credentialName: v.string(),
-  providerName: v.string(),
-  providerApiUrl: v.string(),
-  providerApiKey: v.string(),
+  credentialName: v.pipe(v.string(), v.nonEmpty()),
+  providerName: v.pipe(v.string(), v.nonEmpty()),
+  providerApiUrl: v.pipe(v.string(), v.url()),
+  providerApiKey: v.pipe(v.string(), v.nonEmpty()),
 });
 
 export const createCredential = createRouteResolver({
