@@ -28,6 +28,7 @@ import {
   GetUserDailyActivityParams,
   GetTagDailyActivityParams,
   DeleteModelParams,
+  CreateModelResponse,
 } from '../types/litellm-api-client';
 import { OpenAI } from 'openai/client';
 import stream from 'stream';
@@ -573,9 +574,11 @@ export class LitellmApiClient extends ApiClient {
     inputCostPerToken,
     outputCostPerToken,
     metadata,
-  }: CreateModelParams) {
-    await this.post<
-      void,
+  }: CreateModelParams): Promise<CreateModelResponse> {
+    const res = await this.post<
+      {
+        model_id: string;
+      },
       {
         model_name: string;
         litellm_params: {
@@ -617,6 +620,10 @@ export class LitellmApiClient extends ApiClient {
         },
       },
     });
+
+    return {
+      modelId: res.model_id,
+    };
   }
 
   async updateModel({

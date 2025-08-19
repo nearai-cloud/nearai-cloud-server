@@ -173,6 +173,10 @@ export type CreateModelParams = {
   };
 };
 
+export type CreateModelResponse = {
+  modelId: string;
+};
+
 export type UpdateModelParams = {
   modelId: string;
   model?: string;

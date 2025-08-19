@@ -19,13 +19,18 @@ const inputSchema = v.object({
   }),
 });
 
+const outputSchema = v.object({
+  modelId: v.string(),
+});
+
 export const createModel = createRouteResolver({
   inputs: {
     body: inputSchema,
   },
+  output: outputSchema,
   middlewares: [litellmServiceAccountAuthMiddleware],
   resolve: async ({ inputs: { body } }) => {
-    await adminLitellmApiClient.createModel({
+    return adminLitellmApiClient.createModel({
       model: body.model,
       providerModelName: body.providerModelName,
       providerName: body.providerName,
