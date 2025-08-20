@@ -6,11 +6,15 @@ import { keyRouter } from './key';
 import { modelRouter } from './model';
 import { credentialRouter } from './credential';
 import { globalRouter } from './global';
+import { openaiRouter } from './openai';
 
 // TODO: Need Fix: Currently 405 Method Not Allowed will be considered as 404 Not Found
 export const router = express.Router();
 
 router.use('', globalRouter);
+
+router.use('', openaiRouter);
+router.use('/v1', openaiRouter);
 
 router.get('/', ping);
 router.use('/user', userRouter);
