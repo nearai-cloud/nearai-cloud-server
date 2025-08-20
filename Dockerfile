@@ -9,8 +9,8 @@ RUN apt-get update && \
 
 WORKDIR /app
 
-# Install pnpm
-RUN npm install -g pnpm
+# Install pnpm with specific version
+RUN npm install -g pnpm@10.10.0
 
 # Install all dependencies
 COPY package.json pnpm-lock.yaml* ./
