@@ -782,7 +782,7 @@ export class LitellmApiClient extends ApiClient {
 
   async createCredential({
     credentialName,
-    providerName,
+    providerName = 'OpenAI_Compatible',
     providerApiUrl,
     providerApiKey,
   }: CreateCredentialParams) {

@@ -5,7 +5,7 @@ import { adminLitellmApiClient } from '../../../services/litellm-api-client';
 
 const inputSchema = v.object({
   credentialName: v.pipe(v.string(), v.nonEmpty()),
-  providerName: v.pipe(v.string(), v.nonEmpty()),
+  providerName: v.optional(v.pipe(v.string(), v.nonEmpty())),
   providerApiUrl: v.pipe(v.string(), v.url()),
   providerApiKey: v.pipe(v.string(), v.nonEmpty()),
 });

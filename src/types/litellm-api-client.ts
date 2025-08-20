@@ -225,7 +225,7 @@ export type Model = {
 
 export type CreateCredentialParams = {
   credentialName: string;
-  providerName: string;
+  providerName?: string;
   providerApiUrl: string;
   providerApiKey: string;
 };
