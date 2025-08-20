@@ -21,4 +21,10 @@ build
 .idea
 *.swp
 *.swo
-*~ 
+*~
+.github
+docker-compose.yaml
+makefile
+Procfile
+*.config.mjs
+tsconfig.json
