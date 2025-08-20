@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # LiteLLM Gateway server
   litellm-gateway:
@@ -48,6 +46,7 @@ services:
         reservations:
           cpus: '1'
           memory: 1G
+
   # Dstack Ingress container for custom domain
   dstack-ingress:
     image: kvin/dstack-ingress@sha256:2cc3bc50d71faa4d313084237b0f5d1d25963024f2484c7a6414aed075883cdd
