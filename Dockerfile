@@ -18,7 +18,10 @@ RUN pnpm install --frozen-lockfile
 
 # Build the application
 COPY . .
-RUN npm run build
+RUN pnpm run build
+
+# Prune dev dependencies for production
+RUN pnpm prune --prod
 
 # Stage 2: Runtime Lightweight Image
 FROM node:22-slim AS runtime
