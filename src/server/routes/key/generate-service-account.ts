@@ -28,7 +28,6 @@ export const generateServiceAccount = createRouteResolver({
         serviceAccountId: body.serviceAccountId,
         keyAlias: body.keyAlias,
         models: ['all-team-models'],
-        teamId: undefined, // TODO
       },
     );
 

@@ -178,9 +178,9 @@ export class LitellmApiClient extends ApiClient {
     endDate,
     page,
     pageSize = 10,
-  }: GetUserDailyActivityParams): Promise<unknown> {
+  }: GetUserDailyActivityParams): Promise<Record<string, unknown>> {
     return this.get<
-      unknown,
+      Record<string, unknown>,
       {
         start_date: string;
         end_date: string;
@@ -204,9 +204,9 @@ export class LitellmApiClient extends ApiClient {
     endDate,
     page,
     pageSize = 10,
-  }: GetTagDailyActivityParams): Promise<unknown> {
+  }: GetTagDailyActivityParams): Promise<Record<string, unknown>> {
     return this.get<
-      unknown,
+      Record<string, unknown>,
       {
         tags?: string;
         start_date: string;
@@ -217,7 +217,7 @@ export class LitellmApiClient extends ApiClient {
     >({
       path: '/tag/daily/activity',
       query: {
-        tags,
+        tags: tags?.join(),
         start_date: startDate,
         end_date: endDate,
         page,

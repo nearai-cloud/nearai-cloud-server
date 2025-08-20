@@ -5,7 +5,7 @@ import { litellmServiceAccountAuthMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 
 const inputSchema = v.object({
-  tags: v.optional(v.string()),
+  tags: v.optional(v.array(v.string())),
   startDate: v.pipe(v.string(), v.isoDate()),
   endDate: v.pipe(v.string(), v.isoDate()),
   page: v.optional(

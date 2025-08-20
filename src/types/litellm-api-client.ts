@@ -36,7 +36,7 @@ export type GetUserDailyActivityParams = {
 };
 
 export type GetTagDailyActivityParams = {
-  tags?: string;
+  tags?: string[];
   startDate: string;
   endDate: string;
   page?: number; // Min: 1
