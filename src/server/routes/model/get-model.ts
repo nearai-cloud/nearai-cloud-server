@@ -42,7 +42,7 @@ export const getModel = createRouteResolver({
       if (!query.modelId && !query.modelName) {
         throw createOpenAiHttpError({
           status: STATUS_CODES.BAD_REQUEST,
-          message: 'Missing modelId',
+          message: 'Missing modelId or modelName',
         });
       }
 
