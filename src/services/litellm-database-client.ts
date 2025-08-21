@@ -121,6 +121,9 @@ export class LitellmDatabaseClient {
     const proxyModels = await this.client.liteLLM_ProxyModelTable.findMany({
       skip: offset,
       take: limit,
+      orderBy: {
+        created_at: 'desc',
+      },
     });
 
     const totalModels = await this.client.liteLLM_ProxyModelTable.count();
@@ -132,8 +135,8 @@ export class LitellmDatabaseClient {
           model: v.string(),
           custom_llm_provider: v.string(),
           litellm_credential_name: v.string(),
-          input_cost_per_token: v.number(),
-          output_cost_per_token: v.number(),
+          input_cost_per_token: v.optional(v.number(), 0),
+          output_cost_per_token: v.optional(v.number(), 0),
         }),
         model_info: v.object({
           id: v.string(),
