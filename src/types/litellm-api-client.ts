@@ -198,6 +198,19 @@ export type DeleteModelParams = {
   modelId: string;
 };
 
+export type ListModelsPaginationParams = {
+  page?: number;
+  pageSize?: number;
+};
+
+export type ListModelsPaginationResponse = {
+  models: Model[];
+  totalModels: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+};
+
 export type ListModelsParams = {
   modelId?: string;
 };

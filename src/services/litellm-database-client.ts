@@ -4,6 +4,7 @@ import * as v from 'valibot';
 import {
   InternalModelParams,
   LitellmCredentialValues,
+  LitellmProxyModel,
 } from '../types/litellm-database-client';
 
 export class LitellmDatabaseClient {
@@ -108,6 +109,51 @@ export class LitellmDatabaseClient {
     }
 
     return proxyModel.model_id;
+  }
+
+  async listModels(
+    offset: number,
+    limit: number,
+  ): Promise<{
+    models: LitellmProxyModel[];
+    totalModels: number;
+  }> {
+    const proxyModels = await this.client.liteLLM_ProxyModelTable.findMany({
+      skip: offset,
+      take: limit,
+    });
+
+    const totalModels = await this.client.liteLLM_ProxyModelTable.count();
+
+    const schema = v.array(
+      v.object({
+        model_name: v.string(),
+        litellm_params: v.object({
+          model: v.string(),
+          custom_llm_provider: v.string(),
+          litellm_credential_name: v.string(),
+          input_cost_per_token: v.number(),
+          output_cost_per_token: v.number(),
+        }),
+        model_info: v.object({
+          id: v.string(),
+          nearai_metadata: v.optional(
+            v.object({
+              verifiable: v.optional(v.boolean()),
+              context_length: v.optional(v.number()),
+              model_icon: v.optional(v.string()),
+              model_full_name: v.optional(v.string()),
+              model_description: v.optional(v.string()),
+            }),
+          ),
+        }),
+      }),
+    );
+
+    return {
+      models: v.parse(schema, proxyModels),
+      totalModels,
+    };
   }
 }
 

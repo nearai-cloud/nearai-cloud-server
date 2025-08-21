@@ -16,7 +16,7 @@ import {
   KeyMetadata,
   CreateModelParams,
   UpdateModelParams,
-  ListModelsParams,
+  ListModelsPaginationParams,
   Model,
   GetModelParams,
   GenerateServiceAccountParams,
@@ -29,6 +29,8 @@ import {
   GetTagDailyActivityParams,
   DeleteModelParams,
   CreateModelResponse,
+  ListModelsPaginationResponse,
+  ListModelsParams,
 } from '../types/litellm-api-client';
 import { OpenAI } from 'openai/client';
 import stream from 'stream';
@@ -37,6 +39,7 @@ import { ApiClientOptions } from '../types/api-client';
 import { STATUS_CODES } from '../utils/consts';
 import { ApiClient, ApiError } from './api-client';
 import { litellmKeyHash } from '../utils/crypto';
+import { litellmDatabaseClient } from './litellm-database-client';
 
 export class LitellmApiClient extends ApiClient {
   constructor(options: ApiClientOptions) {
@@ -708,6 +711,44 @@ export class LitellmApiClient extends ApiClient {
         id: modelId,
       },
     });
+  }
+
+  async listModelsPagination({
+    page = 1,
+    pageSize = 100,
+  }: ListModelsPaginationParams = {}): Promise<ListModelsPaginationResponse> {
+    const { models, totalModels } = await litellmDatabaseClient.listModels(
+      (page - 1) * pageSize,
+      pageSize,
+    );
+
+    return {
+      models: models.map((model) => {
+        return {
+          modelId: model.model_info.id,
+          model: model.model_name,
+          providerModelName: model.litellm_params.model,
+          providerName: model.litellm_params.custom_llm_provider,
+          credentialName: model.litellm_params.litellm_credential_name,
+          inputCostPerToken: model.litellm_params.input_cost_per_token,
+          outputCostPerToken: model.litellm_params.output_cost_per_token,
+          metadata: {
+            verifiable: model.model_info.nearai_metadata?.verifiable ?? null,
+            contextLength:
+              model.model_info.nearai_metadata?.context_length ?? null,
+            modelFullName:
+              model.model_info.nearai_metadata?.model_full_name ?? null,
+            modelDescription:
+              model.model_info.nearai_metadata?.model_description ?? null,
+            modelIcon: model.model_info.nearai_metadata?.model_icon ?? null,
+          },
+        };
+      }),
+      totalModels,
+      page,
+      pageSize,
+      totalPages: Math.ceil(totalModels / pageSize),
+    };
   }
 
   async listModels({ modelId }: ListModelsParams = {}): Promise<Model[]> {
