@@ -34,7 +34,6 @@ export const generateKey = createRouteResolver({
         ? toFullKeyAlias(user.userId, body.keyAlias)
         : undefined,
       models: ['all-team-models'],
-      teamId: undefined, // TODO
       maxBudget: body.maxBudget,
     });
 

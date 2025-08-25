@@ -46,7 +46,7 @@ export class LitellmApiClient extends ApiClient {
     super(options);
   }
 
-  async registerUser({ userId, userEmail }: RegisterUserParams) {
+  async registerUser({ userId, userEmail, teamId }: RegisterUserParams) {
     await this.post<
       void,
       {
@@ -55,6 +55,7 @@ export class LitellmApiClient extends ApiClient {
         max_budget?: number;
         auto_create_key?: boolean;
         user_role?: string;
+        team_id?: string;
       }
     >({
       path: '/user/new',
@@ -64,6 +65,7 @@ export class LitellmApiClient extends ApiClient {
         max_budget: 0, // no budget when user is registered until user purchases credits
         auto_create_key: false,
         user_role: 'internal_user_viewer',
+        team_id: teamId,
       },
     });
   }

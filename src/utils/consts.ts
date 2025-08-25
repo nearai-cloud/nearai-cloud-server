@@ -4,6 +4,8 @@ export const BEARER_TOKEN_PREFIX = 'Bearer ';
 
 export const LITELLM_KEY_PREFIX = 'sk-';
 
+export const TEAM_ID_STARTER = 'starter';
+
 export const INPUT_LIMITS = {
   KEY_HASH_TYPE: 'sha256',
   KEY_ALIAS_MAX_LENGTH: 256,

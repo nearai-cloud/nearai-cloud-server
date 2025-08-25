@@ -1,7 +1,7 @@
 export type RegisterUserParams = {
   userId: string;
   userEmail?: string;
-  autoCreateKey?: boolean;
+  teamId?: string;
 };
 
 export type GetUserParams = {
