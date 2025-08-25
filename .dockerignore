@@ -26,5 +26,3 @@ build
 docker-compose.yaml
 makefile
 Procfile
-*.config.mjs
-tsconfig.json
