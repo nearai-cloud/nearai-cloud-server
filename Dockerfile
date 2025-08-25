@@ -20,8 +20,8 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 RUN pnpm run build
 
-# Prune dev dependencies for production
-RUN pnpm prune --prod
+# Prune dev dependencies for production (skip prepare script)
+RUN pnpm prune --prod --ignore-scripts
 
 # Stage 2: Runtime Lightweight Image
 FROM node:22-slim AS runtime
@@ -48,4 +48,4 @@ USER node
 EXPOSE 3000
 
 # Start the application
-CMD ["npm", "start"]
+CMD ["pnpm", "start"]
