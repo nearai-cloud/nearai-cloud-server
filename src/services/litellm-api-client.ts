@@ -31,6 +31,11 @@ import {
   CreateModelResponse,
   ListModelsPaginationResponse,
   ListModelsParams,
+  CreateTeamParams,
+  CreateTeamResponse,
+  UpdateTeamParams,
+  ListTeamsParams,
+  ListTeamsResponse,
 } from '../types/litellm-api-client';
 import { OpenAI } from 'openai/client';
 import stream from 'stream';
@@ -176,6 +181,114 @@ export class LitellmApiClient extends ApiClient {
         max_budget: maxBudget,
       },
     });
+  }
+
+  async createTeam({
+    teamId,
+    teamAlias,
+    maxBudget,
+    models,
+  }: CreateTeamParams): Promise<CreateTeamResponse> {
+    const { team_id } = await this.post<
+      {
+        team_id: string;
+      },
+      {
+        team_id?: string;
+        team_alias: string;
+        max_budget?: number;
+        models?: string[];
+      }
+    >({
+      path: '/team/new',
+      body: {
+        team_id: teamId,
+        team_alias: teamAlias,
+        max_budget: maxBudget,
+        models,
+      },
+    });
+
+    return {
+      teamId: team_id,
+    };
+  }
+
+  async updateTeam({ teamId, teamAlias, maxBudget, models }: UpdateTeamParams) {
+    await this.post<
+      void,
+      {
+        team_id: string;
+        team_alias?: string;
+        max_budget?: number;
+        models?: string[];
+      }
+    >({
+      path: '/team/update',
+      body: {
+        team_id: teamId,
+        team_alias: teamAlias,
+        max_budget: maxBudget,
+        models,
+      },
+    });
+  }
+
+  async listTeams({
+    page,
+    pageSize = 10,
+    sortBy = 'created_at',
+    sortOrder = 'desc',
+  }: ListTeamsParams): Promise<ListTeamsResponse> {
+    const {
+      teams,
+      total,
+      page: current_page,
+      page_size,
+      total_pages,
+    } = await this.get<
+      {
+        teams: {
+          team_id: string;
+          team_alias: string;
+          max_budget: number;
+          models: string[];
+        }[];
+        total: number;
+        page: number;
+        page_size: number;
+        total_pages: number;
+      },
+      {
+        page?: number;
+        page_size?: number;
+        sort_by?: string;
+        sort_order?: string;
+      }
+    >({
+      path: '/v2/team/list',
+      query: {
+        page,
+        page_size: pageSize,
+        sort_by: sortBy,
+        sort_order: sortOrder,
+      },
+    });
+
+    return {
+      teams: teams.map((team) => {
+        return {
+          teamId: team.team_id,
+          teamAlias: team.team_alias,
+          maxBudget: team.max_budget,
+          models: team.models,
+        };
+      }),
+      totalTeams: total,
+      page: current_page,
+      pageSize: page_size,
+      totalPages: total_pages,
+    };
   }
 
   async getUserDailyActivity({

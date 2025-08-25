@@ -28,6 +28,46 @@ export type ManageUserParams = {
   maxBudget: number | null; // null means unlimited
 };
 
+export type CreateTeamParams = {
+  teamId?: string;
+  teamAlias: string;
+  maxBudget?: number;
+  models?: string[];
+};
+
+export type CreateTeamResponse = {
+  teamId: string;
+};
+
+export type UpdateTeamParams = {
+  teamId: string;
+  teamAlias?: string;
+  maxBudget?: number;
+  models?: string[];
+};
+
+export type ListTeamsParams = {
+  page?: number;
+  pageSize?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+};
+
+export type ListTeamsResponse = {
+  teams: Team[];
+  totalTeams: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+};
+
+export type Team = {
+  teamId: string;
+  teamAlias: string;
+  maxBudget: number;
+  models: string[];
+};
+
 export type GetUserDailyActivityParams = {
   startDate: string;
   endDate: string;

@@ -1,6 +1,7 @@
 import express from 'express';
 import { notFoundMiddleware } from '../middlewares/not-found';
 import { ping } from './ping';
+import { teamRouter } from './team';
 import { userRouter } from './user';
 import { keyRouter } from './key';
 import { modelRouter } from './model';
@@ -17,6 +18,7 @@ router.use('', openaiRouter);
 router.use('/v1', openaiRouter);
 
 router.get('/', ping);
+router.use('/team', teamRouter);
 router.use('/user', userRouter);
 router.use('/key', keyRouter);
 router.use('/model', modelRouter);
