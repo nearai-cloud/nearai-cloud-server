@@ -1,6 +1,6 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ['src'],
+  entry: ['src/main.ts'],
   format: ['cjs'],
 });
