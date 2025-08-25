@@ -22,7 +22,7 @@ services:
 
   # NEAR AI Cloud server
   nearai-cloud-server:
-    image: ghcr.io/nearai-cloud/nearai-cloud-server:latest
+    image: ghcr.io/nearai-cloud/nearai-cloud-server:${NEAR_AI_CLOUD_DOCKER_IMAGE_SHA}
     ports:
       - "3000:3000"
     environment:
