@@ -54,7 +54,7 @@ jobs:
           platforms: linux/amd64
 
   deploy-to-phala-cloud:
-    needs: build-and-deploy
+    needs: publish-docker-image-to-ghcr
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to Phala Cloud (Staging)
