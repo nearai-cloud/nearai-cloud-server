@@ -3,8 +3,11 @@ name: Publish Docker Image & Deploy to Phala Cloud
 on:
   push:
     branches:
-      # - main
       - feat/docker-compose
+    # branches:
+    #   - main
+    # tags:
+    #   - v*
 
 env:
   REGISTRY: ghcr.io
@@ -44,9 +47,8 @@ jobs:
           context: .
           push: true
           tags: |
-            latest
-            ${{ github.sha }}
-            ${{ steps.meta.outputs.tags }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64
 
