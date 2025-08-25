@@ -10,10 +10,10 @@ RUN apt-get update && \
 WORKDIR /app
 
 # Install pnpm with specific version
-RUN npm install -g pnpm@10.10.0
+RUN npm install -g pnpm
 
 # Install all dependencies
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml* ./
 RUN pnpm install --frozen-lockfile
 
 # Build the application
