@@ -29,7 +29,7 @@ const outputSchema = v.object({
     v.object({
       teamId: v.string(),
       teamAlias: v.string(),
-      maxBudget: v.number(),
+      maxBudget: v.nullable(v.number()),
       models: v.array(v.string()),
     }),
   ),

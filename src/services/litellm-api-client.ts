@@ -251,7 +251,7 @@ export class LitellmApiClient extends ApiClient {
         teams: {
           team_id: string;
           team_alias: string;
-          max_budget: number;
+          max_budget: number | null;
           models: string[];
         }[];
         total: number;

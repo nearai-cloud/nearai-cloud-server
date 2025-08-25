@@ -64,7 +64,7 @@ export type ListTeamsResponse = {
 export type Team = {
   teamId: string;
   teamAlias: string;
-  maxBudget: number;
+  maxBudget: number | null;
   models: string[];
 };
 
