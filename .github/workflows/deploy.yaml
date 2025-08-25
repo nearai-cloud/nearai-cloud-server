@@ -57,13 +57,13 @@ jobs:
     needs: publish-docker-image-to-ghcr
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Deploy to Phala Cloud (Staging)
         uses: Leechael/phala-deploy-action@v2
         with:
-          # Required parameters
           phala-api-key: ${{ secrets.PHALA_CLOUD_API_KEY }}
-
-          # Optional parameters
           compose-file: "./docker-compose.yaml"
           vcpu: "2"
           memory: "4096"
