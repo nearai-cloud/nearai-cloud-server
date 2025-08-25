@@ -29,7 +29,6 @@ const inputSchema = v.object({
 const outputSchema = v.object({
   keys: v.array(
     v.object({
-      keyOrKeyHash: v.string(),
       keyHash: v.string(),
       keyName: v.string(),
       keyAlias: v.nullable(v.string()),
@@ -76,7 +75,6 @@ export const listKeys = createRouteResolver({
             key.userId && key.keyAlias
               ? toShortKeyAlias(key.userId, key.keyAlias)
               : key.keyAlias,
-          keyOrKeyHash: key.keyHash,
         };
       }),
       totalKeys: keys.totalKeys,
