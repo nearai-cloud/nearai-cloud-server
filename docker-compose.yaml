@@ -14,15 +14,15 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
-          memory: 2G
+          cpus: '4'
+          memory: 4G
         reservations:
           cpus: '1'
-          memory: 1G
+          memory: 2G
 
   # NEAR AI Cloud server
   nearai-cloud-server:
-    image: robortyan/nearai-cloud-server:latest@sha256:a6f695e734f3d41eb02aca0ab067a5e3b6fd665da7fcec59262e8252408682f1
+    image: ghcr.io/nearai-cloud/nearai-cloud-server:latest
     ports:
       - "3000:3000"
     environment:
@@ -41,8 +41,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
-          memory: 2G
+          cpus: '4'
+          memory: 4G
         reservations:
           cpus: '1'
           memory: 1G

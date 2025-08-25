@@ -53,31 +53,33 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64
 
-  # deploy-to-phala-cloud:
-  #   needs: build-and-deploy
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Deploy to Phala Cloud (Staging)
-  #       uses: Leechael/phala-deploy-action@v2
-  #       with:
-  #         # Required parameters
-  #         phala-api-key: ${{ secrets.PHALA_CLOUD_API_KEY }}
+  deploy-to-phala-cloud:
+    needs: build-and-deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Phala Cloud (Staging)
+        uses: Leechael/phala-deploy-action@v2
+        with:
+          # Required parameters
+          phala-api-key: ${{ secrets.PHALA_CLOUD_API_KEY }}
 
-  #         # Optional parameters
-  #         compose-file: "./docker-compose.yaml"
-  #         vcpu: "4"
-  #         memory: "4096"
-  #         disk-size: "10"
-  #         envs: |
-  #           LITELLM_DATABASE_URL: ${{ secrets.LITELLM_DATABASE_URL }}
-  #           LITELLM_MASTER_KEY: ${{ secrets.LITELLM_MASTER_KEY }}
-  #           LITELLM_SALT_KEY: ${{ secrets.LITELLM_SALT_KEY }}
-  #           NEAR_AI_CLOUD_DB_URL: ${{ secrets.NEAR_AI_CLOUD_DB_URL }}
-  #           NEAR_AI_CLOUD_DB_DIRECT_URL: ${{ secrets.NEAR_AI_CLOUD_DB_DIRECT_URL }}
-  #           SUPABASE_API_URL: ${{ secrets.SUPABASE_API_URL }}
-  #           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-  #           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-  #         cvm-name: ${{ secrets.APP_NAME }}
-  #         app-id: ${{ secrets.APP_ID }}
-  #         node-id: ""
-  #         base-image: ""
+          # Optional parameters
+          compose-file: "./docker-compose.yaml"
+          vcpu: "2"
+          memory: "4096"
+          disk-size: "80"
+          envs: |
+            LITELLM_DATABASE_URL: ${{ secrets.LITELLM_DATABASE_URL }}
+            LITELLM_MASTER_KEY: ${{ secrets.LITELLM_MASTER_KEY }}
+            LITELLM_SALT_KEY: ${{ secrets.LITELLM_SALT_KEY }}
+            NEAR_AI_CLOUD_DB_URL: ${{ secrets.NEAR_AI_CLOUD_DB_URL }}
+            NEAR_AI_CLOUD_DB_DIRECT_URL: ${{ secrets.NEAR_AI_CLOUD_DB_DIRECT_URL }}
+            SUPABASE_API_URL: ${{ secrets.SUPABASE_API_URL }}
+            SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          # NEAR_AI_CLOUD_API_DOMAIN: cloud-stg-api.near.ai
+          # CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          # CERTBOT_EMAIL: ${{ secrets.CERTBOT_EMAIL }}
+          cvm-name: ${{ secrets.PHALA_CLOUD_CVM_NAME }}
+          app-id: ${{ secrets.PHALA_CLOUD_APP_ID }}
+          node-id: ${{ secrets.PHALA_CLOUD_NODE_ID }}
+          base-image: ""
