@@ -1,4 +1,4 @@
-name: Publish Docker Image & Deploy to Phala Cloud
+name: Build & Deploy
 
 on:
   push:
