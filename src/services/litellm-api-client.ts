@@ -406,7 +406,6 @@ export class LitellmApiClient extends ApiClient {
       teamId: keyInfo.info.team_id,
       rpmLimit: keyInfo.info.rpm_limit,
       tpmLimit: keyInfo.info.tpm_limit,
-      budgetId: keyInfo.info.budget_id,
       maxBudget: keyInfo.info.max_budget,
       budgetDuration: keyInfo.info.budget_duration,
       budgetResetAt: keyInfo.info.budget_reset_at,
@@ -479,7 +478,6 @@ export class LitellmApiClient extends ApiClient {
         teamId: key.team_id,
         rpmLimit: key.rpm_limit,
         tpmLimit: key.tpm_limit,
-        budgetId: null, // TODO: Doesn't exist in the response. Keeping it `null` will confuse users if the id does exist
         maxBudget: key.max_budget,
         budgetDuration: key.budget_duration,
         budgetResetAt: key.budget_reset_at,

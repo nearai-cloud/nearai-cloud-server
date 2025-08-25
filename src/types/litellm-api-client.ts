@@ -107,7 +107,6 @@ export type Key = {
   teamId: string | null;
   rpmLimit: number | null;
   tpmLimit: number | null;
-  budgetId: string | null;
   maxBudget: number | null;
   budgetDuration: string | null;
   budgetResetAt: string | null;
