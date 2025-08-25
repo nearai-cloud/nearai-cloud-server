@@ -18,7 +18,7 @@ RUN pnpm install --frozen-lockfile
 
 # Build the application
 COPY . .
-RUN pnpm run build
+RUN npm run build
 
 # Prune dev dependencies for production
 RUN pnpm prune --prod
