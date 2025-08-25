@@ -77,9 +77,9 @@ jobs:
             SUPABASE_API_URL: ${{ secrets.SUPABASE_API_URL }}
             SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
             NEAR_AI_CLOUD_DOCKER_IMAGE_SHA: ${{ github.sha }}
-          # NEAR_AI_CLOUD_API_DOMAIN: cloud-stg-api.near.ai
-          # CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          # CERTBOT_EMAIL: ${{ secrets.CERTBOT_EMAIL }}
+            NEAR_AI_CLOUD_API_DOMAIN: ${{ secrets.NEAR_AI_CLOUD_API_DOMAIN }}
+            CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+            CERTBOT_EMAIL: ${{ secrets.CERTBOT_EMAIL }}
           cvm-name: ${{ secrets.PHALA_CLOUD_CVM_NAME }}
           app-id: ${{ secrets.PHALA_CLOUD_APP_ID }}
           node-id: ${{ secrets.PHALA_CLOUD_NODE_ID }}
