@@ -1,14 +1,10 @@
 import { createRouteResolver } from '../../middlewares/route-resolver';
 import { adminLitellmApiClient } from '../../../services/litellm-api-client';
 import * as v from 'valibot';
-import { INPUT_LIMITS } from '../../../utils/consts';
 import { adminAuthMiddleware } from '../../middlewares/auth';
 
 const inputSchema = v.object({
   serviceAccountId: v.pipe(v.string(), v.nonEmpty()),
-  keyAlias: v.optional(
-    v.pipe(v.string(), v.maxLength(INPUT_LIMITS.KEY_ALIAS_MAX_LENGTH)),
-  ),
 });
 
 const outputSchema = v.object({
@@ -26,7 +22,7 @@ export const generateServiceAccount = createRouteResolver({
     const { key, expires } = await adminLitellmApiClient.generateServiceAccount(
       {
         serviceAccountId: body.serviceAccountId,
-        keyAlias: body.keyAlias,
+        keyAlias: body.serviceAccountId,
         models: ['all-team-models'],
       },
     );
