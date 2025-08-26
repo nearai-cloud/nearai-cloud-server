@@ -2,10 +2,11 @@ import { createRouteResolver } from '../../middlewares/route-resolver';
 import * as v from 'valibot';
 import { litellmServiceAccountAuthMiddleware } from '../../middlewares/auth';
 import { adminLitellmApiClient } from '../../../services/litellm-api-client';
+import { INPUT_LIMITS } from '../../../utils/consts';
 
 const inputSchema = v.object({
   modelId: v.string(),
-  model: v.optional(v.pipe(v.string(), v.regex(/^[a-zA-Z0-9_\-.]+$/))),
+  model: v.optional(v.pipe(v.string(), v.regex(INPUT_LIMITS.MODEL_FORMAT))),
   providerModelName: v.optional(v.string()),
   providerName: v.optional(v.string()),
   credentialName: v.optional(v.string()),
