@@ -23,6 +23,7 @@ export const generateServiceAccount = createRouteResolver({
       {
         serviceAccountId: body.serviceAccountId,
         keyAlias: body.serviceAccountId,
+        keyType: 'management',
         models: ['all-team-models'],
       },
     );
