@@ -5,6 +5,7 @@ import { adminLitellmApiClient } from '../../../services/litellm-api-client';
 
 const inputSchema = v.object({
   teamId: v.string(),
+  teamAlias: v.optional(v.string()),
   maxBudget: v.optional(v.number()),
   models: v.optional(v.array(v.string())),
 });
@@ -17,6 +18,7 @@ export const updateTeam = createRouteResolver({
   resolve: async ({ inputs: { body } }) => {
     await adminLitellmApiClient.updateTeam({
       teamId: body.teamId,
+      teamAlias: body.teamAlias,
       maxBudget: body.maxBudget,
       models: body.models,
     });
