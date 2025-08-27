@@ -34,10 +34,14 @@ jest.mock('@supabase/supabase-js', () => {
               user: {
                 id: user.id,
                 email: user.email,
+                user_metadata: {},
+                app_metadata: {},
+                aud: 'authenticated',
+                created_at: '2025-01-01T00:00:00.000000Z',
               }
             },
             error: null,
-          } as UserResponse;
+          }
         }),
       },
     })),
