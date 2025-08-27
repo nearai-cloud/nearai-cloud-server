@@ -45,10 +45,14 @@ import { STATUS_CODES } from '../utils/consts';
 import { ApiClient, ApiError } from './api-client';
 import { litellmKeyHash } from '../utils/crypto';
 import { litellmDatabaseClient } from './litellm-database-client';
+import { InMemoryCache } from '../utils/InMemoryCache';
 
 export class LitellmApiClient extends ApiClient {
+  cache: InMemoryCache<unknown>;
+
   constructor(options: ApiClientOptions) {
     super(options);
+    this.cache = new InMemoryCache();
   }
 
   async registerUser({ userId, userEmail, teamId }: RegisterUserParams) {
@@ -829,13 +833,24 @@ export class LitellmApiClient extends ApiClient {
   async listModelsPagination({
     page = 1,
     pageSize = 100,
+    cache = false,
   }: ListModelsPaginationParams = {}): Promise<ListModelsPaginationResponse> {
+    const cacheKey = `${this.listModelsPagination.name}:${page}:${pageSize}`;
+
+    if (cache) {
+      const response =
+        this.cache.getTyped<ListModelsPaginationResponse>(cacheKey);
+      if (response) {
+        return response;
+      }
+    }
+
     const { models, totalModels } = await litellmDatabaseClient.listModels(
       (page - 1) * pageSize,
       pageSize,
     );
 
-    return {
+    const response = {
       models: models.map((model) => {
         return {
           modelId: model.model_info.id,
@@ -862,6 +877,12 @@ export class LitellmApiClient extends ApiClient {
       pageSize,
       totalPages: Math.ceil(totalModels / pageSize),
     };
+
+    if (cache) {
+      this.cache.set(cacheKey, response, 10 * 60 * 1000);
+    }
+
+    return response;
   }
 
   async listModels({ modelId }: ListModelsParams = {}): Promise<Model[]> {
@@ -873,7 +894,7 @@ export class LitellmApiClient extends ApiClient {
             litellm_params: {
               model: string;
               custom_llm_provider: string;
-              litellm_credential_name: string;
+              litellm_credential_name?: string;
               input_cost_per_token: number;
               output_cost_per_token: number;
             };
