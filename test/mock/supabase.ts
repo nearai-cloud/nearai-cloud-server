@@ -1,17 +1,5 @@
-import { AuthError, User } from "@supabase/supabase-js";
+import { AuthError, UserResponse } from "@supabase/supabase-js";
 import { mockUsers } from "./users";
-
-type MockUserResponse = {
-  data: {
-    user: Partial<User>; // We just use partial fields
-  },
-  error: null
-} | {
-  data: {
-    user: null;
-  },
-  error: AuthError;
-}
 
 jest.mock('@supabase/supabase-js', () => {
   const originalModule = jest.requireActual('@supabase/supabase-js');
@@ -20,7 +8,7 @@ jest.mock('@supabase/supabase-js', () => {
     ...originalModule,
     createClient: jest.fn(() => ({
       auth: {
-        getUser: jest.fn(async (jwt?: string): Promise<MockUserResponse> => {
+        getUser: jest.fn(async (jwt?: string): Promise<UserResponse> => {
           if (!jwt) {
             return {
               data: {
@@ -49,7 +37,7 @@ jest.mock('@supabase/supabase-js', () => {
               }
             },
             error: null,
-          }
+          } as UserResponse;
         }),
       },
     })),
