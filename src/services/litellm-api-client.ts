@@ -41,7 +41,7 @@ import { OpenAI } from 'openai/client';
 import stream from 'stream';
 import { config } from '../config';
 import { ApiClientOptions } from '../types/api-client';
-import { STATUS_CODES } from '../utils/consts';
+import { LIST_MODELS_CACHE_TTL, STATUS_CODES } from '../utils/consts';
 import { ApiClient, ApiError } from './api-client';
 import { litellmKeyHash } from '../utils/crypto';
 import { litellmDatabaseClient } from './litellm-database-client';
@@ -879,7 +879,7 @@ export class LitellmApiClient extends ApiClient {
     };
 
     if (cache) {
-      this.cache.set(cacheKey, response, 10 * 60 * 1000);
+      this.cache.set(cacheKey, response, LIST_MODELS_CACHE_TTL);
     }
 
     return response;

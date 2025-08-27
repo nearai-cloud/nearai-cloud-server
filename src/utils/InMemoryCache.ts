@@ -3,7 +3,7 @@ export class InMemoryCache<V> {
   private readonly timeToLive: number;
   private readonly cleanInterval: number;
 
-  constructor(timeToLive = 60 * 1000, cleanInterval = 100) {
+  constructor(timeToLive = 60 * 1000, cleanInterval = 5000) {
     this.cache = new Map();
     this.timeToLive = timeToLive;
     this.cleanInterval = cleanInterval;
