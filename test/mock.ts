@@ -1,14 +1,12 @@
 import { AuthError, User } from "@supabase/supabase-js";
 
-export const mockUserRecord = {
+export const mockUsers = {
   alice: {
     id: 'alice',
-    email: 'alice@near.org',
+    email: 'alice@gmail.com',
     supabaseAuthToken: 'Bearer alice',
   },
 };
-
-export const mockUserList = Object.values(mockUserRecord);
 
 type MockUserResponse = {
   data: {
@@ -39,7 +37,7 @@ jest.mock('@supabase/supabase-js', () => {
             }
           }
 
-          const user = mockUserList.find(user => user.supabaseAuthToken === jwt)
+          const user = Object.values(mockUsers).find(user => user.supabaseAuthToken === jwt)
 
           if (!user) {
             return {
