@@ -34,8 +34,13 @@ jest.mock('@supabase/supabase-js', () => {
               user: {
                 id: user.id,
                 email: user.email,
-                user_metadata: {},
-                app_metadata: {},
+                user_metadata: {
+                  email_verified: true,
+                },
+                app_metadata: {
+                  provider: 'email',
+                  providers: [ 'email' ],
+                },
                 aud: 'authenticated',
                 created_at: '2025-01-01T00:00:00.000000Z',
               }
