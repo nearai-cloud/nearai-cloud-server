@@ -83,7 +83,7 @@ async function upgradeCvm(cvmId: string) {
     throw Error(`CVM turn into unexpected status: ${cvmStatus}`);
   }
 
-  console.log(`\nCVM ${cvmId} is successfully upgraded\n`);
+  console.log(`\nCVM (${cvmId}) is successfully upgraded\n`);
 }
 
 async function requestUpgradeCvm(cvmId: string) {
