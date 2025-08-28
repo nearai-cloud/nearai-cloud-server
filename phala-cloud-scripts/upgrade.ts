@@ -36,7 +36,7 @@ async function upgradeCvm(cvmId: string) {
   const initCvmStatus = await getCvmStatus(cvmId);
 
   // TODO: Maybe issue: CVM status keeps `starting` when the CVM fails to start
-  if (!['stopped', 'running', 'starting'].includes(initCvmStatus)) {
+  if (!['starting', 'running', 'stopped'].includes(initCvmStatus)) {
     throw Error(
       `Unexpected CVM (${cvmId}) status (${initCvmStatus}) to upgrade`,
     );
