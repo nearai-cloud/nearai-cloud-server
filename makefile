@@ -9,10 +9,10 @@ migrations/nearai-cloud/deploy:
 
 
 phala/create:
-	@rm -rf .phala && env-cmd -f .env-phala sh -c 'phala deploy --api-key $$PHALA_CLOUD_API_KEY --name $$PHALA_CVM_NAME --vcpu $$PHALA_VCPU --memory $$PHALA_MEMORY --disk-size $$PHALA_DISK_SIZE --compose $$PHALA_COMPOSE_FILE_PATH --env-file $$PHALA_COMPOSE_ENV_PATH'
+	@rm -rf .phala && env-cmd -f .env-phala tsx phala-cloud-scripts/create
 
 phala/replicate:
-	@env-cmd -f .env-phala sh -c 'phala cvms replicate $$PHALA_MAIN_CVM_ID --env-file $$PHALA_COMPOSE_ENV_PATH'
+	@env-cmd -f .env-phala tsx phala-cloud-scripts/replicate
 
 phala/upgrade:
 	@env-cmd -f .env-phala tsx phala-cloud-scripts/upgrade

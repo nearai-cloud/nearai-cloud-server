@@ -42,7 +42,7 @@ async function upgradeCvm(cvmId: string) {
     );
   }
 
-  await requestUpgradeCvm(cvmId);
+  requestUpgradeCvm(cvmId);
 
   let cvmStatusChanged = false;
 
@@ -86,7 +86,7 @@ async function upgradeCvm(cvmId: string) {
   console.log(`\nCVM (${cvmId}) is successfully upgraded\n`);
 }
 
-async function requestUpgradeCvm(cvmId: string) {
+function requestUpgradeCvm(cvmId: string) {
   const command = spawnSync(
     'phala',
     [
