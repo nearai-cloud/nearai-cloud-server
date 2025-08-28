@@ -814,6 +814,8 @@ export class LitellmApiClient extends ApiClient {
         },
       },
     });
+
+    this.clearModelsCache();
   }
 
   async deleteModel({ modelId }: DeleteModelParams) {
@@ -828,6 +830,8 @@ export class LitellmApiClient extends ApiClient {
         id: modelId,
       },
     });
+
+    this.clearModelsCache();
   }
 
   async listModelsPagination({
@@ -835,11 +839,8 @@ export class LitellmApiClient extends ApiClient {
     pageSize = 100,
     cache = false,
   }: ListModelsPaginationParams = {}): Promise<ListModelsPaginationResponse> {
-    const cacheKey = `${this.listModelsPagination.name}:${page}:${pageSize}`;
-
     if (cache) {
-      const response =
-        this.cache.getTyped<ListModelsPaginationResponse>(cacheKey);
+      const response = this.getModelsCache(page, pageSize);
       if (response) {
         return response;
       }
@@ -879,7 +880,7 @@ export class LitellmApiClient extends ApiClient {
     };
 
     if (cache) {
-      this.cache.set(cacheKey, response, LIST_MODELS_CACHE_TTL);
+      this.setModelsCache(response, page, pageSize);
     }
 
     return response;
@@ -1047,6 +1048,30 @@ export class LitellmApiClient extends ApiClient {
           api_key: providerApiKey,
         },
       },
+    });
+  }
+
+  private getModelsCache(
+    page: number,
+    pageSize: number,
+  ): ListModelsPaginationResponse | undefined {
+    const key = `Models:${page}:${pageSize}`;
+    return this.cache.getTyped(key);
+  }
+
+  private setModelsCache(
+    response: ListModelsPaginationResponse,
+    page: number,
+    pageSize: number,
+  ) {
+    const key = `Models:${page}:${pageSize}`;
+    this.cache.set(key, response, LIST_MODELS_CACHE_TTL);
+  }
+
+  private clearModelsCache() {
+    const keys = this.cache.keys().filter((key) => key.startsWith('Models:'));
+    keys.forEach((key) => {
+      this.cache.delete(key);
     });
   }
 }

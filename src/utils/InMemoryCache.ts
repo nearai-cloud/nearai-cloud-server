@@ -20,6 +20,10 @@ export class InMemoryCache<V> {
     }, this.cleanInterval);
   }
 
+  keys(): string[] {
+    return Array.from(this.cache.keys());
+  }
+
   get(key: string): V | undefined {
     const cache = this.cache.get(key);
 
