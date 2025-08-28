@@ -741,6 +741,8 @@ export class LitellmApiClient extends ApiClient {
       },
     });
 
+    this.clearModelsCache();
+
     return {
       modelId: res.model_id,
     };
