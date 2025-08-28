@@ -14,8 +14,5 @@ phala/create:
 phala/replicate:
 	@env-cmd -f .env-phala sh -c 'phala cvms replicate $$PHALA_MAIN_CVM_ID --env-file $$PHALA_COMPOSE_ENV_PATH'
 
-phala/upgrade/main:
-	@env-cmd -f .env-phala sh -c 'phala deploy --api-key $$PHALA_CLOUD_API_KEY --uuid $$PHALA_MAIN_CVM_ID --compose $$PHALA_COMPOSE_FILE_PATH --env-file $$PHALA_COMPOSE_ENV_PATH'
-
-phala/upgrade/replica:
-	@env-cmd -f .env-phala sh -c 'phala deploy --api-key $$PHALA_CLOUD_API_KEY --uuid $$PHALA_REPLICA_CVM_ID --compose $$PHALA_COMPOSE_FILE_PATH --env-file $$PHALA_COMPOSE_ENV_PATH'
+phala/upgrade:
+	@env-cmd -f .env-phala tsx phala-cloud-scripts/upgrade

@@ -14,8 +14,8 @@
     "build": "rm -rf dist && pnpm generate:litellm && pnpm generate:nearai-cloud && tsup",
     "preview": "env-cmd -f .env.local sh -c 'env-cmd -f .env.$ENV sh -c \"tsx src/main.ts\"'",
     "start": "node dist/main.js",
-    "lint": "eslint 'src/**/*.ts' '*.mjs' --fix",
-    "prettier": "prettier 'src/**/*.ts' '*.mjs' --write --list-different",
+    "lint": "eslint '{src,phala-cloud-scripts}/**/*.ts' './*.{ts,mjs}' --fix",
+    "prettier": "prettier '{src,phala-cloud-scripts}/**/*.ts' './*.{ts,mjs}' --write --list-different",
     "check": "tsc",
     "prepare": "husky"
   },
@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",
+    "@phala/cloud": "^0.0.9",
     "@prisma/client": "^6.13.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",

@@ -16,45 +16,51 @@ export function runMigrations() {
 }
 
 function migrateStatus(): boolean {
-  const command = spawnSync('prisma', [
-    'migrate',
-    'status',
-    '--schema',
-    SCHEMA_FILE_PATH,
-  ]);
+  const command = spawnSync(
+    'prisma',
+    ['migrate', 'status', '--schema', SCHEMA_FILE_PATH],
+    {
+      encoding: 'utf-8',
+    },
+  );
 
   if (command.error) {
     throw command.error;
   }
 
-  if (command.stderr.byteLength > 0) {
-    throw new Error(command.stderr.toString());
+  if (command.stderr.length > 0) {
+    throw new Error(command.stderr);
   }
 
-  if (command.stdout.byteLength > 0) {
-    logger.info(command.stdout.toString());
+  if (command.stdout.length > 0) {
+    logger.info(command.stdout);
   }
 
   return command.status === 0;
 }
 
 function migrateDeploy() {
-  const command = spawnSync('prisma', [
-    'migrate',
-    'deploy',
-    '--schema',
-    SCHEMA_FILE_PATH,
-  ]);
+  const command = spawnSync(
+    'prisma',
+    ['migrate', 'deploy', '--schema', SCHEMA_FILE_PATH],
+    {
+      encoding: 'utf-8',
+    },
+  );
 
   if (command.error) {
     throw command.error;
   }
 
-  if (command.stderr.byteLength > 0) {
-    throw new Error(command.stderr.toString());
+  if (command.stderr.length > 0) {
+    throw new Error(command.stderr);
   }
 
-  if (command.stdout.byteLength > 0) {
-    logger.info(command.stdout.toString());
+  if (command.stdout.length > 0) {
+    logger.info(command.stdout);
+  }
+
+  if (command.status !== 0) {
+    throw Error(`Command exited with code ${command.status}`);
   }
 }
