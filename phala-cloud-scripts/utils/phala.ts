@@ -5,7 +5,12 @@ const client = createClient({
   apiKey: ENV_PHALA_CLOUD_API_KEY,
 });
 
-export type CvmStatus = 'starting' | 'running' | 'stopping' | 'stopped';
+export type CvmStatus =
+  | 'creating'
+  | 'starting'
+  | 'running'
+  | 'stopping'
+  | 'stopped';
 
 export async function getCvmStatus(cvmId: string): Promise<CvmStatus> {
   const cvm = await getCvmInfo(client, {
