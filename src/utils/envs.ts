@@ -1,19 +1,4 @@
-import { config } from 'dotenv';
-
-config({
-  path: '.env.local',
-  quiet: true,
-});
-
 export const ENV = requiredEnv('ENV');
-
-config({
-  path: `.env.${ENV}`,
-  quiet: true,
-  override: true,
-});
-
-// ------------------------------- Load through dotenv -------------------------------
 
 export const ENV_SUPABASE_API_URL = requiredEnv('SUPABASE_API_URL');
 export const ENV_SUPABASE_ANON_KEY = requiredEnv('SUPABASE_ANON_KEY');
