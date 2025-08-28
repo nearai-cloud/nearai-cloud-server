@@ -41,7 +41,11 @@ import { OpenAI } from 'openai/client';
 import stream from 'stream';
 import { config } from '../config';
 import { ApiClientOptions } from '../types/api-client';
-import { LIST_MODELS_CACHE_TTL, STATUS_CODES } from '../utils/consts';
+import {
+  LIST_MODELS_CACHE_KEY_PREFIX,
+  LIST_MODELS_CACHE_TTL,
+  STATUS_CODES,
+} from '../utils/consts';
 import { ApiClient, ApiError } from './api-client';
 import { litellmKeyHash } from '../utils/crypto';
 import { litellmDatabaseClient } from './litellm-database-client';
@@ -1057,7 +1061,7 @@ export class LitellmApiClient extends ApiClient {
     page: number,
     pageSize: number,
   ): ListModelsPaginationResponse | undefined {
-    const key = `Models:${page}:${pageSize}`;
+    const key = this.modelsCacheKey(page, pageSize);
     return this.cache.getTyped(key);
   }
 
@@ -1066,15 +1070,21 @@ export class LitellmApiClient extends ApiClient {
     page: number,
     pageSize: number,
   ) {
-    const key = `Models:${page}:${pageSize}`;
+    const key = this.modelsCacheKey(page, pageSize);
     this.cache.set(key, response, LIST_MODELS_CACHE_TTL);
   }
 
   private clearModelsCache() {
-    const keys = this.cache.keys().filter((key) => key.startsWith('Models:'));
+    const keys = this.cache
+      .keys()
+      .filter((key) => key.startsWith(LIST_MODELS_CACHE_KEY_PREFIX));
     keys.forEach((key) => {
       this.cache.delete(key);
     });
+  }
+
+  private modelsCacheKey(page: number, pageSize: number): string {
+    return `${LIST_MODELS_CACHE_KEY_PREFIX}${page}:${pageSize}`;
   }
 }
 
