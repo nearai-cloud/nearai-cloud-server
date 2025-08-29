@@ -204,9 +204,17 @@ export async function authorizeLitellmServiceAccount(authorization?: string) {
     });
   }
 
-  const key = await adminLitellmApiClient.getKey({
-    keyOrKeyHash: token,
-  });
+  let key: Key | null;
+
+  try {
+    key = await adminLitellmApiClient.getKey({ keyOrKeyHash: token });
+  } catch (e: unknown) {
+    throw createOpenAiHttpError({
+      status: STATUS_CODES.UNAUTHORIZED,
+      message: 'Failed to authorize', // Override with simple error message
+      cause: e,
+    });
+  }
 
   if (!key) {
     throw createOpenAiHttpError({
