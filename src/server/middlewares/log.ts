@@ -42,7 +42,7 @@ export function createOutgoingLogMiddleware({
 
     const status = tokens['status']?.(req, res) ?? '';
 
-    const statusColor = getHttpStatusColor(Number(status));
+    const statusColor = status ? getHttpStatusColor(Number(status)) : 'gray';
 
     const responseTime = tokens['response-time']?.(req, res) ?? '';
 
