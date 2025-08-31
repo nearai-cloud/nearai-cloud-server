@@ -12,10 +12,7 @@ export class InMemoryCache<V> {
 
     const id = this.runCleaner();
 
-    addGlobalCleaners(() => {
-      clearInterval(id);
-      this.cache.clear();
-    });
+    addGlobalCleaners(() => clearInterval(id));
   }
 
   private runCleaner(): NodeJS.Timeout {
