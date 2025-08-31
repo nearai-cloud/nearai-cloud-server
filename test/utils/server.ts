@@ -11,5 +11,6 @@ export function setupServer(): Agent {
 }
 
 export function teardownServer() {
+  // Ensure that tests can exit normally
   runGlobalCleaners();
 }
