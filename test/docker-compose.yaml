@@ -10,15 +10,15 @@ services:
     environment:
       PORT: 4001
       STORE_MODEL_IN_DB: true
-      DATABASE_URL: postgresql://litellm_gateway_user:litellm_gateway_password@litellm-gateway-db:5432/litellm-gateway
+      DATABASE_URL: postgresql://admin:admin@litellm-gateway-db:5432/litellm-gateway
       LITELLM_MASTER_KEY: sk-master
       LITELLM_SALT_KEY: sk-salt
 
   litellm-gateway-db:
     image: postgres:16
     environment:
-      POSTGRES_USER: litellm_gateway_user
-      POSTGRES_PASSWORD: litellm_gateway_password
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
       POSTGRES_DB: litellm-gateway
     ports:
       - "4002:5432"
@@ -26,8 +26,8 @@ services:
   nearai-cloud-db:
     image: postgres:16
     environment:
-      POSTGRES_USER: nearai_cloud_user
-      POSTGRES_PASSWORD: nearai_cloud_password
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
       POSTGRES_DB: nearai-cloud
     ports:
       - "3002:5432"
