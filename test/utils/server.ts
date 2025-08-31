@@ -1,6 +1,6 @@
 import { runMigrations } from '../../src/migrations';
 import { createServer } from '../../src/server/app';
-import { clearGlobalIntervals } from '../../src/utils/global-intervals';
+import { runGlobalCleaners } from '../../src/utils/global-cleaners';
 import supertest, { Agent } from 'supertest';
 
 export function simulateStartServer(): Agent {
@@ -10,5 +10,5 @@ export function simulateStartServer(): Agent {
 }
 
 export function simulateStopServer() {
-  clearGlobalIntervals();
+  runGlobalCleaners();
 }

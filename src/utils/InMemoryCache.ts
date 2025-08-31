@@ -1,4 +1,4 @@
-import { addGlobalInterval } from './global-intervals';
+import { addGlobalCleaners } from './global-cleaners';
 
 export class InMemoryCache<V> {
   private readonly cache: Map<string, Cache<V>>;
@@ -9,17 +9,25 @@ export class InMemoryCache<V> {
     this.cache = new Map();
     this.timeToLive = timeToLive;
     this.cleanInterval = cleanInterval;
-    addGlobalInterval(this.runCleaner());
+
+    const id = this.runCleaner();
+
+    addGlobalCleaners(() => {
+      clearInterval(id);
+      this.cache.clear();
+    });
   }
 
   private runCleaner(): NodeJS.Timeout {
-    return setInterval(() => {
-      for (const [key, cache] of this.cache.entries()) {
-        if (Date.now() >= cache.expiration) {
-          this.cache.delete(key);
-        }
+    return setInterval(() => this.clean(), this.cleanInterval);
+  }
+
+  private clean() {
+    for (const [key, cache] of this.cache.entries()) {
+      if (Date.now() >= cache.expiration) {
+        this.cache.delete(key);
       }
-    }, this.cleanInterval);
+    }
   }
 
   keys(): string[] {
@@ -53,6 +61,10 @@ export class InMemoryCache<V> {
 
   delete(key: string) {
     this.cache.delete(key);
+  }
+
+  clear() {
+    this.cache.clear();
   }
 }
 
