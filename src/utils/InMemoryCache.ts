@@ -1,3 +1,5 @@
+import { addGlobalInterval } from './global-intervals';
+
 export class InMemoryCache<V> {
   private readonly cache: Map<string, Cache<V>>;
   private readonly timeToLive: number;
@@ -7,11 +9,11 @@ export class InMemoryCache<V> {
     this.cache = new Map();
     this.timeToLive = timeToLive;
     this.cleanInterval = cleanInterval;
-    this.runCleaner();
+    addGlobalInterval(this.runCleaner());
   }
 
-  private runCleaner() {
-    setInterval(() => {
+  private runCleaner(): NodeJS.Timeout {
+    return setInterval(() => {
       for (const [key, cache] of this.cache.entries()) {
         if (Date.now() >= cache.expiration) {
           this.cache.delete(key);

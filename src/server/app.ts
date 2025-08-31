@@ -11,8 +11,9 @@ import {
   createExposeErrorMiddleware,
 } from './middlewares/error';
 import { router } from './routes';
+import { Server } from 'http';
 
-export function runServer() {
+export function runServer(): Server {
   const app = express();
 
   app.disable('x-powered-by');
@@ -39,5 +40,5 @@ export function runServer() {
     }),
   );
 
-  app.listen(config.server.port);
+  return app.listen(config.server.port);
 }

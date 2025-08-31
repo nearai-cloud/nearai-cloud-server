@@ -1,11 +1,8 @@
-import { runServer } from './server/app';
+import { startServer } from './server';
 import { sendSlackInfo } from './services/slack';
-import { runMigrations } from './migrations';
 
 async function main() {
-  runMigrations();
-  runServer();
-
+  startServer();
   await sendSlackInfo('Server started');
 }
 
