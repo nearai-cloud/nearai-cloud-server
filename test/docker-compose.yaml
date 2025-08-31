@@ -1,0 +1,31 @@
+services:
+  litellm-gateway:
+    depends_on:
+      - litellm-gateway-db
+    image: ghcr.io/berriai/litellm:v1.74.15-stable
+    ports:
+      - "4001:4001"
+    environment:
+      PORT: 4001
+      STORE_MODEL_IN_DB: true
+      DATABASE_URL: postgresql://litellm_gateway_user:litellm_gateway_password@litellm-gateway-db:5433/litellm-gateway
+      LITELLM_MASTER_KEY: sk-master
+      LITELLM_SALT_KEY: sk-salt
+
+  litellm-gateway-db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: litellm_gateway_user
+      POSTGRES_PASSWORD: litellm_gateway_password
+      POSTGRES_DB: litellm-gateway
+    ports:
+      - "5433:5433"
+
+  nearai-cloud-db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: nearai_cloud_user
+      POSTGRES_PASSWORD: nearai_cloud_password
+      POSTGRES_DB: nearai-cloud
+    ports:
+      - "5434:5434"
