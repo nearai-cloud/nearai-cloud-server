@@ -2,14 +2,10 @@ import { sendSlackInfo } from './services/slack';
 import { runMigrations } from './migrations';
 import { runServer } from './server/app';
 
-void main();
-
 async function main() {
-  startServer();
+  runMigrations();
+  runServer();
   await sendSlackInfo('Server started');
 }
 
-function startServer() {
-  runMigrations();
-  runServer();
-}
+void main();
