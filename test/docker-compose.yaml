@@ -1,3 +1,5 @@
+# This docker-compose file is used in integration test
+
 services:
   litellm-gateway:
     depends_on:
@@ -8,7 +10,7 @@ services:
     environment:
       PORT: 4001
       STORE_MODEL_IN_DB: true
-      DATABASE_URL: postgresql://litellm_gateway_user:litellm_gateway_password@litellm-gateway-db:5433/litellm-gateway
+      DATABASE_URL: postgresql://litellm_gateway_user:litellm_gateway_password@litellm-gateway-db:5432/litellm-gateway
       LITELLM_MASTER_KEY: sk-master
       LITELLM_SALT_KEY: sk-salt
 
@@ -19,7 +21,7 @@ services:
       POSTGRES_PASSWORD: litellm_gateway_password
       POSTGRES_DB: litellm-gateway
     ports:
-      - "5433:5433"
+      - "4002:5432"
 
   nearai-cloud-db:
     image: postgres:16
@@ -28,4 +30,4 @@ services:
       POSTGRES_PASSWORD: nearai_cloud_password
       POSTGRES_DB: nearai-cloud
     ports:
-      - "5434:5434"
+      - "3002:5432"

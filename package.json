@@ -11,11 +11,13 @@
   "scripts": {
     "generate:litellm": "rm -rf .prisma/generated/litellm && prisma generate --schema .prisma/litellm.schema.prisma",
     "generate:nearai-cloud": "rm -rf .prisma/generated/nearai-cloud && prisma generate --schema .prisma/nearai-cloud.schema.prisma",
-    "build": "rm -rf dist && pnpm generate:litellm && pnpm generate:nearai-cloud && tsup",
+    "generate:all": "pnpm generate:litellm && pnpm generate:nearai-cloud",
+    "build": "rm -rf dist && pnpm generate:all && tsup",
     "preview": "env-cmd -f .env.local sh -c 'env-cmd -f .env.$ENV sh -c \"tsx src/main.ts\"'",
     "start": "node dist/main.js",
-    "lint": "eslint '{src,phala-cloud-scripts}/**/*.ts' './*.{ts,mjs}' --fix",
-    "prettier": "prettier '{src,phala-cloud-scripts}/**/*.ts' './*.{ts,mjs}' --write --list-different",
+    "test": "pnpm generate:all && env-cmd -f test/.env jest",
+    "lint": "eslint '{src,test,phala-cloud-scripts}/**/*.ts' './*.{ts,mjs}' --fix",
+    "prettier": "prettier '{src,test,phala-cloud-scripts}/**/*.ts' './*.{ts,mjs}' --write --list-different",
     "check": "tsc",
     "prepare": "husky"
   },

@@ -1,5 +1,5 @@
-import { AuthError, UserResponse } from "@supabase/supabase-js";
-import { mockUsers } from "./users";
+import { AuthError, UserResponse } from '@supabase/supabase-js';
+import { mockUsers } from './users';
 
 jest.mock('@supabase/supabase-js', () => {
   const originalModule = jest.requireActual('@supabase/supabase-js');
@@ -12,21 +12,23 @@ jest.mock('@supabase/supabase-js', () => {
           if (!jwt) {
             return {
               data: {
-                user: null
+                user: null,
               },
               error: new AuthError('Invalid authorization', 401),
-            }
+            };
           }
 
-          const user = Object.values(mockUsers).find(user => user.supabaseAuthorization === jwt)
+          const user = Object.values(mockUsers).find(
+            (user) => user.supabaseAuthorization === jwt,
+          );
 
           if (!user) {
             return {
               data: {
-                user: null
+                user: null,
               },
               error: new AuthError('Invalid authorization', 401),
-            }
+            };
           }
 
           return {
@@ -39,14 +41,14 @@ jest.mock('@supabase/supabase-js', () => {
                 },
                 app_metadata: {
                   provider: 'email',
-                  providers: [ 'email' ],
+                  providers: ['email'],
                 },
                 aud: 'authenticated',
                 created_at: '2025-01-01T00:00:00.000000Z',
-              }
+              },
             },
             error: null,
-          }
+          };
         }),
       },
     })),

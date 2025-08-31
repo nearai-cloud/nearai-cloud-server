@@ -2,7 +2,7 @@ export type MockUser = {
   id: string;
   email: string;
   supabaseAuthorization: string;
-}
+};
 
 export const mockUsers: Record<string, MockUser> = {
   alice: {
