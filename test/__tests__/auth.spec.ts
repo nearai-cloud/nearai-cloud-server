@@ -1,6 +1,6 @@
 import { Agent } from 'supertest';
 import { mockUsers } from '../utils/users';
-import { simulateStartServer, simulateStopServer } from '../utils/server';
+import { simulateStartServer, simulateTeardownServer } from '../utils/server';
 
 describe('Auth', () => {
   let agent: Agent;
@@ -10,7 +10,7 @@ describe('Auth', () => {
   });
 
   afterAll(() => {
-    simulateStopServer();
+    simulateTeardownServer();
   });
 
   test('Mocked Supabase Auth', async () => {

@@ -9,6 +9,6 @@ export function simulateStartServer(): Agent {
   return supertest(server);
 }
 
-export function simulateStopServer() {
+export function simulateTeardownServer() {
   runGlobalCleaners();
 }
