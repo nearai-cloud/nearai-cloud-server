@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Express } from 'express';
 import cors from 'cors';
 import ctx from 'express-http-context';
 import { config } from '../config';
@@ -11,9 +11,8 @@ import {
   createExposeErrorMiddleware,
 } from './middlewares/error';
 import { router } from './routes';
-import { Server } from 'http';
 
-export function runServer(): Server {
+export function createServer(): Express {
   const app = express();
 
   app.disable('x-powered-by');
@@ -40,5 +39,9 @@ export function runServer(): Server {
     }),
   );
 
-  return app.listen(config.server.port);
+  return app;
+}
+
+export function runServer() {
+  createServer().listen(config.server.port);
 }
