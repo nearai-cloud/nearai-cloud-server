@@ -1,13 +1,12 @@
-import { Express } from 'express';
-import request from 'supertest';
+import { Agent } from 'supertest';
 import { mockUsers } from '../utils/users';
 import { simulateStartServer, simulateStopServer } from '../utils/server';
 
 describe('Auth', () => {
-  let server: Express;
+  let agent: Agent;
 
   beforeAll(() => {
-    server = simulateStartServer();
+    agent = simulateStartServer();
   });
 
   afterAll(() => {
@@ -15,14 +14,16 @@ describe('Auth', () => {
   });
 
   test('Mocked Supabase Auth', async () => {
-    await request(server)
+    const res1 = await agent
       .get('/user/info')
-      .auth(mockUsers.alice.supabaseAuthorization, { type: 'bearer' })
-      .expect(200);
+      .auth(mockUsers.alice.supabaseAuthorization, { type: 'bearer' });
 
-    await request(server)
+    expect(res1.status).toEqual(200);
+
+    const res2 = await agent
       .get('/user/info')
-      .auth('Bearer random-token', { type: 'bearer' })
-      .expect(401);
+      .auth('Bearer random-token', { type: 'bearer' });
+
+    expect(res2.status).toEqual(401);
   });
 });

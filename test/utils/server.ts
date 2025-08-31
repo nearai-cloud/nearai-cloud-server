@@ -1,11 +1,12 @@
-import { Express } from 'express';
 import { runMigrations } from '../../src/migrations';
 import { createServer } from '../../src/server/app';
 import { clearGlobalIntervals } from '../../src/utils/global-intervals';
+import supertest, { Agent } from 'supertest';
 
-export function simulateStartServer(): Express {
+export function simulateStartServer(): Agent {
   runMigrations();
-  return createServer();
+  const server = createServer();
+  return supertest(server);
 }
 
 export function simulateStopServer() {
