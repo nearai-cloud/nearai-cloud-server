@@ -1,8 +1,8 @@
-import { runServer } from '../../src/server/app';
+import { runTestServer } from '../utils/server';
 
 describe('', () => {
   beforeAll(() => {
-    runServer();
+    runTestServer();
   });
 
   test('', async () => {});
