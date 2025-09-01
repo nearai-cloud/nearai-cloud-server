@@ -2,9 +2,11 @@ import * as v from 'valibot';
 import { outputSchema as getUserOutputSchema } from '../../src/server/routes/user/get-user';
 import { Agent } from 'supertest';
 
-export type ApiResponse<T = Record<string, never>> = {
+export type Empty = Record<string, never>;
+
+export type ApiResponse<TOutput> = {
   status: number;
-  output?: T;
+  output?: TOutput;
   error?: {
     message: string;
     type: string | null;
@@ -13,18 +15,18 @@ export type ApiResponse<T = Record<string, never>> = {
   };
 };
 
-export type ApiOptions<T = Record<string, never>> = {
+export type ApiOptions<TInput> = {
   agent: Agent;
-  input?: T;
+  input?: TInput;
   authorization?: string;
 };
 
 // ------------------------------------------------------------------------
 
-export type GetUserOptions = ApiOptions;
+export type GetUserOptions = ApiOptions<Empty>;
 export type GetUserResponse = ApiResponse<
   v.InferOutput<typeof getUserOutputSchema>
 >;
 
-export type RegisterUserOptions = ApiOptions;
-export type RegisterUserResponse = ApiResponse;
+export type RegisterUserOptions = ApiOptions<Empty>;
+export type RegisterUserResponse = ApiResponse<Empty>;
