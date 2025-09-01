@@ -2,7 +2,7 @@ import * as v from 'valibot';
 import { outputSchema as getUserOutputSchema } from '../../src/server/routes/user/get-user';
 import { Agent } from 'supertest';
 
-export type Empty = Record<string, never>;
+export type EmptyRecord = Record<string, never>;
 
 export type ApiResponse<TOutput> = {
   status: number;
@@ -23,10 +23,10 @@ export type ApiOptions<TInput> = {
 
 // ------------------------------------------------------------------------
 
-export type GetUserOptions = ApiOptions<Empty>;
+export type GetUserOptions = ApiOptions<EmptyRecord>;
 export type GetUserResponse = ApiResponse<
   v.InferOutput<typeof getUserOutputSchema>
 >;
 
-export type RegisterUserOptions = ApiOptions<Empty>;
-export type RegisterUserResponse = ApiResponse<Empty>;
+export type RegisterUserOptions = ApiOptions<EmptyRecord>;
+export type RegisterUserResponse = ApiResponse<EmptyRecord>;
