@@ -1,16 +1,54 @@
-import { Agent } from 'supertest';
-import { GetUserOptions, GetUserOutput } from './api-types';
-import { STATUS_CODES } from '../../src/utils/consts';
+import { Response } from 'supertest';
+import {
+  ApiResponse,
+  GetUserOptions,
+  GetUserResponse,
+  RegisterUserOptions,
+  RegisterUserResponse,
+} from '../types/api';
 
-export async function getUser(
-  agent: Agent,
-  options: GetUserOptions,
-): Promise<GetUserOutput> {
-  const res = await agent
-    .get('/user/info')
-    .auth(options.authorization, { type: 'bearer' });
-  if (res.status !== STATUS_CODES.OK) {
-    throw Error(JSON.stringify(res.body));
+function parseApiResponse<T>(res: Response): ApiResponse<T> {
+  if (res.status >= 200 && res.status < 300) {
+    return {
+      status: res.status,
+      output: res.body,
+      error: undefined,
+    };
   }
-  return res.body;
+
+  return {
+    status: res.status,
+    output: undefined,
+    error: res.body.error,
+  };
+}
+
+export async function getUser({
+  agent,
+  authorization,
+}: GetUserOptions): Promise<GetUserResponse> {
+  const request = agent.get('/user/info');
+
+  if (authorization) {
+    request.auth(authorization, { type: 'bearer' });
+  }
+
+  const res = await request;
+
+  return parseApiResponse(res);
+}
+
+export async function registerUser({
+  agent,
+  authorization,
+}: RegisterUserOptions): Promise<RegisterUserResponse> {
+  const request = agent.post('/user/register');
+
+  if (authorization) {
+    request.auth(authorization, { type: 'bearer' });
+  }
+
+  const res = await request;
+
+  return parseApiResponse(res);
 }

@@ -8,27 +8,29 @@ import {
 } from '../types/api-client';
 import { ApiErrorOptions } from '../types/api-client';
 import * as v from 'valibot';
+import { OpenAiError, openAiErrorSchema } from '../types/error';
 
-export class ApiError extends Error {
+export class ApiError extends Error implements Partial<OpenAiError> {
   status?: number;
 
-  type?: string | null;
+  type?: string;
   param?: string | null;
   code?: string | null;
 
   data?: unknown;
 
   constructor(options: ApiErrorOptions) {
-    const schema = v.object({
+    const openaiErrorBodySchema = v.object({
       error: v.object({
-        message: v.string(),
-        type: v.nullable(v.string()), // Use `nullable` for LiteLLM compatibility
-        param: v.nullable(v.string()),
-        code: v.nullable(v.string()),
+        ...openAiErrorSchema.entries,
+        type: v.nullable(v.string(), 'error'), // Use `nullable` for LiteLLM compatibility
       }),
     });
 
-    const { success, output } = v.safeParse(schema, options.data);
+    const { success, output } = v.safeParse(
+      openaiErrorBodySchema,
+      options.data,
+    );
 
     const data = success ? output : undefined;
 

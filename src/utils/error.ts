@@ -1,9 +1,10 @@
-import internalCreateHttpError, { HttpError, isHttpError } from 'http-errors';
+import createHttpError, { HttpError, isHttpError } from 'http-errors';
 import {
   InternalOpenAiHttpErrorOptions,
   ThrowHttpErrorOptions,
   OpenAiHttpError,
   ThrowOpenAiHttpErrorOptions,
+  openAiErrorSchema,
 } from '../types/error';
 import * as v from 'valibot';
 
@@ -12,13 +13,7 @@ export function isOpenAiHttpError(e: unknown): e is OpenAiHttpError {
     return false;
   }
 
-  const schema = v.object({
-    type: v.nullable(v.string()), // Use `nullable` for LiteLLM compatibility
-    param: v.nullable(v.string()),
-    code: v.nullable(v.string()),
-  });
-
-  const { success } = v.safeParse(schema, e);
+  const { success } = v.safeParse(openAiErrorSchema, e);
 
   return success;
 }
@@ -41,24 +36,24 @@ export function createOpenAiHttpError({
   });
 }
 
-function createHttpError({
+function internalCreateHttpError({
   status,
   message,
   cause,
-}: ThrowHttpErrorOptions = {}) {
+}: ThrowHttpErrorOptions = {}): HttpError {
   const error = message ?? cause;
   if (status && error) {
-    return internalCreateHttpError(status, error);
+    return createHttpError(status, error);
   } else if (!status && error) {
-    return internalCreateHttpError(error);
+    return createHttpError(error);
   } else if (status && !error) {
-    return internalCreateHttpError(status);
+    return createHttpError(status);
   } else {
-    return internalCreateHttpError();
+    return createHttpError();
   }
 }
 
-class InternalOpenAiHttpError extends Error implements HttpError {
+class InternalOpenAiHttpError extends Error implements OpenAiHttpError {
   status: number;
   statusCode: number;
   expose: boolean;
@@ -75,7 +70,7 @@ class InternalOpenAiHttpError extends Error implements HttpError {
     param,
     code,
   }: InternalOpenAiHttpErrorOptions) {
-    const e = createHttpError({
+    const e = internalCreateHttpError({
       status,
       message,
       cause,
