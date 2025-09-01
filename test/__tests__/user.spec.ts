@@ -22,6 +22,7 @@ describe('user api', () => {
     });
 
     expect(res.status).toEqual(STATUS_CODES.UNAUTHORIZED);
+    expect(res.error).toBeTruthy();
     expect(res.error!.message).toEqual('Failed to authorize');
   });
 
@@ -32,7 +33,7 @@ describe('user api', () => {
     });
 
     expect(res.status).toEqual(STATUS_CODES.OK);
-    expect(res.output).toBeNull(); // User not registered
+    expect(res.output).toBeNull();
   });
 
   test('register user with invalid authorization', async () => {
@@ -42,6 +43,7 @@ describe('user api', () => {
     });
 
     expect(res.status).toEqual(STATUS_CODES.UNAUTHORIZED);
+    expect(res.error).toBeTruthy();
     expect(res.error!.message).toEqual('Failed to authorize');
   });
 
@@ -61,6 +63,7 @@ describe('user api', () => {
     });
 
     expect(res.status).toEqual(STATUS_CODES.BAD_REQUEST);
+    expect(res.error).toBeTruthy();
     expect(res.error!.message).toContain(
       `User with email ${mockUsers.alice.email} already exists`,
     );
@@ -73,6 +76,7 @@ describe('user api', () => {
     });
 
     expect(res.status).toEqual(STATUS_CODES.OK);
+    expect(res.output).toBeTruthy();
     expect(res.output!.userId).toEqual(mockUsers.alice.id);
   });
 });
