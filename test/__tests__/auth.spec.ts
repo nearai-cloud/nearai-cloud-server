@@ -1,6 +1,7 @@
 import { Agent } from 'supertest';
 import { mockUsers } from '../utils/users';
 import { setupServer, teardownServer } from '../utils/server';
+import * as api from '../utils/api';
 
 describe('Auth', () => {
   let agent: Agent;
@@ -14,16 +15,16 @@ describe('Auth', () => {
   });
 
   test('Mocked Supabase Auth', async () => {
-    const aliceResponse = await agent
-      .get('/user/info')
-      .auth(mockUsers.alice.supabaseAuthorization, { type: 'bearer' });
+    const alice = await api.getUser(agent, {
+      authorization: mockUsers.alice.supabaseAuthorization,
+    });
 
-    expect(aliceResponse.status).toEqual(200);
+    expect(alice).toBeNull(); // User registered on Supabase while not registered on NEAR AI Cloud
 
-    const randomUserResponse = await agent
-      .get('/user/info')
-      .auth('Bearer random-user', { type: 'bearer' });
-
-    expect(randomUserResponse.status).toEqual(401);
+    await expect(
+      api.getUser(agent, {
+        authorization: 'Bearer random-user',
+      }),
+    ).rejects.toEqual('');
   });
 });
