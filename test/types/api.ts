@@ -13,6 +13,10 @@ import {
   inputSchema as generateServiceAccountInputSchema,
   outputSchema as generateServiceAccountOutputSchema,
 } from '../../src/server/routes/key/generate-service-account';
+import {
+  inputSchema as getKeyInputSchema,
+  outputSchema as getKeyOutputSchema,
+} from '../../src/server/routes/key/get-key';
 
 export type EmptyRecord = Record<string, never>;
 
@@ -62,4 +66,9 @@ export type GenerateServiceAccountOptions = ApiOptions<
 >;
 export type GenerateServiceAccountResponse = ApiResponse<
   v.InferOutput<typeof generateServiceAccountOutputSchema>
+>;
+
+export type GetKeyOptions = ApiOptions<v.InferInput<typeof getKeyInputSchema>>;
+export type GetKeyResponse = ApiResponse<
+  v.InferOutput<typeof getKeyOutputSchema>
 >;

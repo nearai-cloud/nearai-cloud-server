@@ -6,6 +6,8 @@ import {
   GenerateKeyResponse,
   GenerateServiceAccountOptions,
   GenerateServiceAccountResponse,
+  GetKeyOptions,
+  GetKeyResponse,
   GetUserOptions,
   GetUserResponse,
   ListUsersOptions,
@@ -116,5 +118,12 @@ export async function generateServiceAccount(
   return POST({
     ...options,
     path: '/key/service-account/generate',
+  });
+}
+
+export async function getKey(options: GetKeyOptions): Promise<GetKeyResponse> {
+  return GET({
+    ...options,
+    path: '/key/info',
   });
 }

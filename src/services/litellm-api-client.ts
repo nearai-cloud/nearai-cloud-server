@@ -373,7 +373,7 @@ export class LitellmApiClient extends ApiClient {
         key_type?: string;
         user_id?: string;
         team_id?: string;
-        key_alias?: string;
+        key_alias: string;
         duration?: string;
         models?: string[];
         max_budget?: number;
