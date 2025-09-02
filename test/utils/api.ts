@@ -40,21 +40,18 @@ async function GET<TQuery, TData>({
   return parseApiResponse(res);
 }
 
-async function POST<TQuery, TBody, TData>({
+async function POST<TBody, TData>({
   agent,
-  query,
   body,
   authorization,
   path,
-}: ApiOptions<TQuery, TBody> & { path: string }): Promise<ApiResponse<TData>> {
+}: ApiOptions<EmptyRecord, TBody> & { path: string }): Promise<
+  ApiResponse<TData>
+> {
   const request = agent.post(path);
 
   if (authorization) {
     request.auth(authorization, { type: 'bearer' });
-  }
-
-  if (query) {
-    request.query(query);
   }
 
   if (body) {
