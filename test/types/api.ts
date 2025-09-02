@@ -40,24 +40,24 @@ export type ApiOptions<TQuery, TBody> = {
 
 // ------------------------------------------------------------------------
 
-export type GetUserOptions = ApiOptions<EmptyRecord, never>;
+export type GetUserOptions = ApiOptions<EmptyRecord, EmptyRecord>;
 export type GetUserResponse = ApiResponse<
   v.InferOutput<typeof getUserOutputSchema>
 >;
 
 export type ListUsersOptions = ApiOptions<
   v.InferInput<typeof listUsersInputSchema>,
-  never
+  EmptyRecord
 >;
 export type ListUsersResponse = ApiResponse<
   v.InferOutput<typeof listUsersOutputSchema>
 >;
 
-export type RegisterUserOptions = ApiOptions<never, EmptyRecord>;
+export type RegisterUserOptions = ApiOptions<EmptyRecord, EmptyRecord>;
 export type RegisterUserResponse = ApiResponse<EmptyRecord>;
 
 export type GenerateKeyOptions = ApiOptions<
-  never,
+  EmptyRecord,
   v.InferInput<typeof generateKeyInputSchema>
 >;
 export type GenerateKeyResponse = ApiResponse<
@@ -65,7 +65,7 @@ export type GenerateKeyResponse = ApiResponse<
 >;
 
 export type GenerateServiceAccountOptions = ApiOptions<
-  never,
+  EmptyRecord,
   v.InferInput<typeof generateServiceAccountInputSchema>
 >;
 export type GenerateServiceAccountResponse = ApiResponse<
@@ -74,7 +74,7 @@ export type GenerateServiceAccountResponse = ApiResponse<
 
 export type GetKeyOptions = ApiOptions<
   v.InferInput<typeof getKeyInputSchema>,
-  never
+  EmptyRecord
 >;
 export type GetKeyResponse = ApiResponse<
   v.InferOutput<typeof getKeyOutputSchema>

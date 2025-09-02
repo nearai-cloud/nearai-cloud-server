@@ -2,6 +2,7 @@ import { Response } from 'supertest';
 import {
   ApiOptions,
   ApiResponse,
+  EmptyRecord,
   GenerateKeyOptions,
   GenerateKeyResponse,
   GenerateServiceAccountOptions,
@@ -21,7 +22,9 @@ async function GET<TQuery, TData>({
   query,
   authorization,
   path,
-}: ApiOptions<TQuery, never> & { path: string }): Promise<ApiResponse<TData>> {
+}: ApiOptions<TQuery, EmptyRecord> & { path: string }): Promise<
+  ApiResponse<TData>
+> {
   const request = agent.get(path);
 
   if (authorization) {
