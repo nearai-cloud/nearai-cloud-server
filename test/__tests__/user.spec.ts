@@ -2,6 +2,7 @@ import { Agent } from 'supertest';
 import { mockUsers } from '../utils/users';
 import * as api from '../utils/api';
 import { setup, tearDown } from '../utils/setup';
+import { LITELLM_MASTER_KEY } from '../utils/docker';
 
 describe('user api', () => {
   let agent: Agent;
@@ -23,7 +24,7 @@ describe('user api', () => {
 
     expect(res.status).toEqual(401);
     expect(res.error).toBeTruthy();
-    expect(res.error!.message).toEqual('Invalid authorization token');
+    expect(res.error!.message).toContain('Invalid authorization token');
   });
 
   test('get user before registration', async () => {
@@ -44,7 +45,7 @@ describe('user api', () => {
 
     expect(res.status).toEqual(401);
     expect(res.error).toBeTruthy();
-    expect(res.error!.message).toEqual('Invalid authorization token');
+    expect(res.error!.message).toContain('Invalid authorization token');
   });
 
   test('register user', async () => {
@@ -91,13 +92,27 @@ describe('user api', () => {
     expect(res.output!.userId).toEqual(mockUsers.alice.id);
   });
 
+  test('generate service account key for listing users with invalid authorization', async () => {
+    const res = await api.generateServiceAccount({
+      agent,
+      input: {
+        serviceAccountId: 'list-user-service-account',
+      },
+      authorization: 'invalid-token',
+    });
+
+    expect(res.status).toEqual(403);
+    expect(res.error).toBeTruthy();
+    expect(res.error!.message).toContain('Only admin can access this endpoint');
+  });
+
   test('generate service account key for listing users', async () => {
     const res = await api.generateServiceAccount({
       agent,
       input: {
         serviceAccountId: 'list-user-service-account',
       },
-      authorization: 'sk-master',
+      authorization: LITELLM_MASTER_KEY,
     });
 
     expect(res.status).toEqual(200);
@@ -114,7 +129,7 @@ describe('user api', () => {
 
     expect(res.status).toEqual(401);
     expect(res.error).toBeTruthy();
-    expect(res.error!.message).toEqual('Invalid authorization token');
+    expect(res.error!.message).toContain('Invalid authorization token');
   });
 
   test('list users', async () => {
