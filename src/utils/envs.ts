@@ -9,6 +9,9 @@ export const ENV_LITELLM_SIGNING_KEY = requiredEnv('LITELLM_SIGNING_KEY');
 
 export const ENV_SERVER_PORT = Number(requiredEnv('PORT'));
 
+export const ENV_ENABLE_CACHE_CLEANER =
+  optionalEnv('ENABLE_CACHE_CLEANER') === 'true';
+
 export const ENV_SLACK_WEBHOOK_URL = optionalEnv('SLACK_WEBHOOK_URL');
 
 // ------------------------------- Helper  -------------------------------------------

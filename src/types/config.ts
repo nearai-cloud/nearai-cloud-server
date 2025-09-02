@@ -15,6 +15,9 @@ export type Config = {
   server: {
     port: number;
   };
+  cache: {
+    enableCleaner?: boolean;
+  };
   slack: {
     webhookUrl?: string;
   };

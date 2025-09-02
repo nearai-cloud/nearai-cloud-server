@@ -1,5 +1,5 @@
 import { setupContainers, teardownContainers } from './docker';
-import { setupServer, teardownServer } from './server';
+import { setupServer } from './server';
 import { Agent } from 'supertest';
 
 export async function setup(): Promise<Agent> {
@@ -9,5 +9,4 @@ export async function setup(): Promise<Agent> {
 
 export async function tearDown() {
   await teardownContainers();
-  teardownServer();
 }

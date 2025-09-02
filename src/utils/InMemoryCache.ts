@@ -1,6 +1,8 @@
-import { addGlobalCleaners } from './global-cleaners';
+import { config } from '../config';
 
 export class InMemoryCache<V> {
+  static ENABLE_CACHE_CLEANER = true;
+
   private readonly cache: Map<string, Cache<V>>;
   private readonly timeToLive: number;
   private readonly cleanInterval: number;
@@ -10,9 +12,9 @@ export class InMemoryCache<V> {
     this.timeToLive = timeToLive;
     this.cleanInterval = cleanInterval;
 
-    const id = this.runCleaner();
-
-    addGlobalCleaners(() => clearInterval(id));
+    if (InMemoryCache.ENABLE_CACHE_CLEANER) {
+      this.runCleaner();
+    }
   }
 
   private runCleaner(): NodeJS.Timeout {
@@ -21,14 +23,20 @@ export class InMemoryCache<V> {
 
   private clean() {
     for (const [key, cache] of this.cache.entries()) {
-      if (Date.now() >= cache.expiration) {
+      if (isExpired(cache)) {
         this.cache.delete(key);
       }
     }
   }
 
   keys(): string[] {
-    return Array.from(this.cache.keys());
+    const keys: string[] = [];
+    this.cache.entries().forEach(([key, cache]) => {
+      if (!isExpired(cache)) {
+        keys.push(key);
+      }
+    });
+    return keys;
   }
 
   get(key: string): V | undefined {
@@ -69,3 +77,11 @@ type Cache<T> = {
   value: T;
   expiration: number;
 };
+
+if (config.cache.enableCleaner !== undefined) {
+  InMemoryCache.ENABLE_CACHE_CLEANER = config.cache.enableCleaner;
+}
+
+function isExpired<V>(cache: Cache<V>): boolean {
+  return Date.now() >= cache.expiration;
+}

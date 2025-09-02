@@ -7,6 +7,7 @@ import {
   ENV_LITELLM_API_URL,
   ENV_LITELLM_ADMIN_KEY,
   ENV_LITELLM_SIGNING_KEY,
+  ENV_ENABLE_CACHE_CLEANER,
 } from '../utils/envs';
 
 const config: Config = {
@@ -25,6 +26,9 @@ const config: Config = {
   },
   server: {
     port: ENV_SERVER_PORT,
+  },
+  cache: {
+    enableCleaner: ENV_ENABLE_CACHE_CLEANER,
   },
   slack: {
     webhookUrl: ENV_SLACK_WEBHOOK_URL,
