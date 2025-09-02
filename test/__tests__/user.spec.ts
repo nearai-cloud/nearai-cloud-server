@@ -5,6 +5,7 @@ import { setup, tearDown } from '../utils/setup';
 
 describe('user api', () => {
   let agent: Agent;
+  let serviceAccountKeyForListingUsers: string;
 
   beforeAll(async () => {
     agent = await setup();
@@ -17,12 +18,12 @@ describe('user api', () => {
   test('get user with invalid authorization', async () => {
     const res = await api.getUser({
       agent,
-      authorization: 'Bearer invalid-user',
+      authorization: 'invalid-token',
     });
 
     expect(res.status).toEqual(401);
     expect(res.error).toBeTruthy();
-    expect(res.error!.message).toEqual('Failed to authorize');
+    expect(res.error!.message).toEqual('Invalid authorization token');
   });
 
   test('get user before registration', async () => {
@@ -38,12 +39,12 @@ describe('user api', () => {
   test('register user with invalid authorization', async () => {
     const res = await api.registerUser({
       agent,
-      authorization: 'Bearer invalid-user',
+      authorization: 'invalid-token',
     });
 
     expect(res.status).toEqual(401);
     expect(res.error).toBeTruthy();
-    expect(res.error!.message).toEqual('Failed to authorize');
+    expect(res.error!.message).toEqual('Invalid authorization token');
   });
 
   test('register user', async () => {
@@ -90,28 +91,40 @@ describe('user api', () => {
     expect(res.output!.userId).toEqual(mockUsers.alice.id);
   });
 
-  test('generate service account key', async () => {
+  test('generate service account key for listing users', async () => {
     const res = await api.generateServiceAccount({
       agent,
       input: {
         serviceAccountId: 'list-user-service-account',
       },
-      authorization: 'Bearer sk-master',
+      authorization: 'sk-master',
     });
 
-    expect(res.status).toEqual(401);
-    expect(res.error).toBeTruthy();
-    expect(res.error!.message).toEqual('Failed to authorize');
+    expect(res.status).toEqual(200);
+    expect(res.output).toBeTruthy();
+
+    serviceAccountKeyForListingUsers = res.output!.key;
   });
 
   test('list users with invalid authorization', async () => {
     const res = await api.listUsers({
       agent,
-      authorization: 'Bearer invalid-user',
+      authorization: 'invalid-token',
     });
 
     expect(res.status).toEqual(401);
     expect(res.error).toBeTruthy();
-    expect(res.error!.message).toEqual('Failed to authorize');
+    expect(res.error!.message).toEqual('Invalid authorization token');
+  });
+
+  test('list users', async () => {
+    const res = await api.listUsers({
+      agent,
+      authorization: serviceAccountKeyForListingUsers,
+    });
+
+    expect(res.status).toEqual(200);
+    expect(res.output).toBeTruthy();
+    expect(res.output!.users.length).toEqual(1);
   });
 });

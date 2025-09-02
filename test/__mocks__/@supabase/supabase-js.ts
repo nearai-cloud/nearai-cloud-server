@@ -13,7 +13,7 @@ export const createClient = jest.fn(() => ({
           data: {
             user: null,
           },
-          error: new supabase.AuthError('Invalid authorization', 401),
+          error: new supabase.AuthError('Invalid authorization token', 401),
         };
       }
 
@@ -26,7 +26,7 @@ export const createClient = jest.fn(() => ({
           data: {
             user: null,
           },
-          error: new supabase.AuthError('Invalid authorization', 401),
+          error: new supabase.AuthError('Invalid authorization token', 401),
         };
       }
 

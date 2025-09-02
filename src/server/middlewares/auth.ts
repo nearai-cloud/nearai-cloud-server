@@ -153,7 +153,7 @@ async function authorizeSupabase(
   if (res.error) {
     throw createOpenAiHttpError({
       status: res.error.status,
-      message: 'Failed to authorize', // Override with simple error message
+      message: 'Invalid authorization token', // Override with simple error message
       cause: res.error,
     });
   }
