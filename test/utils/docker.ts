@@ -23,7 +23,7 @@ export async function setupContainers() {
 
   networks.push(network);
 
-  await sleep(10 * 1000); // TODO: health check
+  await sleep(20 * 1000); // TODO: health check
 }
 
 export async function teardownContainers() {
