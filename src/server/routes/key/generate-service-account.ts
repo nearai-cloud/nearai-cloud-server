@@ -3,11 +3,11 @@ import { adminLitellmApiClient } from '../../../services/litellm-api-client';
 import * as v from 'valibot';
 import { adminAuthMiddleware } from '../../middlewares/auth';
 
-const inputSchema = v.object({
+export const inputSchema = v.object({
   serviceAccountId: v.pipe(v.string(), v.nonEmpty()),
 });
 
-const outputSchema = v.object({
+export const outputSchema = v.object({
   key: v.string(),
   expires: v.nullable(v.string()),
 });

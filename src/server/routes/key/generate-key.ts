@@ -6,14 +6,14 @@ import { Auth, authMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 import { toFullKeyAlias } from '../../../utils/common';
 
-const inputSchema = v.object({
+export const inputSchema = v.object({
   keyAlias: v.optional(
     v.pipe(v.string(), v.maxLength(INPUT_LIMITS.KEY_ALIAS_MAX_LENGTH)),
   ),
   maxBudget: v.optional(v.number()),
 });
 
-const outputSchema = v.object({
+export const outputSchema = v.object({
   key: v.string(),
   expires: v.nullable(v.string()),
 });

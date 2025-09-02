@@ -2,6 +2,10 @@ import { Response } from 'supertest';
 import {
   ApiOptions,
   ApiResponse,
+  GenerateKeyOptions,
+  GenerateKeyResponse,
+  GenerateServiceAccountOptions,
+  GenerateServiceAccountResponse,
   GetUserOptions,
   GetUserResponse,
   ListUsersOptions,
@@ -11,10 +15,10 @@ import {
 } from '../types/api';
 
 async function GET<TInput, TOutput>({
-  path,
   agent,
   input,
   authorization,
+  path,
 }: ApiOptions<TInput> & { path: string }): Promise<ApiResponse<TOutput>> {
   const request = agent.get(path);
 
@@ -32,10 +36,10 @@ async function GET<TInput, TOutput>({
 }
 
 async function POST<TInput, TOutput>({
-  path,
   agent,
   input,
   authorization,
+  path,
 }: ApiOptions<TInput> & { path: string }): Promise<ApiResponse<TOutput>> {
   const request = agent.post(path);
 
@@ -70,41 +74,47 @@ function parseApiResponse<T>(res: Response): ApiResponse<T> {
 
 // ------------------------------------------------------------------------
 
-export async function getUser({
-  agent,
-  input,
-  authorization,
-}: GetUserOptions): Promise<GetUserResponse> {
+export async function getUser(
+  options: GetUserOptions,
+): Promise<GetUserResponse> {
   return GET({
+    ...options,
     path: '/user/info',
-    agent,
-    input,
-    authorization,
   });
 }
 
-export async function listUsers({
-  agent,
-  input,
-  authorization,
-}: ListUsersOptions): Promise<ListUsersResponse> {
+export async function listUsers(
+  options: ListUsersOptions,
+): Promise<ListUsersResponse> {
   return GET({
+    ...options,
     path: '/user/list',
-    agent,
-    input,
-    authorization,
   });
 }
 
-export async function registerUser({
-  agent,
-  input,
-  authorization,
-}: RegisterUserOptions): Promise<RegisterUserResponse> {
+export async function registerUser(
+  options: RegisterUserOptions,
+): Promise<RegisterUserResponse> {
   return POST({
+    ...options,
     path: '/user/register',
-    agent,
-    input,
-    authorization,
+  });
+}
+
+export async function generateKey(
+  options: GenerateKeyOptions,
+): Promise<GenerateKeyResponse> {
+  return POST({
+    ...options,
+    path: '/key/generate',
+  });
+}
+
+export async function generateServiceAccount(
+  options: GenerateServiceAccountOptions,
+): Promise<GenerateServiceAccountResponse> {
+  return POST({
+    ...options,
+    path: '/key/service-account/generate',
   });
 }

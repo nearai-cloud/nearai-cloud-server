@@ -5,6 +5,14 @@ import {
   inputSchema as listUsersInputSchema,
   outputSchema as listUsersOutputSchema,
 } from '../../src/server/routes/user/list-users';
+import {
+  inputSchema as generateKeyInputSchema,
+  outputSchema as generateKeyOutputSchema,
+} from '../../src/server/routes/key/generate-key';
+import {
+  inputSchema as generateServiceAccountInputSchema,
+  outputSchema as generateServiceAccountOutputSchema,
+} from '../../src/server/routes/key/generate-service-account';
 
 export type EmptyRecord = Record<string, never>;
 
@@ -37,3 +45,13 @@ export type ListUsersResponse = ApiResponse<typeof listUsersOutputSchema>;
 
 export type RegisterUserOptions = ApiOptions<EmptyRecord>;
 export type RegisterUserResponse = ApiResponse<EmptyRecord>;
+
+export type GenerateKeyOptions = ApiOptions<typeof generateKeyInputSchema>;
+export type GenerateKeyResponse = ApiResponse<typeof generateKeyOutputSchema>;
+
+export type GenerateServiceAccountOptions = ApiOptions<
+  typeof generateServiceAccountInputSchema
+>;
+export type GenerateServiceAccountResponse = ApiResponse<
+  typeof generateServiceAccountOutputSchema
+>;
