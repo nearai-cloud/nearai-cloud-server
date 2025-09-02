@@ -7,6 +7,7 @@ import { signature } from './signature';
 export const openaiRouter = express.Router();
 
 openaiRouter.post('/chat/completions', chatCompletions);
+openaiRouter.post('/completions', chatCompletions);
 openaiRouter.get('/models', models);
 openaiRouter.get('/attestation/report', attestationReport);
 openaiRouter.get('/signature/:chat_id', signature);

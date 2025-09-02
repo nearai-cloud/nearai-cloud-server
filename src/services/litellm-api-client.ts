@@ -684,6 +684,16 @@ export class LitellmApiClient extends ApiClient {
     });
   }
 
+  async completions(
+    params: OpenAI.CompletionCreateParams,
+  ): Promise<OpenAI.Completion | stream.Readable> {
+    return this.post({
+      path: '/completions',
+      body: params,
+      responseType: params.stream ? 'stream' : undefined,
+    });
+  }
+
   async models(): Promise<OpenAI.PageResponse<OpenAI.Model>> {
     return this.get({
       path: '/models',
