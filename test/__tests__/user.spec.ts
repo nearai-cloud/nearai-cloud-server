@@ -37,7 +37,7 @@ describe('user api', () => {
     });
 
     expect(res.status).toEqual(200);
-    expect(res.output).toBeNull();
+    expect(res.data).toBeNull();
   });
 
   test('register user with invalid authorization', async () => {
@@ -80,8 +80,8 @@ describe('user api', () => {
     });
 
     expect(res.status).toEqual(200);
-    expect(res.output).toBeTruthy();
-    expect(res.output!.userId).toEqual(alice.id);
+    expect(res.data).toBeTruthy();
+    expect(res.data!.userId).toEqual(alice.id);
   });
 
   test('get user after registration', async () => {
@@ -91,8 +91,8 @@ describe('user api', () => {
     });
 
     expect(res.status).toEqual(200);
-    expect(res.output).toBeTruthy();
-    expect(res.output!.userId).toEqual(alice.id);
+    expect(res.data).toBeTruthy();
+    expect(res.data!.userId).toEqual(alice.id);
   });
 
   test('list users with invalid authorization', async () => {
@@ -109,16 +109,16 @@ describe('user api', () => {
   test('generate service account for listing users', async () => {
     const res = await api.generateServiceAccount({
       agent,
-      input: {
+      body: {
         serviceAccountId: 'list-users',
       },
       authorization: LITELLM_MASTER_KEY,
     });
 
     expect(res.status).toEqual(200);
-    expect(res.output).toBeTruthy();
+    expect(res.data).toBeTruthy();
 
-    listUsersAuthorization = res.output!.key;
+    listUsersAuthorization = res.data!.key;
   });
 
   test('list users', async () => {
@@ -128,7 +128,7 @@ describe('user api', () => {
     });
 
     expect(res.status).toEqual(200);
-    expect(res.output).toBeTruthy();
-    expect(res.output!.users.length).toEqual(1);
+    expect(res.data).toBeTruthy();
+    expect(res.data!.users.length).toEqual(1);
   });
 });

@@ -20,9 +20,9 @@ import {
 
 export type EmptyRecord = Record<string, never>;
 
-export type ApiResponse<TOutput> = {
+export type ApiResponse<T> = {
   status: number;
-  output?: TOutput;
+  data?: T;
   error?: {
     message: string;
     type: string | null;
@@ -31,30 +31,33 @@ export type ApiResponse<TOutput> = {
   };
 };
 
-export type ApiOptions<TInput> = {
+export type ApiOptions<TQuery, TBody> = {
   agent: Agent;
-  input?: TInput;
+  query?: TQuery;
+  body?: TBody;
   authorization?: string;
 };
 
 // ------------------------------------------------------------------------
 
-export type GetUserOptions = ApiOptions<EmptyRecord>;
+export type GetUserOptions = ApiOptions<EmptyRecord, never>;
 export type GetUserResponse = ApiResponse<
   v.InferOutput<typeof getUserOutputSchema>
 >;
 
 export type ListUsersOptions = ApiOptions<
-  v.InferInput<typeof listUsersInputSchema>
+  v.InferInput<typeof listUsersInputSchema>,
+  never
 >;
 export type ListUsersResponse = ApiResponse<
   v.InferOutput<typeof listUsersOutputSchema>
 >;
 
-export type RegisterUserOptions = ApiOptions<EmptyRecord>;
+export type RegisterUserOptions = ApiOptions<never, EmptyRecord>;
 export type RegisterUserResponse = ApiResponse<EmptyRecord>;
 
 export type GenerateKeyOptions = ApiOptions<
+  never,
   v.InferInput<typeof generateKeyInputSchema>
 >;
 export type GenerateKeyResponse = ApiResponse<
@@ -62,13 +65,17 @@ export type GenerateKeyResponse = ApiResponse<
 >;
 
 export type GenerateServiceAccountOptions = ApiOptions<
+  never,
   v.InferInput<typeof generateServiceAccountInputSchema>
 >;
 export type GenerateServiceAccountResponse = ApiResponse<
   v.InferOutput<typeof generateServiceAccountOutputSchema>
 >;
 
-export type GetKeyOptions = ApiOptions<v.InferInput<typeof getKeyInputSchema>>;
+export type GetKeyOptions = ApiOptions<
+  v.InferInput<typeof getKeyInputSchema>,
+  never
+>;
 export type GetKeyResponse = ApiResponse<
   v.InferOutput<typeof getKeyOutputSchema>
 >;

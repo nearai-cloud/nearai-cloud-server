@@ -22,7 +22,7 @@ describe('key api', () => {
   test('generate key with invalid authorization', async () => {
     const res = await api.generateKey({
       agent,
-      input: {
+      body: {
         keyAlias: 'alice-key',
       },
       authorization: 'invalid-token',
@@ -45,16 +45,16 @@ describe('key api', () => {
   test('generate key', async () => {
     const res = await api.generateKey({
       agent,
-      input: {
+      body: {
         keyAlias: 'alice-key',
       },
       authorization: alice.supabaseAuthorization,
     });
 
     expect(res.status).toEqual(200);
-    expect(res.output).toBeTruthy();
+    expect(res.data).toBeTruthy();
 
-    aliceKey = res.output!.key;
+    aliceKey = res.data!.key;
     aliceKeyHash = createHash('sha256')
       .update(aliceKey)
       .digest()
@@ -64,7 +64,7 @@ describe('key api', () => {
   test('get key with invalid authorization', async () => {
     const res = await api.getKey({
       agent,
-      input: {
+      query: {
         keyHash: aliceKeyHash,
       },
       authorization: 'invalid-token',
@@ -78,21 +78,21 @@ describe('key api', () => {
   test('get key', async () => {
     const res = await api.getKey({
       agent,
-      input: {
+      query: {
         keyHash: aliceKeyHash,
       },
       authorization: alice.supabaseAuthorization,
     });
 
     expect(res.status).toEqual(200);
-    expect(res.output).toBeTruthy();
-    expect(res.output!.keyHash).toEqual(aliceKeyHash);
+    expect(res.data).toBeTruthy();
+    expect(res.data!.keyHash).toEqual(aliceKeyHash);
   });
 
   test('generate service account key for listing users with invalid authorization', async () => {
     const res = await api.generateServiceAccount({
       agent,
-      input: {
+      body: {
         serviceAccountId: 'list-user',
       },
       authorization: 'invalid-token',

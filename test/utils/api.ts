@@ -16,20 +16,20 @@ import {
   RegisterUserResponse,
 } from '../types/api';
 
-async function GET<TInput, TOutput>({
+async function GET<TQuery, TData>({
   agent,
-  input,
+  query,
   authorization,
   path,
-}: ApiOptions<TInput> & { path: string }): Promise<ApiResponse<TOutput>> {
+}: ApiOptions<TQuery, never> & { path: string }): Promise<ApiResponse<TData>> {
   const request = agent.get(path);
 
   if (authorization) {
     request.auth(authorization, { type: 'bearer' });
   }
 
-  if (input) {
-    request.query(input);
+  if (query) {
+    request.query(query);
   }
 
   const res = await request;
@@ -37,20 +37,25 @@ async function GET<TInput, TOutput>({
   return parseApiResponse(res);
 }
 
-async function POST<TInput, TOutput>({
+async function POST<TQuery, TBody, TData>({
   agent,
-  input,
+  query,
+  body,
   authorization,
   path,
-}: ApiOptions<TInput> & { path: string }): Promise<ApiResponse<TOutput>> {
+}: ApiOptions<TQuery, TBody> & { path: string }): Promise<ApiResponse<TData>> {
   const request = agent.post(path);
 
   if (authorization) {
     request.auth(authorization, { type: 'bearer' });
   }
 
-  if (input) {
-    request.send(input);
+  if (query) {
+    request.query(query);
+  }
+
+  if (body) {
+    request.send(body);
   }
 
   const res = await request;
@@ -62,14 +67,14 @@ function parseApiResponse<T>(res: Response): ApiResponse<T> {
   if (res.status >= 200 && res.status < 300) {
     return {
       status: res.status,
-      output: res.body,
+      data: res.body,
       error: undefined,
     };
   }
 
   return {
     status: res.status,
-    output: undefined,
+    data: undefined,
     error: res.body.error,
   };
 }
