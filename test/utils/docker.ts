@@ -75,7 +75,6 @@ async function setupLitellmGatewayContainer(network: Docker.Network) {
     Image: 'ghcr.io/berriai/litellm:v1.74.15-stable',
     name: 'litellm-gateway',
     Env: [
-      'PORT=4000',
       'STORE_MODEL_IN_DB=true',
       'DATABASE_URL=postgresql://admin:admin@litellm-gateway-db:5432/litellm-gateway',
       'LITELLM_MASTER_KEY=sk-master',
