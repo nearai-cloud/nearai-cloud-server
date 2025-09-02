@@ -117,7 +117,7 @@ dataset/local
 .env-compose
 .env-phala
 !.env.example
-!test/.env
+!.env.test
 
 # Prisma
 .prisma/generated

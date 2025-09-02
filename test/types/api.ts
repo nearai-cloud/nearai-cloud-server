@@ -40,18 +40,26 @@ export type GetUserResponse = ApiResponse<
   v.InferOutput<typeof getUserOutputSchema>
 >;
 
-export type ListUsersOptions = ApiOptions<typeof listUsersInputSchema>;
-export type ListUsersResponse = ApiResponse<typeof listUsersOutputSchema>;
+export type ListUsersOptions = ApiOptions<
+  v.InferInput<typeof listUsersInputSchema>
+>;
+export type ListUsersResponse = ApiResponse<
+  v.InferOutput<typeof listUsersOutputSchema>
+>;
 
 export type RegisterUserOptions = ApiOptions<EmptyRecord>;
 export type RegisterUserResponse = ApiResponse<EmptyRecord>;
 
-export type GenerateKeyOptions = ApiOptions<typeof generateKeyInputSchema>;
-export type GenerateKeyResponse = ApiResponse<typeof generateKeyOutputSchema>;
+export type GenerateKeyOptions = ApiOptions<
+  v.InferInput<typeof generateKeyInputSchema>
+>;
+export type GenerateKeyResponse = ApiResponse<
+  v.InferOutput<typeof generateKeyOutputSchema>
+>;
 
 export type GenerateServiceAccountOptions = ApiOptions<
-  typeof generateServiceAccountInputSchema
+  v.InferInput<typeof generateServiceAccountInputSchema>
 >;
 export type GenerateServiceAccountResponse = ApiResponse<
-  typeof generateServiceAccountOutputSchema
+  v.InferOutput<typeof generateServiceAccountOutputSchema>
 >;

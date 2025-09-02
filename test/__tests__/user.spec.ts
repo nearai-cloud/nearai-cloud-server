@@ -89,4 +89,29 @@ describe('user api', () => {
     expect(res.output).toBeTruthy();
     expect(res.output!.userId).toEqual(mockUsers.alice.id);
   });
+
+  test('generate service account key', async () => {
+    const res = await api.generateServiceAccount({
+      agent,
+      input: {
+        serviceAccountId: 'list-user-service-account',
+      },
+      authorization: 'Bearer sk-master',
+    });
+
+    expect(res.status).toEqual(401);
+    expect(res.error).toBeTruthy();
+    expect(res.error!.message).toEqual('Failed to authorize');
+  });
+
+  test('list users with invalid authorization', async () => {
+    const res = await api.listUsers({
+      agent,
+      authorization: 'Bearer invalid-user',
+    });
+
+    expect(res.status).toEqual(401);
+    expect(res.error).toBeTruthy();
+    expect(res.error!.message).toEqual('Failed to authorize');
+  });
 });
