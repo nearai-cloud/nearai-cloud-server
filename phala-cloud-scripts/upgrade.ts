@@ -7,6 +7,7 @@ import {
 } from './utils/env';
 import { getCvmStatus } from './utils/phala';
 import { sleep } from './utils/common';
+import { logger } from '../src/services/logger';
 
 void upgrade();
 
@@ -109,12 +110,12 @@ function requestUpgradeCvm(cvmId: string) {
     throw command.error;
   }
 
-  if (command.stderr.length > 0) {
-    throw new Error(command.stderr);
-  }
-
   if (command.stdout.length > 0) {
     console.log(command.stdout);
+  }
+
+  if (command.stderr.length > 0) {
+    logger.error(command.stderr);
   }
 
   if (command.status !== 0) {

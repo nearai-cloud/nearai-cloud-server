@@ -28,12 +28,12 @@ function migrateStatus(): boolean {
     throw command.error;
   }
 
-  if (command.stderr.length > 0) {
-    throw new Error(command.stderr);
-  }
-
   if (command.stdout.length > 0) {
     logger.info(command.stdout);
+  }
+
+  if (command.stderr.length > 0) {
+    logger.error(command.stderr);
   }
 
   return command.status === 0;
@@ -52,12 +52,12 @@ function migrateDeploy() {
     throw command.error;
   }
 
-  if (command.stderr.length > 0) {
-    throw new Error(command.stderr);
-  }
-
   if (command.stdout.length > 0) {
     logger.info(command.stdout);
+  }
+
+  if (command.stderr.length > 0) {
+    logger.error(command.stderr);
   }
 
   if (command.status !== 0) {

@@ -3,6 +3,7 @@ import {
   ENV_PHALA_COMPOSE_ENV_FILE_PATH,
   ENV_PHALA_MAIN_CVM_ID,
 } from './utils/env';
+import { logger } from '../src/services/logger';
 
 replicate();
 
@@ -27,12 +28,12 @@ function replicateCvm(cvmId: string) {
     throw command.error;
   }
 
-  if (command.stderr.length > 0) {
-    throw new Error(command.stderr);
-  }
-
   if (command.stdout.length > 0) {
     console.log(command.stdout);
+  }
+
+  if (command.stderr.length > 0) {
+    logger.error(command.stderr);
   }
 
   if (command.status !== 0) {
