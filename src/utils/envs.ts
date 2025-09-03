@@ -51,7 +51,7 @@ function optionalEnv(
 ): string | number | boolean | undefined {
   const value = process.env[name];
 
-  if (!value) {
+  if (value === undefined) {
     return undefined;
   }
 
