@@ -88,7 +88,7 @@ describe('credential api', () => {
       agent,
       body: {
         credentialName: 'OpenAI',
-        providerApiKey: 'sk-update',
+        providerApiUrl: 'https://api.openai.com/v2',
       },
       authorization: 'sk-invalid',
     });
