@@ -2,6 +2,8 @@ import { Response } from 'supertest';
 import {
   ApiOptions,
   ApiResponse,
+  CreateCredentialOptions,
+  CreateCredentialResponse,
   DeleteKeyOptions,
   DeleteKeyResponse,
   EmptyRecord,
@@ -13,12 +15,16 @@ import {
   GetKeyResponse,
   GetUserOptions,
   GetUserResponse,
+  ListCredentialsOptions,
+  ListCredentialsResponse,
   ListKeysOptions,
   ListKeysResponse,
   ListUsersOptions,
   ListUsersResponse,
   RegisterUserOptions,
   RegisterUserResponse,
+  UpdateCredentialOptions,
+  UpdateCredentialResponse,
   UpdateKeyOptions,
   UpdateKeyResponse,
 } from '../types/api';
@@ -163,5 +169,32 @@ export async function listKeys(
   return GET({
     ...options,
     path: '/key/list',
+  });
+}
+
+export async function createCredential(
+  options: CreateCredentialOptions,
+): Promise<CreateCredentialResponse> {
+  return POST({
+    ...options,
+    path: '/credential/new',
+  });
+}
+
+export async function updateCredential(
+  options: UpdateCredentialOptions,
+): Promise<UpdateCredentialResponse> {
+  return POST({
+    ...options,
+    path: '/credential/update',
+  });
+}
+
+export async function listCredentials(
+  options: ListCredentialsOptions,
+): Promise<ListCredentialsResponse> {
+  return GET({
+    ...options,
+    path: '/credential/list',
   });
 }

@@ -2,11 +2,11 @@ export const mockUsers = {
   alice: {
     id: 'alice',
     email: 'alice@gmail.com',
-    supabaseAuthorization: 'alice-token',
+    supabaseAuthorization: 'sk-alice',
   },
   bob: {
     id: 'bob',
     email: 'bob@gmail.com',
-    supabaseAuthorization: 'bob-token',
+    supabaseAuthorization: 'sk-bob',
   },
 } as const;

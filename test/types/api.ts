@@ -23,6 +23,9 @@ import {
   inputSchema as listKeysInputSchema,
   outputSchema as listKeysOutputSchema,
 } from '../../src/server/routes/key/list-keys';
+import { inputSchema as createCredentialInputSchema } from '../../src/server/routes/credential/create-credential';
+import { inputSchema as updateCredentialInputSchema } from '../../src/server/routes/credential/update-credential';
+import { outputSchema as listCredentialsOutputSchema } from '../../src/server/routes/credential/list-credentials';
 
 export type EmptyRecord = Record<string, never>;
 
@@ -104,4 +107,21 @@ export type ListKeysOptions = ApiOptions<
 >;
 export type ListKeysResponse = ApiResponse<
   v.InferOutput<typeof listKeysOutputSchema>
+>;
+
+export type CreateCredentialOptions = ApiOptions<
+  EmptyRecord,
+  v.InferInput<typeof createCredentialInputSchema>
+>;
+export type CreateCredentialResponse = ApiResponse<EmptyRecord>;
+
+export type UpdateCredentialOptions = ApiOptions<
+  EmptyRecord,
+  v.InferInput<typeof updateCredentialInputSchema>
+>;
+export type UpdateCredentialResponse = ApiResponse<EmptyRecord>;
+
+export type ListCredentialsOptions = ApiOptions<EmptyRecord, EmptyRecord>;
+export type ListCredentialsResponse = ApiResponse<
+  v.InferInput<typeof listCredentialsOutputSchema>
 >;

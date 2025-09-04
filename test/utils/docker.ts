@@ -13,13 +13,13 @@ const networks: Docker.Network[] = [];
 
 export async function setupContainers() {
   const network = await docker.createNetwork({
-    Name: 'nearai-cloud-integration-test',
+    Name: `nearai-cloud-integration-test-${Date.now()}`,
     Driver: 'bridge',
   });
 
-  await setupLitellmGatewayDatabaseContainer(network);
-  await setupLitellmGatewayContainer(network);
-  await setupNearAiCloudDatabaseContainer(network);
+  await setupLitellmGatewayDatabaseContainer(network.id);
+  await setupLitellmGatewayContainer(network.id);
+  await setupNearAiCloudDatabaseContainer(network.id);
 
   networks.push(network);
 
@@ -36,7 +36,7 @@ export async function teardownContainers() {
   }
 }
 
-async function setupNearAiCloudDatabaseContainer(network: Docker.Network) {
+async function setupNearAiCloudDatabaseContainer(networkId: string) {
   const container = await docker.createContainer({
     Image: 'postgres:16',
     name: 'nearai-cloud-database',
@@ -47,7 +47,7 @@ async function setupNearAiCloudDatabaseContainer(network: Docker.Network) {
     ],
     HostConfig: {
       PortBindings: { '5432/tcp': [{ HostPort: '3002' }] },
-      NetworkMode: network.id,
+      NetworkMode: networkId,
     },
   });
 
@@ -56,7 +56,7 @@ async function setupNearAiCloudDatabaseContainer(network: Docker.Network) {
   containers.push(container);
 }
 
-async function setupLitellmGatewayDatabaseContainer(network: Docker.Network) {
+async function setupLitellmGatewayDatabaseContainer(networkId: string) {
   const container = await docker.createContainer({
     Image: 'postgres:16',
     name: 'litellm-gateway-database',
@@ -67,7 +67,7 @@ async function setupLitellmGatewayDatabaseContainer(network: Docker.Network) {
     ],
     HostConfig: {
       PortBindings: { '5432/tcp': [{ HostPort: '4002' }] },
-      NetworkMode: network.id,
+      NetworkMode: networkId,
     },
   });
 
@@ -76,7 +76,7 @@ async function setupLitellmGatewayDatabaseContainer(network: Docker.Network) {
   containers.push(container);
 }
 
-async function setupLitellmGatewayContainer(network: Docker.Network) {
+async function setupLitellmGatewayContainer(networkId: string) {
   const container = await docker.createContainer({
     Image: LITELLM_IMAGE,
     name: 'litellm-gateway',
@@ -88,7 +88,7 @@ async function setupLitellmGatewayContainer(network: Docker.Network) {
     ],
     HostConfig: {
       PortBindings: { '4000/tcp': [{ HostPort: '4001' }] },
-      NetworkMode: network.id,
+      NetworkMode: networkId,
     },
   });
 

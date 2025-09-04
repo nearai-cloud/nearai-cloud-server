@@ -44,7 +44,7 @@ describe('key api', () => {
       body: {
         keyAlias: 'alice-key',
       },
-      authorization: 'invalid-token',
+      authorization: 'sk-invalid',
     });
 
     expect(res.status).toEqual(401);
@@ -77,7 +77,7 @@ describe('key api', () => {
       body: {
         serviceAccountId: 'test',
       },
-      authorization: 'invalid-token',
+      authorization: 'sk-invalid',
     });
 
     expect(res.status).toEqual(403);
@@ -89,7 +89,7 @@ describe('key api', () => {
     const res = await api.generateServiceAccount({
       agent,
       body: {
-        serviceAccountId: 'test',
+        serviceAccountId: 'test-key-api',
       },
       authorization: LITELLM_MASTER_KEY,
     });
@@ -105,7 +105,7 @@ describe('key api', () => {
       query: {
         keyHash: aliceKeyHash,
       },
-      authorization: 'invalid-token',
+      authorization: 'sk-invalid',
     });
 
     expect(res.status).toEqual(401);
@@ -147,7 +147,7 @@ describe('key api', () => {
   test('list keys with invalid authorization', async () => {
     const res = await api.listKeys({
       agent,
-      authorization: 'invalid token',
+      authorization: 'sk-invalid',
     });
 
     expect(res.status).toEqual(401);
@@ -173,7 +173,7 @@ describe('key api', () => {
         keyHash: aliceKeyHash,
         keyAlias: 'updated-alice-key',
       },
-      authorization: 'invalid token',
+      authorization: 'sk-invalid',
     });
 
     expect(res.status).toEqual(401);
@@ -199,7 +199,7 @@ describe('key api', () => {
   });
 
   test('update key', async () => {
-    const res = await api.updateKey({
+    const updateKeyRes = await api.updateKey({
       agent,
       body: {
         keyHash: aliceKeyHash,
@@ -208,11 +208,9 @@ describe('key api', () => {
       authorization: alice.supabaseAuthorization,
     });
 
-    expect(res.status).toEqual(204);
-  });
+    expect(updateKeyRes.status).toEqual(204);
 
-  test('get updated key', async () => {
-    const res = await api.getKey({
+    const getKeyRes = await api.getKey({
       agent,
       query: {
         keyHash: aliceKeyHash,
@@ -220,10 +218,10 @@ describe('key api', () => {
       authorization: alice.supabaseAuthorization,
     });
 
-    expect(res.status).toEqual(200);
-    expect(res.data).toBeTruthy();
-    expect(res.data!.keyHash).toEqual(aliceKeyHash);
-    expect(res.data!.keyAlias).toEqual('update-alice-key');
+    expect(getKeyRes.status).toEqual(200);
+    expect(getKeyRes.data).toBeTruthy();
+    expect(getKeyRes.data!.keyHash).toEqual(aliceKeyHash);
+    expect(getKeyRes.data!.keyAlias).toEqual('update-alice-key');
   });
 
   test('delete key with invalid authorization', async () => {
@@ -232,7 +230,7 @@ describe('key api', () => {
       body: {
         keyHash: aliceKeyHash,
       },
-      authorization: 'invalid token',
+      authorization: 'sk-invalid',
     });
 
     expect(res.status).toEqual(401);
@@ -257,7 +255,7 @@ describe('key api', () => {
   });
 
   test('delete key', async () => {
-    const res = await api.deleteKey({
+    const deleteKeyRes = await api.deleteKey({
       agent,
       body: {
         keyHash: aliceKeyHash,
@@ -265,11 +263,9 @@ describe('key api', () => {
       authorization: alice.supabaseAuthorization,
     });
 
-    expect(res.status).toEqual(204);
-  });
+    expect(deleteKeyRes.status).toEqual(204);
 
-  test('get deleted key', async () => {
-    const res = await api.getKey({
+    const getKeyRes = await api.getKey({
       agent,
       query: {
         keyHash: aliceKeyHash,
@@ -277,7 +273,16 @@ describe('key api', () => {
       authorization: alice.supabaseAuthorization,
     });
 
-    expect(res.status).toEqual(200);
-    expect(res.data).toBeNull();
+    expect(getKeyRes.status).toEqual(200);
+    expect(getKeyRes.data).toBeNull();
+
+    const listKeysRes = await api.listKeys({
+      agent,
+      authorization: alice.supabaseAuthorization,
+    });
+
+    expect(listKeysRes.status).toEqual(200);
+    expect(listKeysRes.data).toBeTruthy();
+    expect(listKeysRes.data!.keys.length).toEqual(0);
   });
 });

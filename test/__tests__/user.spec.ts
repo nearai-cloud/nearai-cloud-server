@@ -23,7 +23,7 @@ describe('user api', () => {
     const res = await api.generateServiceAccount({
       agent,
       body: {
-        serviceAccountId: 'test',
+        serviceAccountId: 'test-user-api',
       },
       authorization: LITELLM_MASTER_KEY,
     });
@@ -37,7 +37,7 @@ describe('user api', () => {
   test('register user with invalid authorization', async () => {
     const res = await api.registerUser({
       agent,
-      authorization: 'invalid-token',
+      authorization: 'sk-invalid',
     });
 
     expect(res.status).toEqual(401);
@@ -70,7 +70,7 @@ describe('user api', () => {
   test('get user with invalid authorization', async () => {
     const res = await api.getUser({
       agent,
-      authorization: 'invalid-token',
+      authorization: 'sk-invalid',
     });
 
     expect(res.status).toEqual(401);
@@ -92,7 +92,7 @@ describe('user api', () => {
   test('list users with invalid authorization', async () => {
     const res = await api.listUsers({
       agent,
-      authorization: 'invalid-token',
+      authorization: 'sk-invalid',
     });
 
     expect(res.status).toEqual(401);
