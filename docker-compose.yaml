@@ -2,8 +2,6 @@ services:
   # LiteLLM Gateway server
   litellm-gateway:
     image: ghcr.io/berriai/litellm:v1.74.15-stable
-    ports:
-      - "4000:4000"
     environment:
       PORT: 4000
       STORE_MODEL_IN_DB: true
@@ -23,8 +21,6 @@ services:
   # NEAR AI Cloud server
   nearai-cloud-server:
     image: ghcr.io/nearai-cloud/nearai-cloud-server:${NEAR_AI_CLOUD_DOCKER_IMAGE_SHA}
-    ports:
-      - "3000:3000"
     environment:
       ENV: prd
       PORT: 3000
@@ -48,7 +44,6 @@ services:
           memory: 1G
 
   # Dstack Ingress container for custom domain
-  # Temporarily commented out to simplify deployment
   dstack-ingress:
     image: kvin/dstack-ingress@sha256:2cc3bc50d71faa4d313084237b0f5d1d25963024f2484c7a6414aed075883cdd
     ports:
