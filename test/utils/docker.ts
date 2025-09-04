@@ -4,8 +4,6 @@ import { sleep } from './common';
 export const LITELLM_IMAGE = 'ghcr.io/berriai/litellm:v1.74.15-stable';
 export const LITELLM_MASTER_KEY = 'sk-master';
 export const LITELLM_SALT_KEY = 'sk-salt';
-export const LITELLM_DATABASE_URL =
-  'postgresql://admin:admin@litellm-gateway-database:5432/litellm-gateway';
 
 const docker = new Docker();
 
@@ -14,24 +12,48 @@ const LABEL_VALUE = 'nearai-cloud-integration-test';
 const LABEL = `${LABEL_KEY}=${LABEL_VALUE}`;
 
 export async function setupContainers() {
-  await clearCache();
+  const timestamp = Date.now();
 
-  const network = await setupNetwork();
+  const network = await setupNetwork(timestamp);
 
-  await setupLitellmGatewayDatabaseContainer(network);
-  await setupLitellmGatewayContainer(network);
-  await setupNearAiCloudDatabaseContainer(network);
+  await setupNearAiCloudDatabaseContainer(timestamp, network);
+  await setupLitellmGatewayDatabaseContainer(timestamp, network);
+  await setupLitellmGatewayContainer(timestamp, network);
 
-  await sleep(15 * 1000);
+  await sleep(20 * 1000);
 }
 
 export async function teardownContainers() {
-  await clearCache();
+  const containerInfos = await docker.listContainers({
+    all: true,
+    filters: {
+      label: [LABEL],
+    },
+  });
+
+  for (const containerInfo of containerInfos) {
+    const container = docker.getContainer(containerInfo.Id);
+    if (containerInfo.State === 'running') {
+      await container.stop();
+    }
+    await container.remove();
+  }
+
+  const networkInfos = await docker.listNetworks({
+    filters: {
+      label: [LABEL],
+    },
+  });
+
+  for (const networkInfo of networkInfos) {
+    const network = docker.getNetwork(networkInfo.Id);
+    await network.remove();
+  }
 }
 
-async function setupNetwork(): Promise<Docker.Network> {
+async function setupNetwork(timestamp: number): Promise<Docker.Network> {
   return docker.createNetwork({
-    Name: `nearai-cloud-integration-test-${Date.now()}`,
+    Name: `nearai-cloud-integration-test-${timestamp}`,
     Driver: 'bridge',
     Labels: {
       [LABEL_KEY]: LABEL_VALUE,
@@ -39,10 +61,13 @@ async function setupNetwork(): Promise<Docker.Network> {
   });
 }
 
-async function setupNearAiCloudDatabaseContainer(network: Docker.Network) {
+async function setupNearAiCloudDatabaseContainer(
+  timestamp: number,
+  network: Docker.Network,
+) {
   const container = await docker.createContainer({
     Image: 'postgres:16',
-    name: 'nearai-cloud-database',
+    name: `nearai-cloud-database-${timestamp}`,
     Env: [
       'POSTGRES_USER=admin',
       'POSTGRES_PASSWORD=admin',
@@ -60,10 +85,13 @@ async function setupNearAiCloudDatabaseContainer(network: Docker.Network) {
   await container.start();
 }
 
-async function setupLitellmGatewayDatabaseContainer(network: Docker.Network) {
+async function setupLitellmGatewayDatabaseContainer(
+  timestamp: number,
+  network: Docker.Network,
+) {
   const container = await docker.createContainer({
     Image: 'postgres:16',
-    name: 'litellm-gateway-database',
+    name: `litellm-gateway-database-${timestamp}`,
     Env: [
       'POSTGRES_USER=admin',
       'POSTGRES_PASSWORD=admin',
@@ -81,13 +109,16 @@ async function setupLitellmGatewayDatabaseContainer(network: Docker.Network) {
   await container.start();
 }
 
-async function setupLitellmGatewayContainer(network: Docker.Network) {
+async function setupLitellmGatewayContainer(
+  timestamp: number,
+  network: Docker.Network,
+) {
   const container = await docker.createContainer({
     Image: LITELLM_IMAGE,
-    name: 'litellm-gateway',
+    name: `litellm-gateway-${timestamp}`,
     Env: [
       'STORE_MODEL_IN_DB=true',
-      `DATABASE_URL=${LITELLM_DATABASE_URL}`,
+      `DATABASE_URL=postgresql://admin:admin@litellm-gateway-database-${timestamp}:5432/litellm-gateway`,
       `LITELLM_MASTER_KEY=${LITELLM_MASTER_KEY}`,
       `LITELLM_SALT_KEY=${LITELLM_SALT_KEY}`,
     ],
@@ -101,29 +132,4 @@ async function setupLitellmGatewayContainer(network: Docker.Network) {
   });
 
   await container.start();
-}
-
-async function clearCache() {
-  const containerInfos = await docker.listContainers({
-    filters: {
-      label: [LABEL],
-    },
-  });
-
-  for (const containerInfo of containerInfos) {
-    const container = docker.getContainer(containerInfo.Id);
-    await container.stop();
-    await container.remove();
-  }
-
-  const networkInfos = await docker.listNetworks({
-    filters: {
-      label: [LABEL],
-    },
-  });
-
-  for (const networkInfo of networkInfos) {
-    const network = docker.getNetwork(networkInfo.Id);
-    await network.remove();
-  }
 }
