@@ -3,7 +3,7 @@ import { mockUsers } from '../utils/users';
 import * as api from '../utils/api';
 import { setup, tearDown } from '../utils/setup';
 import { createHash } from 'crypto';
-import { LITELLM_MASTER_KEY } from '../utils/docker';
+import { LITELLM_MASTER_KEY } from '../utils/consts';
 
 describe('key api', () => {
   let agent: Agent;

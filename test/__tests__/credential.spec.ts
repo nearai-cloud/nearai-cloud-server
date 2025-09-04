@@ -1,7 +1,7 @@
 import { Agent } from 'supertest';
 import * as api from '../utils/api';
 import { setup, tearDown } from '../utils/setup';
-import { LITELLM_MASTER_KEY } from '../utils/docker';
+import { LITELLM_MASTER_KEY } from '../utils/consts';
 
 describe('credential api', () => {
   let agent: Agent;

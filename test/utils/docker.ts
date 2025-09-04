@@ -1,11 +1,10 @@
 import Docker from 'dockerode';
 import { sleep } from './common';
-
-export const LITELLM_IMAGE = 'ghcr.io/berriai/litellm:v1.74.15-stable';
-export const LITELLM_MASTER_KEY = 'sk-master';
-export const LITELLM_SALT_KEY = 'sk-salt';
+import { LITELLM_MASTER_KEY } from './consts';
 
 const docker = new Docker();
+
+const LITELLM_IMAGE = 'ghcr.io/berriai/litellm:v1.74.15-stable';
 
 const LABEL_KEY = 'test';
 const LABEL_VALUE = 'nearai-cloud-integration-test';
@@ -120,7 +119,7 @@ async function setupLitellmGatewayContainer(
       'STORE_MODEL_IN_DB=true',
       `DATABASE_URL=postgresql://admin:admin@litellm-gateway-database-${timestamp}:5432/litellm-gateway`,
       `LITELLM_MASTER_KEY=${LITELLM_MASTER_KEY}`,
-      `LITELLM_SALT_KEY=${LITELLM_SALT_KEY}`,
+      `LITELLM_SALT_KEY=sk-salt`,
     ],
     HostConfig: {
       PortBindings: { '4000/tcp': [{ HostPort: '4001' }] },
