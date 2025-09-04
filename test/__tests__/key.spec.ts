@@ -22,7 +22,8 @@ describe('key api', () => {
     await tearDown();
   });
 
-  test('register users', async () => {
+  test('setup', async () => {
+    // Register alice
     const aliceRes = await api.registerUser({
       agent,
       authorization: alice.supabaseAuthorization,
@@ -30,6 +31,7 @@ describe('key api', () => {
 
     expect(aliceRes.status).toEqual(204);
 
+    // Register bob
     const bobRes = await api.registerUser({
       agent,
       authorization: bob.supabaseAuthorization,
@@ -63,7 +65,6 @@ describe('key api', () => {
 
     expect(res.status).toEqual(200);
     expect(res.data).toBeTruthy();
-
     aliceKey = res.data!.key;
     aliceKeyHash = createHash('sha256')
       .update(aliceKey)

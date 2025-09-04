@@ -9,8 +9,10 @@ import {
   inputSchema as generateKeyInputSchema,
   outputSchema as generateKeyOutputSchema,
 } from '../../src/server/routes/key/generate-key';
-import { inputSchema as updateKeyInputSchema } from '../../src/server/routes/key/update-key';
-import { inputSchema as deleteKeyInputSchema } from '../../src/server/routes/key/delete-key';
+import {
+  inputSchema as updateKeyInputSchema,
+  inputSchema as deleteKeyInputSchema,
+} from '../../src/server/routes/key/update-key';
 import {
   inputSchema as generateServiceAccountInputSchema,
   outputSchema as generateServiceAccountOutputSchema,
@@ -26,6 +28,20 @@ import {
 import { inputSchema as createCredentialInputSchema } from '../../src/server/routes/credential/create-credential';
 import { inputSchema as updateCredentialInputSchema } from '../../src/server/routes/credential/update-credential';
 import { outputSchema as listCredentialsOutputSchema } from '../../src/server/routes/credential/list-credentials';
+import {
+  inputSchema as createModelInputSchema,
+  outputSchema as createModelOutputSchema,
+} from '../../src/server/routes/model/create-model';
+import { inputSchema as updateModelInputSchema } from '../../src/server/routes/model/update-model';
+import { inputSchema as deleteModelInputSchema } from '../../src/server/routes/model/delete-model';
+import {
+  inputSchema as getModelInputSchema,
+  outputSchema as getModelOutputSchema,
+} from '../../src/server/routes/model/get-model';
+import {
+  inputSchema as listModelsInputSchema,
+  outputSchema as listModelsOutputSchema,
+} from '../../src/server/routes/model/list-models';
 
 export type EmptyRecord = Record<string, never>;
 
@@ -124,4 +140,40 @@ export type UpdateCredentialResponse = ApiResponse<EmptyRecord>;
 export type ListCredentialsOptions = ApiOptions<EmptyRecord, EmptyRecord>;
 export type ListCredentialsResponse = ApiResponse<
   v.InferInput<typeof listCredentialsOutputSchema>
+>;
+
+export type CreateModelOptions = ApiOptions<
+  EmptyRecord,
+  v.InferInput<typeof createModelInputSchema>
+>;
+export type CreateModelResponse = ApiResponse<
+  v.InferOutput<typeof createModelOutputSchema>
+>;
+
+export type UpdateModelOptions = ApiOptions<
+  EmptyRecord,
+  v.InferInput<typeof updateModelInputSchema>
+>;
+export type UpdateModelResponse = ApiResponse<EmptyRecord>;
+
+export type DeleteModelOptions = ApiOptions<
+  EmptyRecord,
+  v.InferInput<typeof deleteModelInputSchema>
+>;
+export type DeleteModelResponse = ApiResponse<EmptyRecord>;
+
+export type GetModelOptions = ApiOptions<
+  v.InferInput<typeof getModelInputSchema>,
+  EmptyRecord
+>;
+export type GetModelResponse = ApiResponse<
+  v.InferOutput<typeof getModelOutputSchema>
+>;
+
+export type ListModelsOptions = ApiOptions<
+  v.InferInput<typeof listModelsInputSchema>,
+  EmptyRecord
+>;
+export type ListModelsResponse = ApiResponse<
+  v.InferOutput<typeof listModelsOutputSchema>
 >;

@@ -16,7 +16,8 @@ describe('credential api', () => {
     await tearDown();
   });
 
-  test('generate service account', async () => {
+  test('setup', async () => {
+    // Generate service account
     const res = await api.generateServiceAccount({
       agent,
       body: {
@@ -27,7 +28,6 @@ describe('credential api', () => {
 
     expect(res.status).toEqual(200);
     expect(res.data).toBeTruthy();
-
     serviceAccount = res.data!.key;
   });
 
@@ -77,8 +77,6 @@ describe('credential api', () => {
       agent,
       authorization: serviceAccount,
     });
-
-    console.log(res.data);
 
     expect(res.status).toEqual(200);
     expect(res.data).toBeTruthy();

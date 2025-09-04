@@ -4,8 +4,12 @@ import {
   ApiResponse,
   CreateCredentialOptions,
   CreateCredentialResponse,
+  CreateModelOptions,
+  CreateModelResponse,
   DeleteKeyOptions,
   DeleteKeyResponse,
+  DeleteModelOptions,
+  DeleteModelResponse,
   EmptyRecord,
   GenerateKeyOptions,
   GenerateKeyResponse,
@@ -13,12 +17,16 @@ import {
   GenerateServiceAccountResponse,
   GetKeyOptions,
   GetKeyResponse,
+  GetModelOptions,
+  GetModelResponse,
   GetUserOptions,
   GetUserResponse,
   ListCredentialsOptions,
   ListCredentialsResponse,
   ListKeysOptions,
   ListKeysResponse,
+  ListModelsOptions,
+  ListModelsResponse,
   ListUsersOptions,
   ListUsersResponse,
   RegisterUserOptions,
@@ -27,6 +35,8 @@ import {
   UpdateCredentialResponse,
   UpdateKeyOptions,
   UpdateKeyResponse,
+  UpdateModelOptions,
+  UpdateModelResponse,
 } from '../types/api';
 
 async function GET<TQuery, TData>({
@@ -196,5 +206,50 @@ export async function listCredentials(
   return GET({
     ...options,
     path: '/credential/list',
+  });
+}
+
+export async function createModel(
+  options: CreateModelOptions,
+): Promise<CreateModelResponse> {
+  return POST({
+    ...options,
+    path: '/model/new',
+  });
+}
+
+export async function updateModel(
+  options: UpdateModelOptions,
+): Promise<UpdateModelResponse> {
+  return POST({
+    ...options,
+    path: '/model/update',
+  });
+}
+
+export async function deleteModel(
+  options: DeleteModelOptions,
+): Promise<DeleteModelResponse> {
+  return POST({
+    ...options,
+    path: '/model/delete',
+  });
+}
+
+export async function getModel(
+  options: GetModelOptions,
+): Promise<GetModelResponse> {
+  return GET({
+    ...options,
+    path: '/model/details',
+  });
+}
+
+export async function listModels(
+  options: ListModelsOptions,
+): Promise<ListModelsResponse> {
+  return GET({
+    ...options,
+    path: '/model/list',
   });
 }
