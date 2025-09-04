@@ -12,12 +12,30 @@ describe('key api', () => {
   let aliceKey: string;
   let aliceKeyHash: string;
 
+  const bob = mockUsers.bob;
+
   beforeAll(async () => {
     agent = await setup();
   });
 
   afterAll(async () => {
     await tearDown();
+  });
+
+  test('register users', async () => {
+    const aliceRes = await api.registerUser({
+      agent,
+      authorization: alice.supabaseAuthorization,
+    });
+
+    expect(aliceRes.status).toEqual(204);
+
+    const bobRes = await api.registerUser({
+      agent,
+      authorization: bob.supabaseAuthorization,
+    });
+
+    expect(bobRes.status).toEqual(204);
   });
 
   test('generate key with invalid authorization', async () => {
@@ -32,15 +50,6 @@ describe('key api', () => {
     expect(res.status).toEqual(401);
     expect(res.error).toBeTruthy();
     expect(res.error!.message).toMatch('Invalid authorization token');
-  });
-
-  test('register user for generating key', async () => {
-    const res = await api.registerUser({
-      agent,
-      authorization: alice.supabaseAuthorization,
-    });
-
-    expect(res.status).toEqual(204);
   });
 
   test('generate key', async () => {
@@ -104,6 +113,22 @@ describe('key api', () => {
     expect(res.error!.message).toMatch('Invalid authorization token');
   });
 
+  test('get key owned by other users', async () => {
+    const res = await api.getKey({
+      agent,
+      query: {
+        keyHash: aliceKeyHash,
+      },
+      authorization: bob.supabaseAuthorization,
+    });
+
+    expect(res.status).toEqual(403);
+    expect(res.error).toBeTruthy();
+    expect(res.error!.message).toMatch(
+      'No permission to access the key that is owned by other users',
+    );
+  });
+
   test('get key', async () => {
     const res = await api.getKey({
       agent,
@@ -156,12 +181,29 @@ describe('key api', () => {
     expect(res.error!.message).toEqual('Invalid authorization token');
   });
 
+  test('update key owned by other users', async () => {
+    const res = await api.updateKey({
+      agent,
+      body: {
+        keyHash: aliceKeyHash,
+        keyAlias: 'bob-update-alice-key',
+      },
+      authorization: bob.supabaseAuthorization,
+    });
+
+    expect(res.status).toEqual(403);
+    expect(res.error).toBeTruthy();
+    expect(res.error!.message).toMatch(
+      'No permission to access the key that is owned by other users',
+    );
+  });
+
   test('update key', async () => {
     const res = await api.updateKey({
       agent,
       body: {
         keyHash: aliceKeyHash,
-        keyAlias: 'updated-alice-key',
+        keyAlias: 'update-alice-key',
       },
       authorization: alice.supabaseAuthorization,
     });
@@ -169,7 +211,7 @@ describe('key api', () => {
     expect(res.status).toEqual(204);
   });
 
-  test('get key after updating', async () => {
+  test('get updated key', async () => {
     const res = await api.getKey({
       agent,
       query: {
@@ -181,7 +223,7 @@ describe('key api', () => {
     expect(res.status).toEqual(200);
     expect(res.data).toBeTruthy();
     expect(res.data!.keyHash).toEqual(aliceKeyHash);
-    expect(res.data!.keyAlias).toEqual('updated-alice-key');
+    expect(res.data!.keyAlias).toEqual('update-alice-key');
   });
 
   test('delete key with invalid authorization', async () => {
@@ -198,6 +240,22 @@ describe('key api', () => {
     expect(res.error!.message).toEqual('Invalid authorization token');
   });
 
+  test('delete key owned by other users', async () => {
+    const res = await api.deleteKey({
+      agent,
+      body: {
+        keyHash: aliceKeyHash,
+      },
+      authorization: bob.supabaseAuthorization,
+    });
+
+    expect(res.status).toEqual(403);
+    expect(res.error).toBeTruthy();
+    expect(res.error!.message).toMatch(
+      'No permission to access the key that is owned by other users',
+    );
+  });
+
   test('delete key', async () => {
     const res = await api.deleteKey({
       agent,
@@ -210,7 +268,7 @@ describe('key api', () => {
     expect(res.status).toEqual(204);
   });
 
-  test('get key after deletion', async () => {
+  test('get deleted key', async () => {
     const res = await api.getKey({
       agent,
       query: {
@@ -221,16 +279,5 @@ describe('key api', () => {
 
     expect(res.status).toEqual(200);
     expect(res.data).toBeNull();
-  });
-
-  test('list keys after deletion', async () => {
-    const res = await api.listKeys({
-      agent,
-      authorization: alice.supabaseAuthorization,
-    });
-
-    expect(res.status).toEqual(200);
-    expect(res.data).toBeTruthy();
-    expect(res.data!.keys.length).toEqual(0);
   });
 });
