@@ -16,8 +16,8 @@ export type LitellmProxyModel = {
     model: string;
     custom_llm_provider: string;
     litellm_credential_name?: string;
-    input_cost_per_token: number;
-    output_cost_per_token: number;
+    input_cost_per_token?: number;
+    output_cost_per_token?: number;
   };
   model_info: {
     id: string;

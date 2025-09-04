@@ -64,11 +64,11 @@ describe('model api', () => {
         providerName: 'openai',
         providerModelName: 'openai/gpt-3.5',
         metadata: {
-          verifiable: false,
-          contextLength: 10000,
+          verifiable: true,
+          contextLength: 10_000,
           modelFullName: 'GPT 3.5',
-          modelDescription: 'A test Model',
-          modelIcon: '',
+          modelDescription: 'I am description',
+          modelIcon: 'I am icon',
         },
       },
       authorization: 'sk-invalid',
@@ -89,13 +89,13 @@ describe('model api', () => {
         providerModelName: 'openai/gpt-3.5',
         metadata: {
           verifiable: true,
-          contextLength: 10000,
+          contextLength: 10_000,
           modelFullName: 'GPT 3.5',
-          modelDescription: 'A test Model',
-          modelIcon: '',
+          modelDescription: 'I am description',
+          modelIcon: 'I am icon',
         },
       },
-      authorization: 'sk-invalid',
+      authorization: serviceAccount,
     });
 
     expect(res.status).toEqual(200);
