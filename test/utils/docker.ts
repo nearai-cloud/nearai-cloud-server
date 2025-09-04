@@ -1,10 +1,8 @@
 import Docker from 'dockerode';
 import { sleep } from './common';
-import { LITELLM_MASTER_KEY } from './consts';
+import { LITELLM_MASTER_KEY, LITELLM_IMAGE } from './consts';
 
 const docker = new Docker();
-
-const LITELLM_IMAGE = 'ghcr.io/berriai/litellm:v1.74.15-stable';
 
 const LABEL_KEY = 'test';
 const LABEL_VALUE = 'nearai-cloud-integration-test';
