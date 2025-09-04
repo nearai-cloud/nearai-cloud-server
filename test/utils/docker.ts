@@ -23,7 +23,7 @@ export async function setupContainers() {
 
   networks.push(network);
 
-  await sleep(20 * 1000); // TODO: health check
+  await sleep(25 * 1000);
 }
 
 export async function teardownContainers() {
@@ -34,6 +34,8 @@ export async function teardownContainers() {
   for (const network of networks) {
     await network.remove();
   }
+
+  await sleep(5 * 1000);
 }
 
 async function setupNearAiCloudDatabaseContainer(networkId: string) {
