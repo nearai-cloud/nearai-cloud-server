@@ -78,6 +78,8 @@ describe('credential api', () => {
       authorization: serviceAccount,
     });
 
+    console.log(res.data);
+
     expect(res.status).toEqual(200);
     expect(res.data).toBeTruthy();
     expect(res.data!.length).toEqual(1);
@@ -103,7 +105,7 @@ describe('credential api', () => {
       agent,
       body: {
         credentialName: 'OpenAI',
-        providerApiKey: 'sk-update',
+        providerApiUrl: 'https://api.openai.com/v2',
       },
       authorization: serviceAccount,
     });
@@ -117,6 +119,8 @@ describe('credential api', () => {
 
     expect(listCredentialsRes.status).toEqual(200);
     expect(listCredentialsRes.data).toBeTruthy();
-    expect(listCredentialsRes.data![0].providerApiKey).toEqual('sk-update');
+    expect(listCredentialsRes.data![0].providerApiUrl).toEqual(
+      'https://api.openai.com/v2',
+    );
   });
 });
