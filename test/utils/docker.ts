@@ -8,37 +8,38 @@ export const LITELLM_DATABASE_URL =
   'postgresql://admin:admin@litellm-gateway-database:5432/litellm-gateway';
 
 const docker = new Docker();
-const containers: Docker.Container[] = [];
-const networks: Docker.Network[] = [];
+
+const LABEL_KEY = 'test';
+const LABEL_VALUE = 'nearai-cloud-integration-test';
+const LABEL = `${LABEL_KEY}=${LABEL_VALUE}`;
 
 export async function setupContainers() {
-  const network = await docker.createNetwork({
-    Name: `nearai-cloud-integration-test-${Date.now()}`,
-    Driver: 'bridge',
-  });
+  await clearCache();
 
-  await setupLitellmGatewayDatabaseContainer(network.id);
-  await setupLitellmGatewayContainer(network.id);
-  await setupNearAiCloudDatabaseContainer(network.id);
+  const network = await setupNetwork();
 
-  networks.push(network);
+  await setupLitellmGatewayDatabaseContainer(network);
+  await setupLitellmGatewayContainer(network);
+  await setupNearAiCloudDatabaseContainer(network);
 
-  await sleep(25 * 1000);
+  await sleep(15 * 1000);
 }
 
 export async function teardownContainers() {
-  for (const container of containers) {
-    await container.remove({ force: true });
-  }
-
-  for (const network of networks) {
-    await network.remove();
-  }
-
-  await sleep(5 * 1000);
+  await clearCache();
 }
 
-async function setupNearAiCloudDatabaseContainer(networkId: string) {
+async function setupNetwork(): Promise<Docker.Network> {
+  return docker.createNetwork({
+    Name: `nearai-cloud-integration-test-${Date.now()}`,
+    Driver: 'bridge',
+    Labels: {
+      [LABEL_KEY]: LABEL_VALUE,
+    },
+  });
+}
+
+async function setupNearAiCloudDatabaseContainer(network: Docker.Network) {
   const container = await docker.createContainer({
     Image: 'postgres:16',
     name: 'nearai-cloud-database',
@@ -49,16 +50,17 @@ async function setupNearAiCloudDatabaseContainer(networkId: string) {
     ],
     HostConfig: {
       PortBindings: { '5432/tcp': [{ HostPort: '3002' }] },
-      NetworkMode: networkId,
+      NetworkMode: network.id,
+    },
+    Labels: {
+      [LABEL_KEY]: LABEL_VALUE,
     },
   });
 
   await container.start();
-
-  containers.push(container);
 }
 
-async function setupLitellmGatewayDatabaseContainer(networkId: string) {
+async function setupLitellmGatewayDatabaseContainer(network: Docker.Network) {
   const container = await docker.createContainer({
     Image: 'postgres:16',
     name: 'litellm-gateway-database',
@@ -69,16 +71,17 @@ async function setupLitellmGatewayDatabaseContainer(networkId: string) {
     ],
     HostConfig: {
       PortBindings: { '5432/tcp': [{ HostPort: '4002' }] },
-      NetworkMode: networkId,
+      NetworkMode: network.id,
+    },
+    Labels: {
+      [LABEL_KEY]: LABEL_VALUE,
     },
   });
 
   await container.start();
-
-  containers.push(container);
 }
 
-async function setupLitellmGatewayContainer(networkId: string) {
+async function setupLitellmGatewayContainer(network: Docker.Network) {
   const container = await docker.createContainer({
     Image: LITELLM_IMAGE,
     name: 'litellm-gateway',
@@ -90,11 +93,37 @@ async function setupLitellmGatewayContainer(networkId: string) {
     ],
     HostConfig: {
       PortBindings: { '4000/tcp': [{ HostPort: '4001' }] },
-      NetworkMode: networkId,
+      NetworkMode: network.id,
+    },
+    Labels: {
+      [LABEL_KEY]: LABEL_VALUE,
     },
   });
 
   await container.start();
+}
 
-  containers.push(container);
+async function clearCache() {
+  const containerInfos = await docker.listContainers({
+    filters: {
+      label: [LABEL],
+    },
+  });
+
+  for (const containerInfo of containerInfos) {
+    const container = docker.getContainer(containerInfo.Id);
+    await container.stop();
+    await container.remove();
+  }
+
+  const networkInfos = await docker.listNetworks({
+    filters: {
+      label: [LABEL],
+    },
+  });
+
+  for (const networkInfo of networkInfos) {
+    const network = docker.getNetwork(networkInfo.Id);
+    await network.remove();
+  }
 }
