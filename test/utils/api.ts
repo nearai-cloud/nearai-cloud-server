@@ -2,6 +2,8 @@ import { Response } from 'supertest';
 import {
   ApiOptions,
   ApiResponse,
+  DeleteKeyOptions,
+  DeleteKeyResponse,
   EmptyRecord,
   GenerateKeyOptions,
   GenerateKeyResponse,
@@ -11,10 +13,14 @@ import {
   GetKeyResponse,
   GetUserOptions,
   GetUserResponse,
+  ListKeysOptions,
+  ListKeysResponse,
   ListUsersOptions,
   ListUsersResponse,
   RegisterUserOptions,
   RegisterUserResponse,
+  UpdateKeyOptions,
+  UpdateKeyResponse,
 } from '../types/api';
 
 async function GET<TQuery, TData>({
@@ -126,9 +132,36 @@ export async function generateServiceAccount(
   });
 }
 
+export async function updateKey(
+  options: UpdateKeyOptions,
+): Promise<UpdateKeyResponse> {
+  return POST({
+    ...options,
+    path: '/key/update',
+  });
+}
+
+export async function deleteKey(
+  options: DeleteKeyOptions,
+): Promise<DeleteKeyResponse> {
+  return POST({
+    ...options,
+    path: '/key/delete',
+  });
+}
+
 export async function getKey(options: GetKeyOptions): Promise<GetKeyResponse> {
   return GET({
     ...options,
     path: '/key/info',
+  });
+}
+
+export async function listKeys(
+  options: ListKeysOptions,
+): Promise<ListKeysResponse> {
+  return GET({
+    ...options,
+    path: '/key/list',
   });
 }

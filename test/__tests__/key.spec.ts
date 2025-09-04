@@ -3,6 +3,7 @@ import { mockUsers } from '../utils/users';
 import * as api from '../utils/api';
 import { setup, tearDown } from '../utils/setup';
 import { createHash } from 'crypto';
+import { LITELLM_MASTER_KEY } from '../utils/docker';
 
 describe('key api', () => {
   let agent: Agent;
@@ -61,6 +62,34 @@ describe('key api', () => {
       .toString('hex');
   });
 
+  test('generate service account with invalid authorization', async () => {
+    const res = await api.generateServiceAccount({
+      agent,
+      body: {
+        serviceAccountId: 'test',
+      },
+      authorization: 'invalid-token',
+    });
+
+    expect(res.status).toEqual(403);
+    expect(res.error).toBeTruthy();
+    expect(res.error!.message).toMatch('Only admin can access this endpoint');
+  });
+
+  test('generate service account', async () => {
+    const res = await api.generateServiceAccount({
+      agent,
+      body: {
+        serviceAccountId: 'test',
+      },
+      authorization: LITELLM_MASTER_KEY,
+    });
+
+    expect(res.status).toEqual(200);
+    expect(res.data).toBeTruthy();
+    expect(res.data!.key).toMatch(/^sk-/);
+  });
+
   test('get key with invalid authorization', async () => {
     const res = await api.getKey({
       agent,
@@ -87,19 +116,121 @@ describe('key api', () => {
     expect(res.status).toEqual(200);
     expect(res.data).toBeTruthy();
     expect(res.data!.keyHash).toEqual(aliceKeyHash);
+    expect(res.data!.keyAlias).toEqual('alice-key');
   });
 
-  test('generate service account key for listing users with invalid authorization', async () => {
-    const res = await api.generateServiceAccount({
+  test('list keys with invalid authorization', async () => {
+    const res = await api.listKeys({
       agent,
-      body: {
-        serviceAccountId: 'list-user',
-      },
-      authorization: 'invalid-token',
+      authorization: 'invalid token',
     });
 
-    expect(res.status).toEqual(403);
+    expect(res.status).toEqual(401);
     expect(res.error).toBeTruthy();
-    expect(res.error!.message).toMatch('Only admin can access this endpoint');
+    expect(res.error!.message).toEqual('Invalid authorization token');
+  });
+
+  test('list keys', async () => {
+    const res = await api.listKeys({
+      agent,
+      authorization: alice.supabaseAuthorization,
+    });
+
+    expect(res.status).toEqual(200);
+    expect(res.data).toBeTruthy();
+    expect(res.data!.keys.length).toEqual(1);
+  });
+
+  test('update key with invalid authorization', async () => {
+    const res = await api.updateKey({
+      agent,
+      body: {
+        keyHash: aliceKeyHash,
+        keyAlias: 'updated-alice-key',
+      },
+      authorization: 'invalid token',
+    });
+
+    expect(res.status).toEqual(401);
+    expect(res.error).toBeTruthy();
+    expect(res.error!.message).toEqual('Invalid authorization token');
+  });
+
+  test('update key', async () => {
+    const res = await api.updateKey({
+      agent,
+      body: {
+        keyHash: aliceKeyHash,
+        keyAlias: 'updated-alice-key',
+      },
+      authorization: alice.supabaseAuthorization,
+    });
+
+    expect(res.status).toEqual(204);
+  });
+
+  test('get key after updating', async () => {
+    const res = await api.getKey({
+      agent,
+      query: {
+        keyHash: aliceKeyHash,
+      },
+      authorization: alice.supabaseAuthorization,
+    });
+
+    expect(res.status).toEqual(200);
+    expect(res.data).toBeTruthy();
+    expect(res.data!.keyHash).toEqual(aliceKeyHash);
+    expect(res.data!.keyAlias).toEqual('updated-alice-key');
+  });
+
+  test('delete key with invalid authorization', async () => {
+    const res = await api.deleteKey({
+      agent,
+      body: {
+        keyHash: aliceKeyHash,
+      },
+      authorization: 'invalid token',
+    });
+
+    expect(res.status).toEqual(401);
+    expect(res.error).toBeTruthy();
+    expect(res.error!.message).toEqual('Invalid authorization token');
+  });
+
+  test('delete key', async () => {
+    const res = await api.deleteKey({
+      agent,
+      body: {
+        keyHash: aliceKeyHash,
+      },
+      authorization: alice.supabaseAuthorization,
+    });
+
+    expect(res.status).toEqual(204);
+  });
+
+  test('get key after deletion', async () => {
+    const res = await api.getKey({
+      agent,
+      query: {
+        keyHash: aliceKeyHash,
+      },
+      authorization: alice.supabaseAuthorization,
+    });
+
+    expect(res.status).toEqual(200);
+    expect(res.data).toBeNull();
+  });
+
+  test('list keys after deletion', async () => {
+    const res = await api.listKeys({
+      agent,
+      authorization: alice.supabaseAuthorization,
+    });
+
+    expect(res.status).toEqual(200);
+    expect(res.data).toBeTruthy();
+    expect(res.data!.keys.length).toEqual(0);
   });
 });

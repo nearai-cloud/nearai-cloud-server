@@ -6,7 +6,7 @@ import { adminLitellmApiClient } from '../../../services/litellm-api-client';
 import { CTX_GLOBAL_KEYS, INPUT_LIMITS } from '../../../utils/consts';
 import { toShortKeyAlias } from '../../../utils/common';
 
-const inputSchema = v.object({
+export const inputSchema = v.object({
   page: v.optional(
     v.pipe(
       v.string(),
@@ -26,7 +26,7 @@ const inputSchema = v.object({
   ),
 });
 
-const outputSchema = v.object({
+export const outputSchema = v.object({
   keys: v.array(
     v.object({
       keyHash: v.string(),

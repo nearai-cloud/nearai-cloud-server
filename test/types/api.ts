@@ -9,6 +9,8 @@ import {
   inputSchema as generateKeyInputSchema,
   outputSchema as generateKeyOutputSchema,
 } from '../../src/server/routes/key/generate-key';
+import { inputSchema as updateKeyInputSchema } from '../../src/server/routes/key/update-key';
+import { inputSchema as deleteKeyInputSchema } from '../../src/server/routes/key/delete-key';
 import {
   inputSchema as generateServiceAccountInputSchema,
   outputSchema as generateServiceAccountOutputSchema,
@@ -17,6 +19,10 @@ import {
   inputSchema as getKeyInputSchema,
   outputSchema as getKeyOutputSchema,
 } from '../../src/server/routes/key/get-key';
+import {
+  inputSchema as listKeysInputSchema,
+  outputSchema as listKeysOutputSchema,
+} from '../../src/server/routes/key/list-keys';
 
 export type EmptyRecord = Record<string, never>;
 
@@ -64,6 +70,18 @@ export type GenerateKeyResponse = ApiResponse<
   v.InferOutput<typeof generateKeyOutputSchema>
 >;
 
+export type UpdateKeyOptions = ApiOptions<
+  EmptyRecord,
+  v.InferInput<typeof updateKeyInputSchema>
+>;
+export type UpdateKeyResponse = ApiResponse<EmptyRecord>;
+
+export type DeleteKeyOptions = ApiOptions<
+  EmptyRecord,
+  v.InferInput<typeof deleteKeyInputSchema>
+>;
+export type DeleteKeyResponse = ApiResponse<EmptyRecord>;
+
 export type GenerateServiceAccountOptions = ApiOptions<
   EmptyRecord,
   v.InferInput<typeof generateServiceAccountInputSchema>
@@ -78,4 +96,12 @@ export type GetKeyOptions = ApiOptions<
 >;
 export type GetKeyResponse = ApiResponse<
   v.InferOutput<typeof getKeyOutputSchema>
+>;
+
+export type ListKeysOptions = ApiOptions<
+  v.InferInput<typeof listKeysInputSchema>,
+  EmptyRecord
+>;
+export type ListKeysResponse = ApiResponse<
+  v.InferOutput<typeof listKeysOutputSchema>
 >;
