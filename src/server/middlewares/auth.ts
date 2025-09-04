@@ -60,7 +60,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
   if (!user) {
     throw createOpenAiHttpError({
       status: STATUS_CODES.FORBIDDEN,
-      message: 'Incomplete user registration',
+      message: 'User not registered',
     });
   }
 

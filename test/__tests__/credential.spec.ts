@@ -1,25 +1,26 @@
-import { Agent } from 'supertest';
 import * as api from '../utils/api';
 import { setup, tearDown } from '../utils/setup';
 import { LITELLM_MASTER_KEY } from '../utils/consts';
+import { SetupContext } from '../types/context';
+
+type Context = SetupContext & {
+  serviceAccount?: string;
+};
 
 describe('credential api', () => {
-  let agent: Agent;
-
-  let serviceAccount: string;
+  let ctx: Context;
 
   beforeAll(async () => {
-    agent = await setup();
+    ctx = await setup();
   });
 
   afterAll(async () => {
     await tearDown();
   });
 
-  test('setup', async () => {
-    // Generate service account
+  test('generate service account', async () => {
     const res = await api.generateServiceAccount({
-      agent,
+      agent: ctx.agent,
       body: {
         serviceAccountId: 'test-credential-api',
       },
@@ -28,12 +29,13 @@ describe('credential api', () => {
 
     expect(res.status).toEqual(200);
     expect(res.data).toBeTruthy();
-    serviceAccount = res.data!.key;
+
+    ctx.serviceAccount = res.data!.key;
   });
 
   test('create credential with invalid authorization', async () => {
     const res = await api.createCredential({
-      agent,
+      agent: ctx.agent,
       body: {
         credentialName: 'OpenAI',
         providerApiUrl: 'https://api.openai.com/v1',
@@ -49,13 +51,13 @@ describe('credential api', () => {
 
   test('create credential', async () => {
     const res = await api.createCredential({
-      agent,
+      agent: ctx.agent,
       body: {
         credentialName: 'OpenAI',
         providerApiUrl: 'https://api.openai.com/v1',
         providerApiKey: 'sk-example',
       },
-      authorization: serviceAccount,
+      authorization: ctx.serviceAccount,
     });
 
     expect(res.status).toEqual(204);
@@ -63,7 +65,7 @@ describe('credential api', () => {
 
   test('list credentials with invalid authorization', async () => {
     const res = await api.listCredentials({
-      agent,
+      agent: ctx.agent,
       authorization: 'sk-invalid',
     });
 
@@ -74,8 +76,8 @@ describe('credential api', () => {
 
   test('list credentials', async () => {
     const res = await api.listCredentials({
-      agent,
-      authorization: serviceAccount,
+      agent: ctx.agent,
+      authorization: ctx.serviceAccount,
     });
 
     expect(res.status).toEqual(200);
@@ -85,7 +87,7 @@ describe('credential api', () => {
 
   test('update credential with invalid authorization', async () => {
     const res = await api.updateCredential({
-      agent,
+      agent: ctx.agent,
       body: {
         credentialName: 'OpenAI',
         providerApiUrl: 'https://api.openai.com/v2',
@@ -100,19 +102,19 @@ describe('credential api', () => {
 
   test('update credential', async () => {
     const updateCredentialRes = await api.updateCredential({
-      agent,
+      agent: ctx.agent,
       body: {
         credentialName: 'OpenAI',
         providerApiUrl: 'https://api.openai.com/v2',
       },
-      authorization: serviceAccount,
+      authorization: ctx.serviceAccount,
     });
 
     expect(updateCredentialRes.status).toEqual(204);
 
     const listCredentialsRes = await api.listCredentials({
-      agent,
-      authorization: serviceAccount,
+      agent: ctx.agent,
+      authorization: ctx.serviceAccount,
     });
 
     expect(listCredentialsRes.status).toEqual(200);

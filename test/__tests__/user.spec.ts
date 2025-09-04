@@ -1,28 +1,27 @@
-import { Agent } from 'supertest';
 import { mockUsers } from '../utils/users';
 import * as api from '../utils/api';
 import { setup, tearDown } from '../utils/setup';
 import { LITELLM_MASTER_KEY } from '../utils/consts';
+import { SetupContext } from '../types/context';
+
+type Context = SetupContext & {
+  serviceAccount?: string;
+};
 
 describe('user api', () => {
-  let agent: Agent;
-
-  const alice = mockUsers.alice;
-
-  let serviceAccount: string;
+  let ctx: Context;
 
   beforeAll(async () => {
-    agent = await setup();
+    ctx = await setup({ registerMockUsers: false });
   });
 
   afterAll(async () => {
     await tearDown();
   });
 
-  test('setup', async () => {
-    // Generate service account
+  test('generate service account', async () => {
     const res = await api.generateServiceAccount({
-      agent,
+      agent: ctx.agent,
       body: {
         serviceAccountId: 'test-user-api',
       },
@@ -31,12 +30,13 @@ describe('user api', () => {
 
     expect(res.status).toEqual(200);
     expect(res.data).toBeTruthy();
-    serviceAccount = res.data!.key;
+
+    ctx.serviceAccount = res.data!.key;
   });
 
   test('register user with invalid authorization', async () => {
     const res = await api.registerUser({
-      agent,
+      agent: ctx.agent,
       authorization: 'sk-invalid',
     });
 
@@ -47,8 +47,8 @@ describe('user api', () => {
 
   test('register user', async () => {
     const res = await api.registerUser({
-      agent,
-      authorization: alice.supabaseAuthorization,
+      agent: ctx.agent,
+      authorization: mockUsers.alice.supabaseAuthorization,
     });
 
     expect(res.status).toEqual(204);
@@ -56,20 +56,20 @@ describe('user api', () => {
 
   test('register user twice', async () => {
     const res = await api.registerUser({
-      agent,
-      authorization: alice.supabaseAuthorization,
+      agent: ctx.agent,
+      authorization: mockUsers.alice.supabaseAuthorization,
     });
 
     expect(res.status).toEqual(400);
     expect(res.error).toBeTruthy();
     expect(res.error!.message).toMatch(
-      `User with email ${alice.email} already exists`,
+      `User with email ${mockUsers.alice.email} already exists`,
     );
   });
 
   test('get user with invalid authorization', async () => {
     const res = await api.getUser({
-      agent,
+      agent: ctx.agent,
       authorization: 'sk-invalid',
     });
 
@@ -80,18 +80,18 @@ describe('user api', () => {
 
   test('get user', async () => {
     const res = await api.getUser({
-      agent,
-      authorization: alice.supabaseAuthorization,
+      agent: ctx.agent,
+      authorization: mockUsers.alice.supabaseAuthorization,
     });
 
     expect(res.status).toEqual(200);
     expect(res.data).toBeTruthy();
-    expect(res.data!.userId).toEqual(alice.id);
+    expect(res.data!.userId).toEqual(mockUsers.alice.id);
   });
 
   test('list users with invalid authorization', async () => {
     const res = await api.listUsers({
-      agent,
+      agent: ctx.agent,
       authorization: 'sk-invalid',
     });
 
@@ -102,8 +102,8 @@ describe('user api', () => {
 
   test('list users', async () => {
     const res = await api.listUsers({
-      agent,
-      authorization: serviceAccount,
+      agent: ctx.agent,
+      authorization: ctx.serviceAccount,
     });
 
     expect(res.status).toEqual(200);

@@ -1,36 +1,27 @@
-import { Agent } from 'supertest';
 import * as api from '../utils/api';
 import { setup, tearDown } from '../utils/setup';
 import { LITELLM_MASTER_KEY } from '../utils/consts';
 import { mockUsers } from '../utils/users';
+import { SetupContext } from '../types/context';
+
+type Context = SetupContext & {
+  serviceAccount?: string;
+};
 
 describe('model api', () => {
-  let agent: Agent;
-
-  const alice = mockUsers.alice;
-
-  let serviceAccount: string;
+  let ctx: Context;
 
   beforeAll(async () => {
-    agent = await setup();
+    ctx = await setup();
   });
 
   afterAll(async () => {
     await tearDown();
   });
 
-  test('setup', async () => {
-    // Register alice
-    const registerUserRes = await api.registerUser({
-      agent,
-      authorization: alice.supabaseAuthorization,
-    });
-
-    expect(registerUserRes.status).toEqual(204);
-
-    // Generate service account
+  test('generate service account', async () => {
     const generateServiceAccountRes = await api.generateServiceAccount({
-      agent,
+      agent: ctx.agent,
       body: {
         serviceAccountId: 'test-model-api',
       },
@@ -39,17 +30,19 @@ describe('model api', () => {
 
     expect(generateServiceAccountRes.status).toEqual(200);
     expect(generateServiceAccountRes.data).toBeTruthy();
-    serviceAccount = generateServiceAccountRes.data!.key;
 
-    // Create credential
+    ctx.serviceAccount = generateServiceAccountRes.data!.key;
+  });
+
+  test('create credential', async () => {
     const res = await api.createCredential({
-      agent,
+      agent: ctx.agent,
       body: {
         credentialName: 'OpenAI',
         providerApiUrl: 'https://api.openai.com/v1',
         providerApiKey: 'sk-example',
       },
-      authorization: serviceAccount,
+      authorization: ctx.serviceAccount,
     });
 
     expect(res.status).toEqual(204);
@@ -57,7 +50,7 @@ describe('model api', () => {
 
   test('create model with invalid authorization', async () => {
     const res = await api.createModel({
-      agent,
+      agent: ctx.agent,
       body: {
         credentialName: 'OpenAI',
         model: 'gpt-3.5',
@@ -81,7 +74,7 @@ describe('model api', () => {
 
   test('create model', async () => {
     const res = await api.createModel({
-      agent,
+      agent: ctx.agent,
       body: {
         credentialName: 'OpenAI',
         model: 'gpt-3.5',
@@ -95,7 +88,7 @@ describe('model api', () => {
           modelIcon: 'I am icon',
         },
       },
-      authorization: serviceAccount,
+      authorization: ctx.serviceAccount,
     });
 
     expect(res.status).toEqual(200);
@@ -104,7 +97,7 @@ describe('model api', () => {
 
   test('get model with invalid authorization', async () => {
     const res = await api.getModel({
-      agent,
+      agent: ctx.agent,
       query: {
         model: 'gpt-3.5',
       },
@@ -118,11 +111,11 @@ describe('model api', () => {
 
   test('get model', async () => {
     const res = await api.getModel({
-      agent,
+      agent: ctx.agent,
       query: {
         model: 'gpt-3.5',
       },
-      authorization: alice.supabaseAuthorization,
+      authorization: mockUsers.alice.supabaseAuthorization,
     });
 
     expect(res.status).toEqual(200);

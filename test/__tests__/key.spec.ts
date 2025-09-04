@@ -1,48 +1,29 @@
-import { Agent } from 'supertest';
 import { mockUsers } from '../utils/users';
 import * as api from '../utils/api';
 import { setup, tearDown } from '../utils/setup';
 import { createHash } from 'crypto';
 import { LITELLM_MASTER_KEY } from '../utils/consts';
+import { SetupContext } from '../types/context';
+
+type Context = SetupContext & {
+  aliceKey?: string;
+  aliceKeyHash?: string;
+};
 
 describe('key api', () => {
-  let agent: Agent;
-
-  const alice = mockUsers.alice;
-  let aliceKey: string;
-  let aliceKeyHash: string;
-
-  const bob = mockUsers.bob;
+  let ctx: Context;
 
   beforeAll(async () => {
-    agent = await setup();
+    ctx = await setup();
   });
 
   afterAll(async () => {
     await tearDown();
   });
 
-  test('setup', async () => {
-    // Register alice
-    const aliceRes = await api.registerUser({
-      agent,
-      authorization: alice.supabaseAuthorization,
-    });
-
-    expect(aliceRes.status).toEqual(204);
-
-    // Register bob
-    const bobRes = await api.registerUser({
-      agent,
-      authorization: bob.supabaseAuthorization,
-    });
-
-    expect(bobRes.status).toEqual(204);
-  });
-
   test('generate key with invalid authorization', async () => {
     const res = await api.generateKey({
-      agent,
+      agent: ctx.agent,
       body: {
         keyAlias: 'alice-key',
       },
@@ -56,17 +37,19 @@ describe('key api', () => {
 
   test('generate key', async () => {
     const res = await api.generateKey({
-      agent,
+      agent: ctx.agent,
       body: {
         keyAlias: 'alice-key',
       },
-      authorization: alice.supabaseAuthorization,
+      authorization: mockUsers.alice.supabaseAuthorization,
     });
 
     expect(res.status).toEqual(200);
     expect(res.data).toBeTruthy();
-    aliceKey = res.data!.key;
-    aliceKeyHash = createHash('sha256')
+
+    const aliceKey = res.data!.key;
+    ctx.aliceKey = aliceKey;
+    ctx.aliceKeyHash = createHash('sha256')
       .update(aliceKey)
       .digest()
       .toString('hex');
@@ -74,7 +57,7 @@ describe('key api', () => {
 
   test('generate service account with invalid authorization', async () => {
     const res = await api.generateServiceAccount({
-      agent,
+      agent: ctx.agent,
       body: {
         serviceAccountId: 'test',
       },
@@ -88,7 +71,7 @@ describe('key api', () => {
 
   test('generate service account', async () => {
     const res = await api.generateServiceAccount({
-      agent,
+      agent: ctx.agent,
       body: {
         serviceAccountId: 'test-key-api',
       },
@@ -102,9 +85,9 @@ describe('key api', () => {
 
   test('get key with invalid authorization', async () => {
     const res = await api.getKey({
-      agent,
+      agent: ctx.agent,
       query: {
-        keyHash: aliceKeyHash,
+        keyHash: ctx.aliceKeyHash!,
       },
       authorization: 'sk-invalid',
     });
@@ -116,11 +99,11 @@ describe('key api', () => {
 
   test('get key owned by other users', async () => {
     const res = await api.getKey({
-      agent,
+      agent: ctx.agent,
       query: {
-        keyHash: aliceKeyHash,
+        keyHash: ctx.aliceKeyHash!,
       },
-      authorization: bob.supabaseAuthorization,
+      authorization: mockUsers.bob.supabaseAuthorization,
     });
 
     expect(res.status).toEqual(403);
@@ -132,22 +115,22 @@ describe('key api', () => {
 
   test('get key', async () => {
     const res = await api.getKey({
-      agent,
+      agent: ctx.agent,
       query: {
-        keyHash: aliceKeyHash,
+        keyHash: ctx.aliceKeyHash!,
       },
-      authorization: alice.supabaseAuthorization,
+      authorization: mockUsers.alice.supabaseAuthorization,
     });
 
     expect(res.status).toEqual(200);
     expect(res.data).toBeTruthy();
-    expect(res.data!.keyHash).toEqual(aliceKeyHash);
+    expect(res.data!.keyHash).toEqual(ctx.aliceKeyHash!);
     expect(res.data!.keyAlias).toEqual('alice-key');
   });
 
   test('list keys with invalid authorization', async () => {
     const res = await api.listKeys({
-      agent,
+      agent: ctx.agent,
       authorization: 'sk-invalid',
     });
 
@@ -158,8 +141,8 @@ describe('key api', () => {
 
   test('list keys', async () => {
     const res = await api.listKeys({
-      agent,
-      authorization: alice.supabaseAuthorization,
+      agent: ctx.agent,
+      authorization: mockUsers.alice.supabaseAuthorization,
     });
 
     expect(res.status).toEqual(200);
@@ -169,9 +152,9 @@ describe('key api', () => {
 
   test('update key with invalid authorization', async () => {
     const res = await api.updateKey({
-      agent,
+      agent: ctx.agent,
       body: {
-        keyHash: aliceKeyHash,
+        keyHash: ctx.aliceKeyHash!,
         keyAlias: 'updated-alice-key',
       },
       authorization: 'sk-invalid',
@@ -184,12 +167,12 @@ describe('key api', () => {
 
   test('update key owned by other users', async () => {
     const res = await api.updateKey({
-      agent,
+      agent: ctx.agent,
       body: {
-        keyHash: aliceKeyHash,
+        keyHash: ctx.aliceKeyHash!,
         keyAlias: 'bob-update-alice-key',
       },
-      authorization: bob.supabaseAuthorization,
+      authorization: mockUsers.bob.supabaseAuthorization,
     });
 
     expect(res.status).toEqual(403);
@@ -201,35 +184,35 @@ describe('key api', () => {
 
   test('update key', async () => {
     const updateKeyRes = await api.updateKey({
-      agent,
+      agent: ctx.agent,
       body: {
-        keyHash: aliceKeyHash,
+        keyHash: ctx.aliceKeyHash!,
         keyAlias: 'update-alice-key',
       },
-      authorization: alice.supabaseAuthorization,
+      authorization: mockUsers.alice.supabaseAuthorization,
     });
 
     expect(updateKeyRes.status).toEqual(204);
 
     const getKeyRes = await api.getKey({
-      agent,
+      agent: ctx.agent,
       query: {
-        keyHash: aliceKeyHash,
+        keyHash: ctx.aliceKeyHash!,
       },
-      authorization: alice.supabaseAuthorization,
+      authorization: mockUsers.alice.supabaseAuthorization,
     });
 
     expect(getKeyRes.status).toEqual(200);
     expect(getKeyRes.data).toBeTruthy();
-    expect(getKeyRes.data!.keyHash).toEqual(aliceKeyHash);
+    expect(getKeyRes.data!.keyHash).toEqual(ctx.aliceKeyHash!);
     expect(getKeyRes.data!.keyAlias).toEqual('update-alice-key');
   });
 
   test('delete key with invalid authorization', async () => {
     const res = await api.deleteKey({
-      agent,
+      agent: ctx.agent,
       body: {
-        keyHash: aliceKeyHash,
+        keyHash: ctx.aliceKeyHash!,
       },
       authorization: 'sk-invalid',
     });
@@ -241,11 +224,11 @@ describe('key api', () => {
 
   test('delete key owned by other users', async () => {
     const res = await api.deleteKey({
-      agent,
+      agent: ctx.agent,
       body: {
-        keyHash: aliceKeyHash,
+        keyHash: ctx.aliceKeyHash!,
       },
-      authorization: bob.supabaseAuthorization,
+      authorization: mockUsers.bob.supabaseAuthorization,
     });
 
     expect(res.status).toEqual(403);
@@ -257,29 +240,29 @@ describe('key api', () => {
 
   test('delete key', async () => {
     const deleteKeyRes = await api.deleteKey({
-      agent,
+      agent: ctx.agent,
       body: {
-        keyHash: aliceKeyHash,
+        keyHash: ctx.aliceKeyHash!,
       },
-      authorization: alice.supabaseAuthorization,
+      authorization: mockUsers.alice.supabaseAuthorization,
     });
 
     expect(deleteKeyRes.status).toEqual(204);
 
     const getKeyRes = await api.getKey({
-      agent,
+      agent: ctx.agent,
       query: {
-        keyHash: aliceKeyHash,
+        keyHash: ctx.aliceKeyHash!,
       },
-      authorization: alice.supabaseAuthorization,
+      authorization: mockUsers.alice.supabaseAuthorization,
     });
 
     expect(getKeyRes.status).toEqual(200);
     expect(getKeyRes.data).toBeNull();
 
     const listKeysRes = await api.listKeys({
-      agent,
-      authorization: alice.supabaseAuthorization,
+      agent: ctx.agent,
+      authorization: mockUsers.alice.supabaseAuthorization,
     });
 
     expect(listKeysRes.status).toEqual(200);
