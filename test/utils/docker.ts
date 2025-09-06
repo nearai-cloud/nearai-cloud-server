@@ -17,7 +17,7 @@ export async function setupContainers() {
   await setupLitellmGatewayDatabaseContainer(timestamp, network);
   await setupLitellmGatewayContainer(timestamp, network);
 
-  await sleep(10 * 1000);
+  await sleep(20 * 1000);
 }
 
 export async function teardownContainers() {
