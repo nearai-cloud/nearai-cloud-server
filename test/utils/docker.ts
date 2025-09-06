@@ -9,8 +9,7 @@ const LABEL_VALUE = 'nearai-cloud-integration-test';
 const LABEL = `${LABEL_KEY}=${LABEL_VALUE}`;
 
 export async function setupContainers() {
-  await docker.pull(LITELLM_IMAGE);
-  await docker.pull(DATABASE_IMAGE);
+  await pullImages();
 
   const timestamp = Date.now();
 
@@ -49,6 +48,35 @@ export async function teardownContainers() {
     const network = docker.getNetwork(networkInfo.Id);
     await network.remove();
   }
+}
+
+async function pullImages() {
+  await pullImage(LITELLM_IMAGE);
+  await pullImage(DATABASE_IMAGE);
+}
+
+async function pullImage(image: string) {
+  const stream = await docker.pull(image);
+  await new Promise((resolve, reject) => {
+    docker.modem.followProgress(
+      stream,
+      (error, result) => {
+        if (error) {
+          reject(error);
+        }
+        resolve(result);
+      },
+      (event) => {
+        if (event.status.includes('Pulling from')) {
+          console.log(event);
+        } else if (event.status.includes('Image is up to date')) {
+          console.log(event);
+        } else if (event.status.includes('Downloaded newer image')) {
+          console.log(event);
+        }
+      },
+    );
+  });
 }
 
 async function setupNetwork(timestamp: number): Promise<Docker.Network> {
