@@ -1,6 +1,6 @@
 import Docker from 'dockerode';
 import { sleep } from './common';
-import { LITELLM_MASTER_KEY, LITELLM_IMAGE } from './consts';
+import { LITELLM_MASTER_KEY, LITELLM_IMAGE, DATABASE_IMAGE } from './consts';
 
 const docker = new Docker();
 
@@ -9,6 +9,9 @@ const LABEL_VALUE = 'nearai-cloud-integration-test';
 const LABEL = `${LABEL_KEY}=${LABEL_VALUE}`;
 
 export async function setupContainers() {
+  await docker.pull(LITELLM_IMAGE);
+  await docker.pull(DATABASE_IMAGE);
+
   const timestamp = Date.now();
 
   const network = await setupNetwork(timestamp);
@@ -63,7 +66,7 @@ async function setupNearAiCloudDatabaseContainer(
   network: Docker.Network,
 ) {
   const container = await docker.createContainer({
-    Image: 'postgres:16',
+    Image: DATABASE_IMAGE,
     name: `nearai-cloud-database-${timestamp}`,
     Env: [
       'POSTGRES_USER=admin',
@@ -87,7 +90,7 @@ async function setupLitellmGatewayDatabaseContainer(
   network: Docker.Network,
 ) {
   const container = await docker.createContainer({
-    Image: 'postgres:16',
+    Image: DATABASE_IMAGE,
     name: `litellm-gateway-database-${timestamp}`,
     Env: [
       'POSTGRES_USER=admin',
