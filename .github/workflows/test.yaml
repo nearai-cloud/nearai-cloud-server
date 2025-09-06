@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - test/integration-test
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      - name: Install pnpm
+        run: npm install -g pnpm@10.10.0
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Install Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io
+
+      - name: Start Docker service
+        run: sudo systemctl start docker
+
+      - name: Run tests
+        run: pnpm test
