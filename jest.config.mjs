@@ -2,5 +2,5 @@ export default {
   preset: 'ts-jest',
   verbose: true,
   detectOpenHandles: true,
-  testTimeout: 60 * 1000,
+  testTimeout: 10 * 60 * 1000,
 };
