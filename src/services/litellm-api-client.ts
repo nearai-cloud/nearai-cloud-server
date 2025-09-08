@@ -1062,7 +1062,7 @@ export class LitellmApiClient extends ApiClient {
     if (res && 'openai_code' in res && res.openai_code === 404) {
       throw new ApiError({
         status: STATUS_CODES.BAD_REQUEST,
-        message: 'Cannot update a credential that not exists',
+        message: 'Cannot update a credential that does not exist',
       });
     }
   }
