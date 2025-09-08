@@ -3,6 +3,7 @@ import { setup, tearDown } from '../utils/setup';
 import { LITELLM_MASTER_KEY } from '../utils/consts';
 import { mockUsers } from '../utils/users';
 import { SetupContext } from '../types/context';
+import { sleep } from '../utils/common';
 
 type Context = SetupContext & {
   serviceAccount?: string;
@@ -96,6 +97,8 @@ describe('openai api', () => {
   });
 
   test('chat/completions', async () => {
+    await sleep(10 * 1000); // Wait for model becoming available
+
     const res = await api.chatCompletions({
       agent: ctx.agent,
       body: {
