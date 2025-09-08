@@ -1,5 +1,5 @@
 import { getCvmInfo, createClient } from '@phala/cloud';
-import { ENV_PHALA_CLOUD_API_KEY } from './env';
+import { ENV_PHALA_CLOUD_API_KEY } from './envs';
 
 const client = createClient({
   apiKey: ENV_PHALA_CLOUD_API_KEY,

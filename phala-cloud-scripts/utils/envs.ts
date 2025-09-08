@@ -12,12 +12,14 @@ export const ENV_PHALA_DISK_SIZE = optionalEnv('PHALA_DISK_SIZE');
 export const ENV_PHALA_MAIN_CVM_ID = optionalEnv('PHALA_MAIN_CVM_ID');
 export const ENV_PHALA_REPLICA_CVM_ID = optionalEnv('PHALA_REPLICA_CVM_ID');
 
-export function requiredEnv(name: string): string {
-  return (
-    process.env[name] || console.error('Missing env:', name) || process.exit(1)
-  );
+function requiredEnv(name: string): string {
+  const value = optionalEnv(name);
+  if (value === undefined) {
+    throw Error(`Missing env: ${name}`);
+  }
+  return value;
 }
 
-export function optionalEnv(name: string): string | undefined {
+function optionalEnv(name: string): string | undefined {
   return process.env[name];
 }

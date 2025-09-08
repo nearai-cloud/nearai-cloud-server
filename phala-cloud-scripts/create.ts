@@ -6,7 +6,8 @@ import {
   ENV_PHALA_DISK_SIZE,
   ENV_PHALA_MEMORY,
   ENV_PHALA_VCPU,
-} from './utils/env';
+} from './utils/envs';
+import { logger } from '../src/services/logger';
 
 create();
 
@@ -40,12 +41,12 @@ function createCvm() {
     throw command.error;
   }
 
-  if (command.stderr.length > 0) {
-    throw new Error(command.stderr);
-  }
-
   if (command.stdout.length > 0) {
     console.log(command.stdout);
+  }
+
+  if (command.stderr.length > 0) {
+    logger.error(command.stderr);
   }
 
   if (command.status !== 0) {
