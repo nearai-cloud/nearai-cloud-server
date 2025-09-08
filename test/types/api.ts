@@ -42,6 +42,7 @@ import {
   inputSchema as listModelsInputSchema,
   outputSchema as listModelsOutputSchema,
 } from '../../src/server/routes/model/list-models';
+import { OpenAI } from 'openai/client';
 
 export type EmptyRecord = Record<string, never>;
 
@@ -177,3 +178,9 @@ export type ListModelsOptions = ApiOptions<
 export type ListModelsResponse = ApiResponse<
   v.InferOutput<typeof listModelsOutputSchema>
 >;
+
+export type ChatCompletionsOptions = ApiOptions<
+  EmptyRecord,
+  OpenAI.ChatCompletionCreateParamsNonStreaming
+>;
+export type ChatCompletionsResponse = ApiResponse<OpenAI.ChatCompletion>;

@@ -2,6 +2,8 @@ import { Response } from 'supertest';
 import {
   ApiOptions,
   ApiResponse,
+  ChatCompletionsOptions,
+  ChatCompletionsResponse,
   CreateCredentialOptions,
   CreateCredentialResponse,
   CreateModelOptions,
@@ -251,5 +253,14 @@ export async function listModels(
   return GET({
     ...options,
     path: '/model/list',
+  });
+}
+
+export async function chatCompletions(
+  options: ChatCompletionsOptions,
+): Promise<ChatCompletionsResponse> {
+  return POST({
+    ...options,
+    path: '/chat/completions',
   });
 }
