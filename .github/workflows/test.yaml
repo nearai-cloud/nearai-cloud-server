@@ -6,7 +6,7 @@ on:
       - '**'
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -33,7 +33,7 @@ jobs:
         run: sudo systemctl start docker
 
       - name: Set env for OpenAI API test
-        if: github.ref == 'refs/heads/test/integration-test'
+        if: github.ref == 'refs/heads/main'
         env:
           ENV: ${{ secrets.TEST_CREDENTIAL_API_KEY }}
         run: echo "env TEST_CREDENTIAL_API_KEY is set"
