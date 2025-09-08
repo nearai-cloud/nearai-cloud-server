@@ -182,6 +182,23 @@ describe('key api', () => {
     );
   });
 
+  test('update key that does not exist', async () => {
+    const res = await api.updateKey({
+      agent: ctx.agent,
+      body: {
+        keyHash: '1'.repeat(64),
+        keyAlias: 'update-alice-key',
+      },
+      authorization: mockUsers.alice.supabaseAuthorization,
+    });
+
+    expect(res.status).toEqual(400);
+    expect(res.error).toBeTruthy();
+    expect(res.error!.message).toMatch(
+      'Cannot update a key that does not exist',
+    );
+  });
+
   test('update key', async () => {
     const updateKeyRes = await api.updateKey({
       agent: ctx.agent,

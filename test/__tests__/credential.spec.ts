@@ -101,6 +101,23 @@ describe('credential api', () => {
     expect(res.error!.message).toMatch('Invalid authorization token');
   });
 
+  test('update credential that does not exist', async () => {
+    const res = await api.updateCredential({
+      agent: ctx.agent,
+      body: {
+        credentialName: 'Anthropic',
+        providerApiUrl: 'https://api.anthropic.com/v1',
+      },
+      authorization: ctx.serviceAccount,
+    });
+
+    expect(res.status).toEqual(400);
+    expect(res.error).toBeTruthy();
+    expect(res.error!.message).toMatch(
+      'Cannot update a credential that does not exist',
+    );
+  });
+
   test('update credential', async () => {
     const updateCredentialRes = await api.updateCredential({
       agent: ctx.agent,
