@@ -33,10 +33,8 @@ jobs:
         run: sudo systemctl start docker
 
       - name: Set env for OpenAI API test
-        if: github.ref == 'refs/heads/main'
-        env:
-          ENV: ${{ secrets.TEST_CREDENTIAL_API_KEY }}
-        run: echo "env TEST_CREDENTIAL_API_KEY is set"
+        # if: github.ref == 'refs/heads/main'
+        run: echo "TEST_CREDENTIAL_API_KEY=${{ secrets.TEST_CREDENTIAL_API_KEY }}" >> $GITHUB_ENV
 
       - name: Run tests
         run: pnpm test
