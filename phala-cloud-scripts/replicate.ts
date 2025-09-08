@@ -2,7 +2,7 @@ import { spawnSync } from 'child_process';
 import {
   ENV_PHALA_COMPOSE_ENV_FILE_PATH,
   ENV_PHALA_MAIN_CVM_ID,
-} from './utils/env';
+} from './utils/envs';
 import { logger } from '../src/services/logger';
 
 replicate();

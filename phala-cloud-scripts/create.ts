@@ -6,7 +6,7 @@ import {
   ENV_PHALA_DISK_SIZE,
   ENV_PHALA_MEMORY,
   ENV_PHALA_VCPU,
-} from './utils/env';
+} from './utils/envs';
 import { logger } from '../src/services/logger';
 
 create();

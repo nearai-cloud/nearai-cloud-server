@@ -4,7 +4,7 @@ import {
   ENV_PHALA_COMPOSE_ENV_FILE_PATH,
   ENV_PHALA_MAIN_CVM_ID,
   ENV_PHALA_REPLICA_CVM_ID,
-} from './utils/env';
+} from './utils/envs';
 import { getCvmStatus } from './utils/phala';
 import { sleep } from './utils/common';
 import { logger } from '../src/services/logger';
