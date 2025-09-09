@@ -10,16 +10,16 @@ import { InternalModelParams } from '../../../types/litellm-database-client';
 import { nearAiCloudDatabaseClient } from '../../../services/nearai-cloud-database-client';
 import { logger } from '../../../services/logger';
 
-const paramsInputSchema = v.object({
+export const paramsInputSchema = v.object({
   chat_id: v.string(),
 });
 
-const queryInputSchema = v.object({
+export const queryInputSchema = v.object({
   model: v.string(),
   signing_algo: v.union([v.literal('ecdsa'), v.literal('ed25519')]),
 });
 
-const outputSchema = v.object({
+export const outputSchema = v.object({
   text: v.string(),
   signature: v.string(),
   signing_address: v.string(),

@@ -8,7 +8,7 @@ import { createPrivateLlmApiClient } from '../../../services/private-llm-api-cli
 import * as ctx from 'express-http-context';
 import { InternalModelParams } from '../../../types/litellm-database-client';
 
-const inputSchema = v.object({
+export const inputSchema = v.object({
   model: v.string(),
 });
 
@@ -18,7 +18,7 @@ const attestationSchema = v.object({
   nvidia_payload: v.string(),
 });
 
-const outputSchema = v.intersect([
+export const outputSchema = v.intersect([
   attestationSchema,
   v.object({
     all_attestations: v.array(attestationSchema),

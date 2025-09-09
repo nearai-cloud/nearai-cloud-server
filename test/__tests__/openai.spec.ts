@@ -97,17 +97,6 @@ describe('openai api', () => {
     ctx.aliceKey = res.data!.key;
   });
 
-  test('GET /models', async () => {
-    const res = await api.models({
-      agent: ctx.agent,
-      authorization: ctx.aliceKey,
-    });
-
-    expect(res.status).toEqual(200);
-    expect(res.data).toBeTruthy();
-    expect(res.data!.object).toEqual('list');
-  });
-
   test('POST /chat/completions', async () => {
     await sleep(10 * 1000); // Wait for model becoming available
 
@@ -128,5 +117,50 @@ describe('openai api', () => {
     expect(res.status).toEqual(200);
     expect(res.data).toBeTruthy();
     expect(res.data!.object).toEqual('chat.completion');
+
+    ctx.chatId = res.data!.id;
+  });
+
+  test('GET /models', async () => {
+    const res = await api.models({
+      agent: ctx.agent,
+      authorization: ctx.aliceKey,
+    });
+
+    expect(res.status).toEqual(200);
+    expect(res.data).toBeTruthy();
+    expect(res.data!.object).toEqual('list');
+  });
+
+  test('GET /attestation/report', async () => {
+    const res = await api.attestationReport({
+      agent: ctx.agent,
+      query: {
+        model: 'gpt-oss-120b',
+      },
+      authorization: ctx.aliceKey,
+    });
+
+    expect(res.status).toEqual(200);
+    expect(res.data).toBeTruthy();
+    expect(res.data!.signing_address).toMatch(/^0x/);
+  });
+
+  test('GET /signatures/:chat_id', async () => {
+    const res = await api.signature({
+      agent: ctx.agent,
+      params: {
+        chatId: ctx.chatId!,
+      },
+      query: {
+        model: 'gpt-oss-120b',
+        signing_algo: 'ecdsa',
+      },
+      authorization: ctx.aliceKey,
+    });
+
+    expect(res.status).toEqual(200);
+    expect(res.data).toBeTruthy();
+    expect(res.data!.signing_address).toMatch(/^0x/);
   });
 });

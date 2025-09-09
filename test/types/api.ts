@@ -42,6 +42,14 @@ import {
   inputSchema as listModelsInputSchema,
   outputSchema as listModelsOutputSchema,
 } from '../../src/server/routes/model/list-models';
+import {
+  inputSchema as attestationReportInputSchema,
+  outputSchema as attestationReportOutputSchema,
+} from '../../src/server/routes/openai/attestation-report';
+import {
+  queryInputSchema as signatureInputSchema,
+  outputSchema as signatureOutputSchema,
+} from '../../src/server/routes/openai/signature';
 import { OpenAI } from 'openai/client';
 
 export type EmptyRecord = Record<string, never>;
@@ -187,3 +195,19 @@ export type ChatCompletionsOptions = ApiOptions<
   OpenAI.ChatCompletionCreateParamsNonStreaming
 >;
 export type ChatCompletionsResponse = ApiResponse<OpenAI.ChatCompletion>;
+
+export type AttestationReportOptions = ApiOptions<
+  v.InferInput<typeof attestationReportInputSchema>,
+  EmptyRecord
+>;
+export type AttestationReportResponse = ApiResponse<
+  v.InferOutput<typeof attestationReportOutputSchema>
+>;
+
+export type SignatureOptions = ApiOptions<
+  v.InferInput<typeof signatureInputSchema>,
+  EmptyRecord
+> & { params: { chatId: string } };
+export type SignatureResponse = ApiResponse<
+  v.InferOutput<typeof signatureOutputSchema>
+>;

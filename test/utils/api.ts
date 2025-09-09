@@ -2,6 +2,8 @@ import { Response } from 'supertest';
 import {
   ApiOptions,
   ApiResponse,
+  AttestationReportOptions,
+  AttestationReportResponse,
   ChatCompletionsOptions,
   ChatCompletionsResponse,
   CreateCredentialOptions,
@@ -35,6 +37,8 @@ import {
   ModelsResponse,
   RegisterUserOptions,
   RegisterUserResponse,
+  SignatureOptions,
+  SignatureResponse,
   UpdateCredentialOptions,
   UpdateCredentialResponse,
   UpdateKeyOptions,
@@ -271,5 +275,23 @@ export async function chatCompletions(
   return POST({
     ...options,
     path: '/chat/completions',
+  });
+}
+
+export async function attestationReport(
+  options: AttestationReportOptions,
+): Promise<AttestationReportResponse> {
+  return GET({
+    ...options,
+    path: '/attestation/report',
+  });
+}
+
+export async function signature(
+  options: SignatureOptions,
+): Promise<SignatureResponse> {
+  return GET({
+    ...options,
+    path: `/signature/${options.params.chatId}`,
   });
 }
