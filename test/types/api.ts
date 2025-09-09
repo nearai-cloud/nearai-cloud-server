@@ -179,6 +179,9 @@ export type ListModelsResponse = ApiResponse<
   v.InferOutput<typeof listModelsOutputSchema>
 >;
 
+export type ModelsOptions = ApiOptions<EmptyRecord, EmptyRecord>;
+export type ModelsResponse = ApiResponse<OpenAI.PageResponse<OpenAI.Model>>;
+
 export type ChatCompletionsOptions = ApiOptions<
   EmptyRecord,
   OpenAI.ChatCompletionCreateParamsNonStreaming

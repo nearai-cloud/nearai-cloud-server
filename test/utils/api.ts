@@ -31,6 +31,8 @@ import {
   ListModelsResponse,
   ListUsersOptions,
   ListUsersResponse,
+  ModelsOptions,
+  ModelsResponse,
   RegisterUserOptions,
   RegisterUserResponse,
   UpdateCredentialOptions,
@@ -253,6 +255,13 @@ export async function listModels(
   return GET({
     ...options,
     path: '/model/list',
+  });
+}
+
+export async function models(options: ModelsOptions): Promise<ModelsResponse> {
+  return GET({
+    ...options,
+    path: '/models',
   });
 }
 

@@ -8,6 +8,7 @@ import { sleep } from '../utils/common';
 type Context = SetupContext & {
   serviceAccount?: string;
   aliceKey?: string;
+  chatId?: string;
 };
 
 const ENV_TEST_CREDENTIAL_API_KEY = process.env.TEST_CREDENTIAL_API_KEY;
@@ -96,7 +97,18 @@ describe('openai api', () => {
     ctx.aliceKey = res.data!.key;
   });
 
-  test('chat/completions', async () => {
+  test('GET /models', async () => {
+    const res = await api.models({
+      agent: ctx.agent,
+      authorization: ctx.aliceKey,
+    });
+
+    expect(res.status).toEqual(200);
+    expect(res.data).toBeTruthy();
+    expect(res.data!.object).toEqual('list');
+  });
+
+  test('POST /chat/completions', async () => {
     await sleep(10 * 1000); // Wait for model becoming available
 
     const res = await api.chatCompletions({
