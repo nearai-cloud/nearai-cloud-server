@@ -4,6 +4,7 @@ import ctx from 'express-http-context';
 import {
   BEARER_TOKEN_PREFIX,
   CTX_GLOBAL_KEYS,
+  LITELLM_KEY_PREFIX,
   STATUS_CODES,
 } from '../../utils/consts';
 import { createSupabaseClient } from '../../services/supabase';
@@ -15,6 +16,7 @@ import {
 } from '../../services/litellm-api-client';
 import { Key, User } from '../../types/litellm-api-client';
 import { config } from '../../config';
+import { logger } from '../../services/logger';
 
 export type SupabaseAuth = {
   supabaseUser: SupabaseUser;
@@ -35,12 +37,20 @@ export const supabaseAuthMiddleware: RequestHandler = async (
   res,
   next,
 ) => {
+  const start = Date.now();
   const supabaseAuth = await authorizeSupabase(req.headers.authorization);
   ctx.set(CTX_GLOBAL_KEYS.SUPABASE_AUTH, supabaseAuth);
+  if (config.isDev) {
+    logger.info(
+      `The authorization took ${(Date.now() - start) / 1000} seconds`,
+    );
+  }
   next();
 };
 
 export const authMiddleware: RequestHandler = async (req, res, next) => {
+  const start = Date.now();
+
   const { supabaseUser } = await authorizeSupabase(req.headers.authorization);
 
   const user = await adminLitellmApiClient.getUser({
@@ -61,12 +71,27 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
 
   ctx.set(CTX_GLOBAL_KEYS.AUTH, auth);
 
+  if (config.isDev) {
+    logger.info(
+      `The authorization took ${(Date.now() - start) / 1000} seconds`,
+    );
+  }
+
   next();
 };
 
 export const keyAuthMiddleware: RequestHandler = async (req, res, next) => {
+  const start = Date.now();
+
   const keyAuth = await authorizeKey(req.headers.authorization);
   ctx.set(CTX_GLOBAL_KEYS.KEY_AUTH, keyAuth);
+
+  if (config.isDev) {
+    logger.info(
+      `The authorization took ${(Date.now() - start) / 1000} seconds`,
+    );
+  }
+
   next();
 };
 
@@ -75,12 +100,30 @@ export const litellmServiceAccountAuthMiddleware: RequestHandler = async (
   res,
   next,
 ) => {
+  const start = Date.now();
+
   await authorizeLitellmServiceAccount(req.headers.authorization);
+
+  if (config.isDev) {
+    logger.info(
+      `The authorization took ${(Date.now() - start) / 1000} seconds`,
+    );
+  }
+
   next();
 };
 
 export const adminAuthMiddleware: RequestHandler = async (req, res, next) => {
+  const start = Date.now();
+
   authorizeAdmin(req.headers.authorization);
+
+  if (config.isDev) {
+    logger.info(
+      `The authorization took ${(Date.now() - start) / 1000} seconds`,
+    );
+  }
+
   next();
 };
 
@@ -147,12 +190,17 @@ async function authorizeKey(authorization?: string): Promise<KeyAuth> {
 
   const token = authorization.slice(BEARER_TOKEN_PREFIX.length);
 
-  const litellmApiClient = createLitellmApiClient(token);
+  if (!token.startsWith(LITELLM_KEY_PREFIX)) {
+    throw createOpenAiHttpError({
+      status: STATUS_CODES.UNAUTHORIZED,
+      message: 'Invalid authorization token',
+    });
+  }
 
   let key: Key | null;
 
   try {
-    key = await litellmApiClient.getKey({ keyOrKeyHash: token });
+    key = await adminLitellmApiClient.getKey({ keyOrKeyHash: token });
   } catch (e: unknown) {
     throw createOpenAiHttpError({
       status: STATUS_CODES.UNAUTHORIZED,
@@ -170,7 +218,7 @@ async function authorizeKey(authorization?: string): Promise<KeyAuth> {
 
   return {
     key,
-    litellmApiClient,
+    litellmApiClient: createLitellmApiClient(token),
   };
 }
 
@@ -191,11 +239,24 @@ export async function authorizeLitellmServiceAccount(authorization?: string) {
 
   const token = authorization.slice(BEARER_TOKEN_PREFIX.length);
 
-  const client = createLitellmApiClient(token);
+  if (!token.startsWith(LITELLM_KEY_PREFIX)) {
+    throw createOpenAiHttpError({
+      status: STATUS_CODES.UNAUTHORIZED,
+      message: 'Invalid authorization token',
+    });
+  }
 
-  const key = await client.getKey({
-    keyOrKeyHash: token,
-  });
+  let key: Key | null;
+
+  try {
+    key = await adminLitellmApiClient.getKey({ keyOrKeyHash: token });
+  } catch (e: unknown) {
+    throw createOpenAiHttpError({
+      status: STATUS_CODES.UNAUTHORIZED,
+      message: 'Failed to authorize', // Override with simple error message
+      cause: e,
+    });
+  }
 
   if (!key) {
     throw createOpenAiHttpError({

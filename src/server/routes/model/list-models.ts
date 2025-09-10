@@ -29,9 +29,6 @@ const outputSchema = v.object({
     v.object({
       modelId: v.string(),
       model: v.string(),
-      providerModelName: v.string(),
-      providerName: v.string(),
-      credentialName: v.string(),
       inputCostPerToken: v.number(),
       outputCostPerToken: v.number(),
       metadata: v.object({
@@ -59,6 +56,7 @@ export const listModels = createRouteResolver({
     return adminLitellmApiClient.listModelsPagination({
       page: query.page,
       pageSize: query.pageSize,
+      cache: true,
     });
   },
 });

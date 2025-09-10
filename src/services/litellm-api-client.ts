@@ -41,14 +41,22 @@ import { OpenAI } from 'openai/client';
 import stream from 'stream';
 import { config } from '../config';
 import { ApiClientOptions } from '../types/api-client';
-import { STATUS_CODES } from '../utils/consts';
+import {
+  LIST_MODELS_CACHE_KEY_PREFIX,
+  LIST_MODELS_CACHE_TTL,
+  STATUS_CODES,
+} from '../utils/consts';
 import { ApiClient, ApiError } from './api-client';
 import { litellmKeyHash } from '../utils/crypto';
 import { litellmDatabaseClient } from './litellm-database-client';
+import { InMemoryCache } from '../utils/InMemoryCache';
 
 export class LitellmApiClient extends ApiClient {
+  cache: InMemoryCache<unknown>;
+
   constructor(options: ApiClientOptions) {
     super(options);
+    this.cache = new InMemoryCache();
   }
 
   async registerUser({ userId, userEmail, teamId }: RegisterUserParams) {
@@ -737,6 +745,8 @@ export class LitellmApiClient extends ApiClient {
       },
     });
 
+    this.clearModelsCache();
+
     return {
       modelId: res.model_id,
     };
@@ -810,6 +820,8 @@ export class LitellmApiClient extends ApiClient {
         },
       },
     });
+
+    this.clearModelsCache();
   }
 
   async deleteModel({ modelId }: DeleteModelParams) {
@@ -824,18 +836,28 @@ export class LitellmApiClient extends ApiClient {
         id: modelId,
       },
     });
+
+    this.clearModelsCache();
   }
 
   async listModelsPagination({
     page = 1,
     pageSize = 100,
+    cache = false,
   }: ListModelsPaginationParams = {}): Promise<ListModelsPaginationResponse> {
+    if (cache) {
+      const response = this.getModelsCache(page, pageSize);
+      if (response) {
+        return response;
+      }
+    }
+
     const { models, totalModels } = await litellmDatabaseClient.listModels(
       (page - 1) * pageSize,
       pageSize,
     );
 
-    return {
+    const response = {
       models: models.map((model) => {
         return {
           modelId: model.model_info.id,
@@ -862,6 +884,12 @@ export class LitellmApiClient extends ApiClient {
       pageSize,
       totalPages: Math.ceil(totalModels / pageSize),
     };
+
+    if (cache) {
+      this.setModelsCache(response, page, pageSize);
+    }
+
+    return response;
   }
 
   async listModels({ modelId }: ListModelsParams = {}): Promise<Model[]> {
@@ -873,7 +901,7 @@ export class LitellmApiClient extends ApiClient {
             litellm_params: {
               model: string;
               custom_llm_provider: string;
-              litellm_credential_name: string;
+              litellm_credential_name?: string;
               input_cost_per_token: number;
               output_cost_per_token: number;
             };
@@ -1002,8 +1030,10 @@ export class LitellmApiClient extends ApiClient {
     providerApiUrl,
     providerApiKey,
   }: UpdateCredentialParams) {
-    await this.patch<
-      void,
+    const res = await this.patch<
+      void | {
+        openai_code: 404;
+      },
       {
         credential_name: string;
         credential_info?: {
@@ -1027,6 +1057,44 @@ export class LitellmApiClient extends ApiClient {
         },
       },
     });
+
+    // TODO: Issue of LiteLLM
+    if (res && 'openai_code' in res && res.openai_code === 404) {
+      throw new ApiError({
+        status: STATUS_CODES.BAD_REQUEST,
+        message: 'Cannot update a credential that does not exist',
+      });
+    }
+  }
+
+  private getModelsCache(
+    page: number,
+    pageSize: number,
+  ): ListModelsPaginationResponse | undefined {
+    const key = this.modelsCacheKey(page, pageSize);
+    return this.cache.getTyped(key);
+  }
+
+  private setModelsCache(
+    response: ListModelsPaginationResponse,
+    page: number,
+    pageSize: number,
+  ) {
+    const key = this.modelsCacheKey(page, pageSize);
+    this.cache.set(key, response, LIST_MODELS_CACHE_TTL);
+  }
+
+  private clearModelsCache() {
+    const keys = this.cache
+      .keys()
+      .filter((key) => key.startsWith(LIST_MODELS_CACHE_KEY_PREFIX));
+    keys.forEach((key) => {
+      this.cache.delete(key);
+    });
+  }
+
+  private modelsCacheKey(page: number, pageSize: number): string {
+    return `${LIST_MODELS_CACHE_KEY_PREFIX}${page}:${pageSize}`;
   }
 }
 
