@@ -11,6 +11,7 @@ import {
   createExposeErrorMiddleware,
 } from './middlewares/error';
 import { router } from './routes';
+import { bodyParserMiddleware } from './middlewares/body-parser';
 
 export function runServer() {
   const app = express();
@@ -24,13 +25,7 @@ export function runServer() {
   app.use(createIncomingLogMiddleware({ isDev: config.isDev }));
   app.use(createOutgoingLogMiddleware({ isDev: config.isDev }));
 
-  app.use((req, res, next) => {
-    if (req.path.includes('/chat/completions')) {
-      express.raw({ type: '*/*' })(req, res, next);
-    } else {
-      express.json()(req, res, next);
-    }
-  });
+  app.use(bodyParserMiddleware);
   app.use(ctx.middleware);
   app.use(router);
 
