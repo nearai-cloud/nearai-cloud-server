@@ -24,7 +24,13 @@ export function runServer() {
   app.use(createIncomingLogMiddleware({ isDev: config.isDev }));
   app.use(createOutgoingLogMiddleware({ isDev: config.isDev }));
 
-  app.use(express.json());
+  app.use((req, res, next) => {
+    if (req.path.includes('/chat/completions')) {
+      express.raw({ type: '*/*' })(req, res, next);
+    } else {
+      express.json()(req, res, next);
+    }
+  });
   app.use(ctx.middleware);
   app.use(router);
 
