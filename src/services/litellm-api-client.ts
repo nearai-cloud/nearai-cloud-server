@@ -656,7 +656,7 @@ export class LitellmApiClient extends ApiClient {
       totalSpendLogs,
       page,
       pageSize,
-      totalPages: Math.min(Math.ceil(totalSpendLogs / pageSize), 1),
+      totalPages: Math.max(Math.ceil(totalSpendLogs / pageSize), 1),
     };
   }
 
@@ -927,7 +927,7 @@ export class LitellmApiClient extends ApiClient {
       totalModels,
       page,
       pageSize,
-      totalPages: Math.min(Math.ceil(totalModels / pageSize), 1),
+      totalPages: Math.max(Math.ceil(totalModels / pageSize), 1),
     };
 
     if (cache) {
