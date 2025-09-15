@@ -15,7 +15,7 @@ const paramsInputSchema = v.object({
 });
 
 const queryInputSchema = v.object({
-  model: v.string(),
+  model: v.string(), // Actually not used because we find the model by chat id
   signing_algo: v.union([v.literal('ecdsa'), v.literal('ed25519')]),
 });
 
@@ -34,10 +34,20 @@ export const signature = createRouteResolver({
   output: outputSchema,
   middlewares: [
     keyAuthMiddleware,
-    async (req, res, next, { query }) => {
-      const modelParams = await litellmDatabaseClient.getInternalModelParams(
-        query.model,
+    async (req, res, next, { params }) => {
+      const modelId = await litellmDatabaseClient.getModelIdByChatId(
+        params.chat_id,
       );
+
+      if (!modelId) {
+        throw createOpenAiHttpError({
+          status: STATUS_CODES.NOT_FOUND,
+          message: 'Chat id not found',
+        });
+      }
+
+      const modelParams =
+        await litellmDatabaseClient.getInternalModelParams(modelId);
 
       if (!modelParams) {
         throw createOpenAiHttpError({
