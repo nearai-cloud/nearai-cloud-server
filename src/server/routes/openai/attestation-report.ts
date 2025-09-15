@@ -67,7 +67,11 @@ export const attestationReport = createRouteResolver({
       if (!allReports) {
         allReports = report;
       } else {
-        allReports.all_attestations.push(...report.all_attestations); // TODO: Is there at least one report in the list?
+        if (report.all_attestations.length > 0) {
+          allReports.all_attestations.push(...report.all_attestations);
+        } else {
+          allReports.all_attestations.push(report);
+        }
       }
     }
 
