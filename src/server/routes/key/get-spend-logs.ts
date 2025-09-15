@@ -65,6 +65,8 @@ export const getSpendLogs = createRouteResolver({
       keyOrKeyHash: query.keyHash,
       startDate: query.startDate,
       endDate: query.endDate,
+      page: query.page,
+      pageSize: query.pageSize,
     });
   },
 });
