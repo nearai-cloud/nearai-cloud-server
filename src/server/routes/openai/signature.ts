@@ -52,7 +52,7 @@ export const signature = createRouteResolver({
       if (!model || model.model !== query.model) {
         throw createOpenAiHttpError({
           status: STATUS_CODES.BAD_REQUEST,
-          message: `'model' doesn't match the chat`,
+          message: `The model ${query.model} doesn't match with the chat ID`,
         });
       }
 
