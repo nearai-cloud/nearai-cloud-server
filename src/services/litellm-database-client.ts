@@ -199,21 +199,33 @@ export class LitellmDatabaseClient {
     spendLogs: LiteLLMSpendLog[];
     totalSpendLogs: number;
   }> {
-    const spendLogs = await this.client.liteLLM_SpendLogs.findMany({
-      skip: offset,
-      take: limit,
-      where: {
-        user: userId,
-        api_key: keyHash,
-        startTime: {
-          gte: startDate ? new Date(startDate) : undefined,
-          lt: endDate ? new Date(endDate) : undefined,
+    const [spendLogs, totalSpendLogs] = await Promise.all([
+      this.client.liteLLM_SpendLogs.findMany({
+        skip: offset,
+        take: limit,
+        where: {
+          user: userId,
+          api_key: keyHash,
+          startTime: {
+            gte: startDate ? new Date(startDate) : undefined,
+            lt: endDate ? new Date(endDate) : undefined,
+          },
         },
-      },
-      orderBy: {
-        startTime: 'desc',
-      },
-    });
+        orderBy: {
+          startTime: 'desc',
+        },
+      }),
+      this.client.liteLLM_SpendLogs.count({
+        where: {
+          user: userId,
+          api_key: keyHash,
+          startTime: {
+            gte: startDate ? new Date(startDate) : undefined,
+            lt: endDate ? new Date(endDate) : undefined,
+          },
+        },
+      }),
+    ]);
 
     const schema = v.array(
       v.object({
@@ -238,17 +250,6 @@ export class LitellmDatabaseClient {
         ),
       }),
     );
-
-    const totalSpendLogs = await this.client.liteLLM_SpendLogs.count({
-      where: {
-        user: userId,
-        api_key: keyHash,
-        startTime: {
-          gte: startDate ? new Date(startDate) : undefined,
-          lt: endDate ? new Date(endDate) : undefined,
-        },
-      },
-    });
 
     return {
       spendLogs: v.parse(schema, spendLogs),
