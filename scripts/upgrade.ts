@@ -98,8 +98,9 @@ function requestUpgradeCvm(cvmId: string) {
       cvmId,
       '--compose',
       'docker-compose.yaml',
-      '--env-file',
-      ENV_PHALA_COMPOSE_ENV_FILE_PATH,
+      ...(ENV_PHALA_COMPOSE_ENV_FILE_PATH
+        ? ['--env-file', ENV_PHALA_COMPOSE_ENV_FILE_PATH]
+        : []),
     ],
     {
       encoding: 'utf-8',

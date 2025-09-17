@@ -18,7 +18,14 @@ function replicate() {
 function replicateCvm(cvmId: string) {
   const command = spawnSync(
     'phala',
-    ['cvms', 'replicate', cvmId, '--env-file', ENV_PHALA_COMPOSE_ENV_FILE_PATH],
+    [
+      'cvms',
+      'replicate',
+      cvmId,
+      ...(ENV_PHALA_COMPOSE_ENV_FILE_PATH
+        ? ['--env-file', ENV_PHALA_COMPOSE_ENV_FILE_PATH]
+        : []),
+    ],
     {
       encoding: 'utf-8',
     },

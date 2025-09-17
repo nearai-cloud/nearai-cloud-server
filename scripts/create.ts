@@ -29,8 +29,9 @@ function createCvm() {
       ...(ENV_PHALA_DISK_SIZE ? ['--disk-size', ENV_PHALA_DISK_SIZE] : []),
       '--compose',
       'docker-compose.yaml',
-      '--env-file',
-      ENV_PHALA_COMPOSE_ENV_FILE_PATH,
+      ...(ENV_PHALA_COMPOSE_ENV_FILE_PATH
+        ? ['--env-file', ENV_PHALA_COMPOSE_ENV_FILE_PATH]
+        : []),
     ],
     {
       encoding: 'utf-8',

@@ -1,6 +1,6 @@
 export const ENV_PHALA_CLOUD_API_KEY = requiredEnv('PHALA_CLOUD_API_KEY');
 
-export const ENV_PHALA_COMPOSE_ENV_FILE_PATH = requiredEnv(
+export const ENV_PHALA_COMPOSE_ENV_FILE_PATH = optionalEnv(
   'PHALA_COMPOSE_ENV_FILE_PATH',
 );
 export const ENV_PHALA_CVM_NAME = requiredEnv('PHALA_CVM_NAME');
