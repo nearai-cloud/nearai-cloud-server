@@ -9,6 +9,7 @@ import { createPrivateLlmApiClient } from '../../../services/private-llm-api-cli
 import { InternalModelParams } from '../../../types/litellm-database-client';
 import { nearAiCloudDatabaseClient } from '../../../services/nearai-cloud-database-client';
 import { logger } from '../../../services/logger';
+import { adminLitellmApiClient } from '../../../services/litellm-api-client';
 
 const paramsInputSchema = v.object({
   chat_id: v.string(),
@@ -35,27 +36,28 @@ export const signature = createRouteResolver({
   middlewares: [
     keyAuthMiddleware,
     async (req, res, next, { params, query }) => {
-      const result = await litellmDatabaseClient.getModelIdByChatId(
+      const modelId = await litellmDatabaseClient.getModelIdByChatId(
         params.chat_id,
       );
 
-      if (!result) {
+      if (!modelId) {
         throw createOpenAiHttpError({
           status: STATUS_CODES.NOT_FOUND,
           message: 'Chat id not found',
         });
       }
 
-      if (result.model !== query.model) {
+      const model = await adminLitellmApiClient.getModel({ modelId });
+
+      if (!model || model.model !== query.model) {
         throw createOpenAiHttpError({
           status: STATUS_CODES.BAD_REQUEST,
           message: `'model' doesn't match the chat`,
         });
       }
 
-      const modelParams = await litellmDatabaseClient.getInternalModelParams(
-        result.modelId,
-      );
+      const modelParams =
+        await litellmDatabaseClient.getInternalModelParams(modelId);
 
       if (!modelParams) {
         throw createOpenAiHttpError({

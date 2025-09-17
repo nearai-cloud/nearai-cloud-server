@@ -14,24 +14,18 @@ export class LitellmDatabaseClient {
     this.client = new PrismaClient();
   }
 
-  async getModelIdByChatId(chatId: string): Promise<{
-    modelId: string;
-    model: string;
-  } | null> {
+  async getModelIdByChatId(chatId: string): Promise<string | null> {
     const log = await this.client.liteLLM_SpendLogs.findUnique({
       where: {
         request_id: chatId,
       },
     });
 
-    if (!log || !log.model_id || !log.model_group) {
+    if (!log) {
       return null;
     }
 
-    return {
-      modelId: log.model_id,
-      model: log.model_group,
-    };
+    return log.model_id;
   }
 
   async getInternalModelParams(
