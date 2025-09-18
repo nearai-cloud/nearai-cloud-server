@@ -10,6 +10,7 @@ import { InternalModelParams } from '../../../types/litellm-database-client';
 import { nearAiCloudDatabaseClient } from '../../../services/nearai-cloud-database-client';
 import { logger } from '../../../services/logger';
 import { adminLitellmApiClient } from '../../../services/litellm-api-client';
+import { sleep } from '../../../utils/time';
 
 const paramsInputSchema = v.object({
   chat_id: v.string(),
@@ -36,9 +37,19 @@ export const signature = createRouteResolver({
   middlewares: [
     keyAuthMiddleware,
     async (req, res, next, { params, query }) => {
-      const modelId = await litellmDatabaseClient.getModelIdByChatId(
-        params.chat_id,
-      );
+      let modelId;
+      const maxRetry = 5;
+
+      // Fix the issue where the chat cannot be queried immediately
+      for (let i = 0; i < maxRetry; i++) {
+        modelId = await litellmDatabaseClient.getModelIdByChatId(
+          params.chat_id,
+        );
+        if (modelId) {
+          break;
+        }
+        await sleep(1000);
+      }
 
       if (!modelId) {
         throw createOpenAiHttpError({
