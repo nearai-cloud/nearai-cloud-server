@@ -48,7 +48,7 @@ export const signature = createRouteResolver({
         if (modelId) {
           break;
         }
-        await sleep(1000);
+        await sleep(2 * 1000);
       }
 
       if (!modelId) {
