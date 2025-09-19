@@ -38,7 +38,7 @@ export const signature = createRouteResolver({
     keyAuthMiddleware,
     async (req, res, next, { params, query }) => {
       let modelId;
-      const maxRetry = 5;
+      const maxRetry = 10;
 
       // Fix the issue where the chat cannot be queried immediately
       for (let i = 0; i < maxRetry; i++) {
