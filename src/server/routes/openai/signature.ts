@@ -9,7 +9,6 @@ import { createPrivateLlmApiClient } from '../../../services/private-llm-api-cli
 import { InternalModelParams } from '../../../types/litellm-database-client';
 import { nearAiCloudDatabaseClient } from '../../../services/nearai-cloud-database-client';
 import { logger } from '../../../services/logger';
-import { Signature } from '../../../types/privatellm-api-client';
 
 const paramsInputSchema = v.object({
   chat_id: v.string(),
@@ -63,39 +62,32 @@ export const signature = createRouteResolver({
       return cache[0];
     }
 
-    // In order to solve the problem of not being able to
-    // synchronously query the actual model corresponding
-    // to the chat, we iterate through calling the API of each model
-    for (const [index, modelParams] of modelParamsList.reverse().entries()) {
+    const signatures = modelParamsList.map((modelParams) => {
       const client = createPrivateLlmApiClient(
         modelParams.apiKey,
         modelParams.apiUrl,
       );
 
-      let signature: Signature;
-
-      try {
-        signature = await client.signature({
+      const f = async () => {
+        const signature = await client.signature({
           chat_id: params.chat_id,
           model: modelParams.model,
           signing_algo: query.signing_algo,
         });
-      } catch (e: unknown) {
-        logger.debug(
-          `Failed to get signature: ${e}. ${JSON.stringify(
-            {
-              modelId: modelParams.modelId,
-              model: modelParams.model,
-              number: index + 1,
-              totalNumber: modelParamsList.length,
-            },
-            undefined,
-            2,
-          )}`,
-        );
+        return {
+          signature,
+          modelParams,
+        };
+      };
 
-        continue;
-      }
+      return f();
+    });
+
+    try {
+      // In order to solve the problem of not being able to
+      // synchronously query the actual model corresponding
+      // to the chat, we iterate through calling the API of each model
+      const { signature, modelParams } = await Promise.any(signatures);
 
       nearAiCloudDatabaseClient
         .setSignature(
@@ -109,11 +101,12 @@ export const signature = createRouteResolver({
         });
 
       return signature;
+    } catch (e: unknown) {
+      logger.debug(`Failed to get signature`, e);
+      throw createOpenAiHttpError({
+        status: STATUS_CODES.NOT_FOUND,
+        message: 'Chat id not found or expired',
+      });
     }
-
-    throw createOpenAiHttpError({
-      status: STATUS_CODES.NOT_FOUND,
-      message: 'Chat id not found',
-    });
   },
 });
