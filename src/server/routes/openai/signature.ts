@@ -103,7 +103,7 @@ export const signature = createRouteResolver({
       return signature;
     } catch (e: unknown) {
       if (e instanceof AggregateError) {
-        logger.debug(
+        logger.error(
           `Failed to get signature: ${JSON.stringify(
             e.errors.map((error) => `${error}`),
             undefined,
