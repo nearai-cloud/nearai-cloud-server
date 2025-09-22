@@ -48,7 +48,7 @@ Similarly, you can create [.env.stg](.env.stg) and [.env.prd](.env.prd); you jus
 ## Development Start
 Generate additional code. The code is located in the [.prisma/generated](.prisma/generated) folder
 ```shell
-pnpm generate
+pnpm generate:all
 ```
 
 Run the project
@@ -72,7 +72,7 @@ This project uses two databases: the LiteLLM database and the NEAR AI Cloud data
 We use Prisma ORM to connect with these databases
 
 ### LiteLLM
-If need update the schema of LiteLLM, run command:
+If you need update the schema of LiteLLM, run command:
 ```shell
 make migrations/litellm/pull
 ```
