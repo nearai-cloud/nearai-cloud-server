@@ -94,7 +94,7 @@ export type GenerateKeyParams = {
   keyType?: 'default' | 'llm_api' | 'management';
   userId?: string;
   teamId?: string;
-  keyAlias?: string;
+  keyAlias: string;
   keyDuration?: string; // e.g. 30s 30m 30h 30d
   models?: string[];
   maxBudget?: number;
@@ -107,7 +107,7 @@ export type GenerateServiceAccountParams = {
   keyType?: 'default' | 'llm_api' | 'management';
   serviceAccountId: string;
   teamId?: string;
-  keyAlias?: string;
+  keyAlias: string;
   keyDuration?: string; // e.g. 30s 30m 30h 30d
   models?: string[];
   maxBudget?: number;

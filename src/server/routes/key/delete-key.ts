@@ -11,7 +11,7 @@ import { createRouteResolver } from '../../middlewares/route-resolver';
 import { createOpenAiHttpError } from '../../../utils/error';
 import { Key } from '../../../types/litellm-api-client';
 
-const inputSchema = v.object({
+export const inputSchema = v.object({
   keyHash: v.pipe(v.string(), v.hash([INPUT_LIMITS.KEY_HASH_TYPE])),
 });
 

@@ -111,7 +111,10 @@ dataset/local
 # Env
 .env
 .env.*
+.env-compose
+.env-phala
 !.env.example
+!.env.test
 
 .env-compose
 .env-compose.*

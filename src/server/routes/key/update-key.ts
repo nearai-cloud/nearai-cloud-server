@@ -11,7 +11,7 @@ import { createRouteResolver } from '../../middlewares/route-resolver';
 import { createOpenAiHttpError } from '../../../utils/error';
 import { toFullKeyAlias } from '../../../utils/common';
 
-const inputSchema = v.object({
+export const inputSchema = v.object({
   keyHash: v.pipe(v.string(), v.hash([INPUT_LIMITS.KEY_HASH_TYPE])),
   keyAlias: v.optional(
     v.pipe(v.string(), v.maxLength(INPUT_LIMITS.KEY_ALIAS_MAX_LENGTH)),

@@ -5,7 +5,7 @@ import { CTX_GLOBAL_KEYS } from '../../../utils/consts';
 import { SupabaseAuth, supabaseAuthMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 
-const outputSchema = v.nullable(
+export const outputSchema = v.nullable(
   v.object({
     userId: v.string(),
     userEmail: v.nullable(v.string()),

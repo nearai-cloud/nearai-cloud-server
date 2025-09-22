@@ -6,14 +6,12 @@ import { Auth, authMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 import { toFullKeyAlias } from '../../../utils/common';
 
-const inputSchema = v.object({
-  keyAlias: v.optional(
-    v.pipe(v.string(), v.maxLength(INPUT_LIMITS.KEY_ALIAS_MAX_LENGTH)),
-  ),
+export const inputSchema = v.object({
+  keyAlias: v.pipe(v.string(), v.maxLength(INPUT_LIMITS.KEY_ALIAS_MAX_LENGTH)),
   maxBudget: v.optional(v.number()),
 });
 
-const outputSchema = v.object({
+export const outputSchema = v.object({
   key: v.string(),
   expires: v.nullable(v.string()),
 });
@@ -30,9 +28,7 @@ export const generateKey = createRouteResolver({
     const { key, expires } = await adminLitellmApiClient.generateKey({
       keyType: 'llm_api',
       userId: user.userId,
-      keyAlias: body.keyAlias
-        ? toFullKeyAlias(user.userId, body.keyAlias)
-        : undefined,
+      keyAlias: toFullKeyAlias(user.userId, body.keyAlias),
       models: ['all-team-models'],
       maxBudget: body.maxBudget,
     });

@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      - name: Install pnpm
+        run: npm install -g pnpm@10.10.0
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Install Docker
+        run: |
+          curl -fsSL https://get.docker.com -o get-docker.sh
+          sh get-docker.sh
+
+      - name: Start Docker service
+        run: sudo systemctl start docker
+
+      - name: Set env for OpenAI API test
+        if: github.ref == 'refs/heads/main'
+        run: echo "TEST_CREDENTIAL_API_KEY=${{ secrets.TEST_CREDENTIAL_API_KEY }}" >> $GITHUB_ENV
+
+      - name: Run tests
+        run: pnpm test

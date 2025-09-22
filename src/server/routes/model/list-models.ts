@@ -4,7 +4,7 @@ import { authMiddleware } from '../../middlewares/auth';
 import { adminLitellmApiClient } from '../../../services/litellm-api-client';
 import { INPUT_LIMITS } from '../../../utils/consts';
 
-const inputSchema = v.object({
+export const inputSchema = v.object({
   page: v.optional(
     v.pipe(
       v.string(),
@@ -24,7 +24,7 @@ const inputSchema = v.object({
   ),
 });
 
-const outputSchema = v.object({
+export const outputSchema = v.object({
   models: v.array(
     v.object({
       modelId: v.string(),

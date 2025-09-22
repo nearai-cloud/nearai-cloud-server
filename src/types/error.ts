@@ -1,4 +1,5 @@
 import { HttpError } from 'http-errors';
+import * as v from 'valibot';
 
 export type ThrowHttpErrorOptions = {
   status?: number;
@@ -24,8 +25,13 @@ export type InternalOpenAiHttpErrorOptions = {
   code?: string;
 };
 
-export interface OpenAiHttpError extends HttpError {
-  type: string;
-  param: string | null;
-  code: string | null;
-}
+export interface OpenAiHttpError extends OpenAiError, HttpError {}
+
+export type OpenAiError = v.InferOutput<typeof openAiErrorSchema>;
+
+export const openAiErrorSchema = v.object({
+  message: v.string(),
+  type: v.string(),
+  param: v.nullable(v.string()),
+  code: v.nullable(v.string()),
+});

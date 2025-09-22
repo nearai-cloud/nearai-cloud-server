@@ -4,7 +4,7 @@ import { INPUT_LIMITS } from '../../../utils/consts';
 import { litellmServiceAccountAuthMiddleware } from '../../middlewares/auth';
 import { createRouteResolver } from '../../middlewares/route-resolver';
 
-const inputSchema = v.object({
+export const inputSchema = v.object({
   page: v.optional(
     v.pipe(
       v.string(),
@@ -24,7 +24,7 @@ const inputSchema = v.object({
   ),
 });
 
-const outputSchema = v.object({
+export const outputSchema = v.object({
   users: v.array(
     v.object({
       userId: v.string(),

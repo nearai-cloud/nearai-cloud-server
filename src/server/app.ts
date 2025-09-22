@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Express } from 'express';
 import cors from 'cors';
 import ctx from 'express-http-context';
 import { config } from '../config';
@@ -13,7 +13,7 @@ import {
 import { router } from './routes';
 import { bodyParserMiddleware } from './middlewares/body-parser';
 
-export function runServer() {
+export function createApp(): Express {
   const app = express();
 
   app.disable('x-powered-by');
@@ -40,5 +40,9 @@ export function runServer() {
     }),
   );
 
-  app.listen(config.server.port);
+  return app;
+}
+
+export function runServer() {
+  createApp().listen(config.server.port);
 }

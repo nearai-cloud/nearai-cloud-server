@@ -7,12 +7,13 @@ import { createOpenAiHttpError } from '../../../utils/error';
 import { STATUS_CODES } from '../../../utils/consts';
 import ctx from 'express-http-context';
 
-const inputSchema = v.object({
+export const inputSchema = v.object({
   modelId: v.optional(v.string()),
-  modelName: v.optional(v.string()),
+  model: v.optional(v.string()),
+  modelName: v.optional(v.string()), // TODO: deprecated
 });
 
-const outputSchema = v.nullable(
+export const outputSchema = v.nullable(
   v.object({
     modelId: v.string(),
     model: v.string(),
@@ -39,19 +40,19 @@ export const getModel = createRouteResolver({
   middlewares: [
     authMiddleware,
     async (req, res, next, { query }) => {
-      if (!query.modelId && !query.modelName) {
+      let modelId = query.modelId;
+      const model = query.model ?? query.modelName;
+
+      if (!modelId && !model) {
         throw createOpenAiHttpError({
           status: STATUS_CODES.BAD_REQUEST,
-          message: 'Missing modelId or modelName',
+          message: 'Must provide `modelId` or `model`',
         });
       }
 
-      let modelId = query.modelId;
-
-      if (!modelId) {
+      if (!modelId && model) {
         modelId =
-          (await litellmDatabaseClient.getModelIdByName(query.modelName!)) ??
-          undefined;
+          (await litellmDatabaseClient.getModelIdByName(model)) ?? undefined;
       }
 
       ctx.set('modelId', modelId);

@@ -3,7 +3,7 @@ import { litellmServiceAccountAuthMiddleware } from '../../middlewares/auth';
 import * as v from 'valibot';
 import { adminLitellmApiClient } from '../../../services/litellm-api-client';
 
-const inputSchema = v.object({
+export const inputSchema = v.object({
   credentialName: v.string(),
   providerName: v.optional(v.pipe(v.string(), v.nonEmpty())),
   providerApiUrl: v.optional(v.pipe(v.string(), v.url())),

@@ -12,11 +12,11 @@ import { createRouteResolver } from '../../middlewares/route-resolver';
 import { Key } from '../../../types/litellm-api-client';
 import { toShortKeyAlias } from '../../../utils/common';
 
-const inputSchema = v.object({
+export const inputSchema = v.object({
   keyHash: v.pipe(v.string(), v.hash([INPUT_LIMITS.KEY_HASH_TYPE])),
 });
 
-const outputSchema = v.nullable(
+export const outputSchema = v.nullable(
   v.object({
     keyHash: v.string(),
     keyName: v.string(),

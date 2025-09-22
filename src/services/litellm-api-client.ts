@@ -375,7 +375,7 @@ export class LitellmApiClient extends ApiClient {
         key_type?: string;
         user_id?: string;
         team_id?: string;
-        key_alias?: string;
+        key_alias: string;
         duration?: string;
         models?: string[];
         max_budget?: number;
@@ -912,8 +912,8 @@ export class LitellmApiClient extends ApiClient {
           providerModelName: model.litellm_params.model,
           providerName: model.litellm_params.custom_llm_provider,
           credentialName: model.litellm_params.litellm_credential_name,
-          inputCostPerToken: model.litellm_params.input_cost_per_token,
-          outputCostPerToken: model.litellm_params.output_cost_per_token,
+          inputCostPerToken: model.litellm_params.input_cost_per_token ?? 0,
+          outputCostPerToken: model.litellm_params.output_cost_per_token ?? 0,
           metadata: {
             verifiable: model.model_info.nearai_metadata?.verifiable ?? null,
             contextLength:
@@ -949,8 +949,8 @@ export class LitellmApiClient extends ApiClient {
               model: string;
               custom_llm_provider: string;
               litellm_credential_name?: string;
-              input_cost_per_token: number;
-              output_cost_per_token: number;
+              input_cost_per_token?: number;
+              output_cost_per_token?: number;
             };
             model_info: {
               id: string;
@@ -981,8 +981,8 @@ export class LitellmApiClient extends ApiClient {
           providerModelName: model.litellm_params.model,
           providerName: model.litellm_params.custom_llm_provider,
           credentialName: model.litellm_params.litellm_credential_name,
-          inputCostPerToken: model.litellm_params.input_cost_per_token,
-          outputCostPerToken: model.litellm_params.output_cost_per_token,
+          inputCostPerToken: model.litellm_params.input_cost_per_token ?? 0,
+          outputCostPerToken: model.litellm_params.output_cost_per_token ?? 0,
           metadata: {
             verifiable: model.model_info.nearai_metadata?.verifiable ?? null,
             contextLength:

@@ -60,7 +60,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
   if (!user) {
     throw createOpenAiHttpError({
       status: STATUS_CODES.FORBIDDEN,
-      message: 'Incomplete user registration',
+      message: 'User not registered',
     });
   }
 
@@ -148,28 +148,18 @@ async function authorizeSupabase(
 
   const client = createSupabaseClient();
 
-  const {
-    data: { user: supabaseUser },
-    error,
-  } = await client.auth.getUser(token);
+  const res = await client.auth.getUser(token);
 
-  if (error) {
+  if (res.error) {
     throw createOpenAiHttpError({
-      status: STATUS_CODES.UNAUTHORIZED,
-      message: 'Failed to authorize', // Override with simple error message
-      cause: error,
-    });
-  }
-
-  if (!supabaseUser) {
-    throw createOpenAiHttpError({
-      status: STATUS_CODES.UNAUTHORIZED,
-      message: 'Invalid authorization token',
+      status: res.error.status,
+      message: 'Invalid authorization token', // Override with simple error message
+      cause: res.error,
     });
   }
 
   return {
-    supabaseUser,
+    supabaseUser: res.data.user,
   };
 }
 
@@ -197,17 +187,7 @@ async function authorizeKey(authorization?: string): Promise<KeyAuth> {
     });
   }
 
-  let key: Key | null;
-
-  try {
-    key = await adminLitellmApiClient.getKey({ keyOrKeyHash: token });
-  } catch (e: unknown) {
-    throw createOpenAiHttpError({
-      status: STATUS_CODES.UNAUTHORIZED,
-      message: 'Failed to authorize', // Override with simple error message
-      cause: e,
-    });
-  }
+  const key = await adminLitellmApiClient.getKey({ keyOrKeyHash: token });
 
   if (!key) {
     throw createOpenAiHttpError({
@@ -246,17 +226,7 @@ export async function authorizeLitellmServiceAccount(authorization?: string) {
     });
   }
 
-  let key: Key | null;
-
-  try {
-    key = await adminLitellmApiClient.getKey({ keyOrKeyHash: token });
-  } catch (e: unknown) {
-    throw createOpenAiHttpError({
-      status: STATUS_CODES.UNAUTHORIZED,
-      message: 'Failed to authorize', // Override with simple error message
-      cause: e,
-    });
-  }
+  const key = await adminLitellmApiClient.getKey({ keyOrKeyHash: token });
 
   if (!key) {
     throw createOpenAiHttpError({
