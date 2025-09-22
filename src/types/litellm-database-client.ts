@@ -11,6 +11,7 @@ export type LitellmCredentialValues = {
 };
 
 export type LitellmProxyModel = {
+  model_id: string;
   model_name: string;
   litellm_params: {
     model: string;
@@ -29,4 +30,20 @@ export type LitellmProxyModel = {
       model_description?: string;
     };
   };
+};
+
+export type LiteLLMSpendLog = {
+  request_id: string;
+  user: string;
+  api_key: string;
+  status: string;
+  call_type: string;
+  spend: number;
+  prompt_tokens: number;
+  completion_tokens: number;
+  total_tokens: number;
+  model_id: string;
+  model_group: string;
+  startTime: string;
+  endTime: string;
 };

@@ -9,10 +9,10 @@ migrations/nearai-cloud/deploy:
 
 
 phala/create:
-	@rm -rf .phala && env-cmd -f .env-phala tsx phala-cloud-scripts/create
+	@rm -rf .phala && env-cmd -f .env-phala tsx scripts/create
 
 phala/replicate:
-	@rm -rf .phala && env-cmd -f .env-phala tsx phala-cloud-scripts/replicate
+	@rm -rf .phala && env-cmd -f .env-phala tsx scripts/replicate
 
 phala/upgrade:
-	@env-cmd -f .env-phala tsx phala-cloud-scripts/upgrade
+	@env-cmd -f .env-phala tsx scripts/upgrade

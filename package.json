@@ -16,8 +16,8 @@
     "preview": "env-cmd -f .env.local sh -c 'env-cmd -f .env.$ENV sh -c \"tsx src/main.ts\"'",
     "start": "node dist/main.js",
     "test": "pnpm generate:all && env-cmd -f .env.test jest --runInBand",
-    "lint": "eslint '{src,test,phala-cloud-scripts}/**/*.ts' './*.{ts,mjs}' --fix",
-    "prettier": "prettier '{src,test,phala-cloud-scripts}/**/*.ts' './*.{ts,mjs}' --write --list-different",
+    "lint": "eslint '{src,test,scripts}/**/*.ts' './*.{ts,mjs}' --fix",
+    "prettier": "prettier '{src,test,scripts}/**/*.ts' './*.{ts,mjs}' --write --list-different",
     "check": "tsc",
     "prepare": "husky"
   },
