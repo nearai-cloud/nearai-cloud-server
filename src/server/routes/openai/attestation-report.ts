@@ -8,6 +8,7 @@ import { createPrivateLlmApiClient } from '../../../services/private-llm-api-cli
 import * as ctx from 'express-http-context';
 import { InternalModelParams } from '../../../types/litellm-database-client';
 import { AttestationReport } from '../../../types/privatellm-api-client';
+import { logger } from '../../../services/logger';
 
 const inputSchema = v.object({
   model: v.string(),
@@ -60,9 +61,18 @@ export const attestationReport = createRouteResolver({
         modelParams.apiUrl,
       );
 
-      const report = await client.attestationReport({
-        model: modelParams.model,
-      });
+      let report: AttestationReport;
+
+      try {
+        report = await client.attestationReport({
+          model: modelParams.model,
+        });
+      } catch (e) {
+        logger.error(
+          `Failed to GET /attestation/report. Model Id (${modelParams.modelId}). ${e}`,
+        );
+        continue;
+      }
 
       if (!allReports) {
         allReports = report;
@@ -75,6 +85,13 @@ export const attestationReport = createRouteResolver({
       }
     }
 
-    return allReports!;
+    if (!allReports) {
+      throw createOpenAiHttpError({
+        status: STATUS_CODES.INTERNAL_SERVER_ERROR,
+        message: 'No attestation available',
+      });
+    }
+
+    return allReports;
   },
 });
