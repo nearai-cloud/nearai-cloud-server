@@ -72,9 +72,12 @@ export const attestationReport = createRouteResolver({
 
       const f = async () => {
         try {
-          return await client.attestationReport({
-            model: modelParams.model,
-          });
+          return await client.attestationReport(
+            {
+              model: modelParams.model,
+            },
+            10 * 1000,
+          );
         } catch (e) {
           logger.debug(
             `Failed to GET /attestation/report. Model Id (${modelParams.modelId}). ${e}`,

@@ -72,11 +72,14 @@ export const signature = createRouteResolver({
       );
 
       const f = async () => {
-        const signature = await client.signature({
-          chat_id: params.chat_id,
-          model: modelParams.model,
-          signing_algo: query.signing_algo,
-        });
+        const signature = await client.signature(
+          {
+            chat_id: params.chat_id,
+            model: modelParams.model,
+            signing_algo: query.signing_algo,
+          },
+          10 * 1000,
+        );
         return {
           signature,
           modelParams,
