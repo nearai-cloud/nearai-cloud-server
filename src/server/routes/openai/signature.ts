@@ -35,6 +35,9 @@ export const signature = createRouteResolver({
   middlewares: [
     keyAuthMiddleware,
     async (req, res, next, { query }) => {
+      const modelAlias = await litellmDatabaseClient.getModelAlias();
+      query.model = modelAlias[query.model] ?? query.model;
+
       const modelParamsList =
         await litellmDatabaseClient.listInternalModelParams(query.model);
 

@@ -301,6 +301,29 @@ export class LitellmDatabaseClient {
       totalSpendLogs,
     };
   }
+
+  async getModelAlias(): Promise<Record<string, string | undefined>> {
+    const routerSettingsRaw = await this.client.liteLLM_Config.findUnique({
+      where: {
+        param_name: 'router_settings',
+      },
+    });
+
+    if (!routerSettingsRaw) {
+      return {};
+    }
+
+    const schema = v.object({
+      model_group_alias: v.optional(
+        v.record(v.string(), v.optional(v.string())),
+        {},
+      ),
+    });
+
+    const routerSettings = v.parse(schema, routerSettingsRaw.param_value);
+
+    return routerSettings.model_group_alias;
+  }
 }
 
 export function createLitellmDatabaseClient(): LitellmDatabaseClient {
