@@ -4,10 +4,7 @@ import * as v from 'valibot';
 import * as ctx from 'express-http-context';
 import { litellmDatabaseClient } from '../../../services/litellm-database-client';
 import { createOpenAiHttpError } from '../../../utils/error';
-import {
-  FETCH_ATTESTATION_REPORT_TIMEOUT,
-  STATUS_CODES,
-} from '../../../utils/consts';
+import { FETCH_SIGNATURE_TIMEOUT, STATUS_CODES } from '../../../utils/consts';
 import { createPrivateLlmApiClient } from '../../../services/private-llm-api-client';
 import { InternalModelParams } from '../../../types/litellm-database-client';
 import { nearAiCloudDatabaseClient } from '../../../services/nearai-cloud-database-client';
@@ -81,7 +78,7 @@ export const signature = createRouteResolver({
             model: modelParams.model,
             signing_algo: query.signing_algo,
           },
-          FETCH_ATTESTATION_REPORT_TIMEOUT,
+          FETCH_SIGNATURE_TIMEOUT,
         );
         return {
           signature,
