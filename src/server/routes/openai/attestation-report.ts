@@ -3,7 +3,11 @@ import { keyAuthMiddleware } from '../../middlewares/auth';
 import * as v from 'valibot';
 import { litellmDatabaseClient } from '../../../services/litellm-database-client';
 import { createOpenAiHttpError } from '../../../utils/error';
-import { ATTESTATION_REPORT_TTL, STATUS_CODES } from '../../../utils/consts';
+import {
+  ATTESTATION_REPORT_TTL,
+  FETCH_ATTESTATION_REPORT_TIMEOUT,
+  STATUS_CODES,
+} from '../../../utils/consts';
 import { createPrivateLlmApiClient } from '../../../services/private-llm-api-client';
 import * as ctx from 'express-http-context';
 import { InternalModelParams } from '../../../types/litellm-database-client';
@@ -76,7 +80,7 @@ export const attestationReport = createRouteResolver({
             {
               model: modelParams.model,
             },
-            10 * 1000,
+            FETCH_ATTESTATION_REPORT_TIMEOUT,
           );
         } catch (e) {
           logger.debug(
