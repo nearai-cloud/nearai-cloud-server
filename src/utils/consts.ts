@@ -8,7 +8,11 @@ export const ATTESTATION_REPORT_TTL = 10 * 60 * 1000;
 
 export const LIST_MODELS_CACHE_TTL = 10 * 60 * 1000;
 
+export const ROUTER_SETTINGS_CACHE_TTL = 30 * 60 * 1000;
+
 export const LIST_MODELS_CACHE_KEY_PREFIX = 'Models:';
+
+export const ROUTER_SETTINGS_CACHE_KEY = 'RouterSettings';
 
 export const FETCH_ATTESTATION_REPORT_TIMEOUT = 10 * 1000;
 
