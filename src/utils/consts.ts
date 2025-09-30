@@ -12,6 +12,8 @@ export const ROUTER_SETTINGS_CACHE_TTL = 30 * 60 * 1000;
 
 export const LIST_MODELS_CACHE_KEY_PREFIX = 'Models:';
 
+export const SERVICE_ACCOUNT_TEAM_ID = 'service-account';
+
 export const ROUTER_SETTINGS_CACHE_KEY = 'RouterSettings';
 
 export const FETCH_ATTESTATION_REPORT_TIMEOUT = 10 * 1000;
