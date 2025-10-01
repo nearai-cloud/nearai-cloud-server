@@ -1,57 +1,57 @@
-import {
-  RegisterUserParams,
-  GenerateKeyParams,
-  DeleteKeyParams,
-  GenerateKeyResponse,
-  ListKeysParams,
-  ListKeysResponse,
-  User,
-  Key,
-  UpdateKeyParams,
-  GetSpendLogsParams,
-  SpendLog,
-  GetUserParams,
-  GetKeyParams,
-  ManageUserParams,
-  KeyMetadata,
-  CreateModelParams,
-  UpdateModelParams,
-  ListModelsPaginationParams,
-  Model,
-  GetModelParams,
-  GenerateServiceAccountParams,
-  CreateCredentialParams,
-  Credential,
-  UpdateCredentialParams,
-  ListUsersParams,
-  ListUsersResponse,
-  GetUserDailyActivityParams,
-  GetTagDailyActivityParams,
-  DeleteModelParams,
-  CreateModelResponse,
-  ListModelsPaginationResponse,
-  ListModelsParams,
-  CreateTeamParams,
-  CreateTeamResponse,
-  UpdateTeamParams,
-  ListTeamsParams,
-  ListTeamsResponse,
-  GetSpendLogsPaginationParams,
-  GetSpendLogsPaginationResponse,
-} from '../types/litellm-api-client';
 import { OpenAI } from 'openai/client';
 import stream from 'stream';
 import { config } from '../config';
 import { ApiClientOptions } from '../types/api-client';
 import {
+  CreateCredentialParams,
+  CreateModelParams,
+  CreateModelResponse,
+  CreateTeamParams,
+  CreateTeamResponse,
+  Credential,
+  DeleteKeyParams,
+  DeleteModelParams,
+  GenerateKeyParams,
+  GenerateKeyResponse,
+  GenerateServiceAccountParams,
+  GetKeyParams,
+  GetModelParams,
+  GetSpendLogsPaginationParams,
+  GetSpendLogsPaginationResponse,
+  GetSpendLogsParams,
+  GetTagDailyActivityParams,
+  GetUserDailyActivityParams,
+  GetUserParams,
+  Key,
+  KeyMetadata,
+  ListKeysParams,
+  ListKeysResponse,
+  ListModelsPaginationParams,
+  ListModelsPaginationResponse,
+  ListModelsParams,
+  ListTeamsParams,
+  ListTeamsResponse,
+  ListUsersParams,
+  ListUsersResponse,
+  ManageUserParams,
+  Model,
+  RegisterUserParams,
+  SpendLog,
+  UpdateCredentialParams,
+  UpdateKeyParams,
+  UpdateModelParams,
+  UpdateTeamParams,
+  User,
+} from '../types/litellm-api-client';
+import {
   LIST_MODELS_CACHE_KEY_PREFIX,
   LIST_MODELS_CACHE_TTL,
   STATUS_CODES,
 } from '../utils/consts';
-import { ApiClient, ApiError } from './api-client';
 import { litellmKeyHash } from '../utils/crypto';
-import { litellmDatabaseClient } from './litellm-database-client';
 import { InMemoryCache } from '../utils/InMemoryCache';
+import { ApiClient, ApiError } from './api-client';
+import { litellmDatabaseClient } from './litellm-database-client';
 
 export class LitellmApiClient extends ApiClient {
   cache: InMemoryCache<ListModelsPaginationResponse>;
@@ -1112,6 +1112,34 @@ export class LitellmApiClient extends ApiClient {
         message: 'Cannot update a credential that does not exist',
       });
     }
+  }
+
+  async createCustomer(body: unknown) {
+    return this.post({
+      path: '/customer/new',
+      body,
+    });
+  }
+
+  async getCustomer(query: unknown) {
+    return this.get({
+      path: '/customer/info',
+      query,
+    });
+  }
+
+  async updateCustomer(body: unknown) {
+    return this.post({
+      path: '/customer/update',
+      body,
+    });
+  }
+
+  async listCustomers(query: unknown) {
+    return this.get({
+      path: '/customer/list',
+      query,
+    });
   }
 
   private getModelsCache(
