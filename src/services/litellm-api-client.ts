@@ -1114,6 +1114,9 @@ export class LitellmApiClient extends ApiClient {
     }
   }
 
+  /**
+   * Blindly forward request to upstream LiteLLM without validation
+   */
   async createCustomer(body: unknown) {
     return this.post({
       path: '/customer/new',
@@ -1121,6 +1124,9 @@ export class LitellmApiClient extends ApiClient {
     });
   }
 
+  /**
+   * Blindly forward request to upstream LiteLLM without validation
+   */
   async getCustomer(query: unknown) {
     return this.get({
       path: '/customer/info',
@@ -1128,6 +1134,9 @@ export class LitellmApiClient extends ApiClient {
     });
   }
 
+  /**
+   * Blindly forward request to upstream LiteLLM without validation
+   */
   async updateCustomer(body: unknown) {
     return this.post({
       path: '/customer/update',
@@ -1135,6 +1144,9 @@ export class LitellmApiClient extends ApiClient {
     });
   }
 
+  /**
+   * Blindly forward request to upstream LiteLLM without validation
+   */
   async listCustomers(query: unknown) {
     return this.get({
       path: '/customer/list',
