@@ -17,7 +17,7 @@ const routerSettingsSchema = v.object({
   model_group_alias: v.optional(
     v.record(
       v.string(),
-      v.optional(
+      v.nullish(
         v.union([
           v.string(),
           v.object({
@@ -365,10 +365,10 @@ export class LitellmDatabaseClient {
       return Object.entries(routerSettings.model_group_alias).reduce<
         Record<string, string | undefined>
       >((aliases, [alias, model]) => {
-        if (typeof model === 'object') {
+        if (typeof model === 'object' && model !== null) {
           aliases[alias] = model.model;
         } else {
-          aliases[alias] = model;
+          aliases[alias] = model ?? undefined;
         }
         return aliases;
       }, {});
