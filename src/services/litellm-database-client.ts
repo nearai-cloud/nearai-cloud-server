@@ -18,10 +18,13 @@ const routerSettingsSchema = v.object({
     v.record(
       v.string(),
       v.optional(
-        v.object({
-          model: v.string(),
-          hidden: v.optional(v.boolean()),
-        }),
+        v.union([
+          v.string(),
+          v.object({
+            model: v.string(),
+            hidden: v.optional(v.boolean()),
+          }),
+        ]),
       ),
     ),
   ),
@@ -359,12 +362,16 @@ export class LitellmDatabaseClient {
     if (!routerSettings.model_group_alias) {
       return {};
     } else {
-      const entries = Object.entries(routerSettings.model_group_alias).map(
-        ([key, value]) => {
-          return [key, value?.model];
-        },
-      );
-      return Object.fromEntries(entries);
+      return Object.entries(routerSettings.model_group_alias).reduce<
+        Record<string, string | undefined>
+      >((alias, [alia, model]) => {
+        if (typeof model === 'object') {
+          alias[alia] = model.model;
+        } else {
+          alias[alia] = model;
+        }
+        return alias;
+      }, {});
     }
   }
 }
