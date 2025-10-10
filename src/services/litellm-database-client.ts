@@ -364,13 +364,13 @@ export class LitellmDatabaseClient {
     } else {
       return Object.entries(routerSettings.model_group_alias).reduce<
         Record<string, string | undefined>
-      >((alias, [alia, model]) => {
+      >((aliases, [alias, model]) => {
         if (typeof model === 'object') {
-          alias[alia] = model.model;
+          aliases[alias] = model.model;
         } else {
-          alias[alia] = model;
+          aliases[alias] = model;
         }
-        return alias;
+        return aliases;
       }, {});
     }
   }
