@@ -14,7 +14,17 @@ import {
 } from '../utils/consts';
 
 const routerSettingsSchema = v.object({
-  model_group_alias: v.optional(v.record(v.string(), v.optional(v.string()))),
+  model_group_alias: v.optional(
+    v.record(
+      v.string(),
+      v.optional(
+        v.object({
+          model: v.string(),
+          hidden: v.optional(v.boolean(), false),
+        }),
+      ),
+    ),
+  ),
 });
 
 type RouterSettings = v.InferOutput<typeof routerSettingsSchema>;
@@ -346,7 +356,16 @@ export class LitellmDatabaseClient {
 
   async getModelAlias(): Promise<Record<string, string | undefined>> {
     const routerSettings = await this.getRouterSettings();
-    return routerSettings.model_group_alias ?? {};
+    if (!routerSettings.model_group_alias) {
+      return {};
+    } else {
+      const entries = Object.entries(routerSettings.model_group_alias).map(
+        ([key, value]) => {
+          return [key, value?.model];
+        },
+      );
+      return Object.fromEntries(entries);
+    }
   }
 }
 
