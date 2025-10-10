@@ -20,7 +20,7 @@ const routerSettingsSchema = v.object({
       v.optional(
         v.object({
           model: v.string(),
-          hidden: v.optional(v.boolean(), false),
+          hidden: v.optional(v.boolean()),
         }),
       ),
     ),
