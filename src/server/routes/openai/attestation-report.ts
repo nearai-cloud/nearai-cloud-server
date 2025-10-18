@@ -16,6 +16,7 @@ import { logger } from '../../../services/logger';
 import { InMemoryCache } from '../../../utils/InMemoryCache';
 import { getQuote } from '../../../utils/attestation';
 import { DstackClient } from '@phala/dstack-sdk';
+import { config } from '../../../config';
 
 const cache = new InMemoryCache<AttestationReport>(ATTESTATION_REPORT_TTL);
 
@@ -68,7 +69,12 @@ export const attestationReport = createRouteResolver({
   resolve: async ({ inputs: { query } }) => {
     const client = new DstackClient();
     // TODO: add nonce from the request to the report data
-    const gatewayAttestation = await getQuote(client, new Date().toISOString());
+    const gatewayAttestation = !config.isDev
+      ? await getQuote(client, new Date().toISOString())
+      : {
+          quote: 'quote not available for development environment',
+          event_log: 'event log not available for development environment',
+        };
 
     if (!gatewayAttestation) {
       throw createOpenAiHttpError({
