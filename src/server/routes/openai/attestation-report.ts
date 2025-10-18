@@ -14,6 +14,8 @@ import { InternalModelParams } from '../../../types/litellm-database-client';
 import { AttestationReport } from '../../../types/privatellm-api-client';
 import { logger } from '../../../services/logger';
 import { InMemoryCache } from '../../../utils/InMemoryCache';
+import { getQuote } from '../../../utils/attestation';
+import { DstackClient } from '@phala/dstack-sdk';
 
 const cache = new InMemoryCache<AttestationReport>(ATTESTATION_REPORT_TTL);
 
@@ -21,18 +23,21 @@ const inputSchema = v.object({
   model: v.string(),
 });
 
-const attestationSchema = v.object({
+const gatewayAttestationSchema = v.object({
+  quote: v.string(),
+  event_log: v.string(),
+});
+
+const modelAttestationSchema = v.object({
   signing_address: v.string(),
   intel_quote: v.string(),
   nvidia_payload: v.string(),
 });
 
-const outputSchema = v.intersect([
-  attestationSchema,
-  v.object({
-    all_attestations: v.array(attestationSchema),
-  }),
-]);
+const outputSchema = v.object({
+  gateway_attestation: gatewayAttestationSchema,
+  model_attestations: v.array(modelAttestationSchema),
+});
 
 export const attestationReport = createRouteResolver({
   inputs: {
@@ -61,9 +66,23 @@ export const attestationReport = createRouteResolver({
     },
   ],
   resolve: async ({ inputs: { query } }) => {
+    const client = new DstackClient();
+    // TODO: add nonce from the request to the report data
+    const gatewayAttestation = await getQuote(client, new Date().toISOString());
+
+    if (!gatewayAttestation) {
+      throw createOpenAiHttpError({
+        status: STATUS_CODES.INTERNAL_SERVER_ERROR,
+        message: 'Failed to get gateway attestation',
+      });
+    }
+
     const report = cache.get(query.model);
     if (report) {
-      return report;
+      return {
+        gateway_attestation: gatewayAttestation,
+        model_attestations: report.all_attestations,
+      };
     }
 
     const modelParamsList: InternalModelParams[] = ctx.get('modelParamsList');
@@ -97,6 +116,7 @@ export const attestationReport = createRouteResolver({
 
     let mergedReport: AttestationReport | undefined;
 
+    // TODO: make sure all_attestations field of models are all included
     reports.forEach((report) => {
       if (!report) {
         return;
@@ -116,12 +136,15 @@ export const attestationReport = createRouteResolver({
     if (!mergedReport) {
       throw createOpenAiHttpError({
         status: STATUS_CODES.INTERNAL_SERVER_ERROR,
-        message: 'No attestation available',
+        message: 'No model attestations available',
       });
     }
 
     cache.set(query.model, mergedReport);
 
-    return mergedReport;
+    return {
+      gateway_attestation: gatewayAttestation,
+      model_attestations: mergedReport.all_attestations,
+    };
   },
 });
