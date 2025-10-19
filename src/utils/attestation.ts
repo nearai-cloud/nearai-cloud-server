@@ -18,7 +18,7 @@ export function parseNonce(nonce?: string): string {
 
   // Validate hex format before parsing
   if (!/^[0-9a-fA-F]+$/.test(nonce)) {
-    throw new Error('Nonce must be hex-encoded');
+    throw new Error(`Nonce must be hex-encoded: ${nonce}`);
   }
 
   const nonceBytes = Buffer.from(nonce, 'hex');
