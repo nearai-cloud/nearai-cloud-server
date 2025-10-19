@@ -188,10 +188,14 @@ export const attestationReport = createRouteResolver({
       });
     }
 
+    const { all_attestations, ...attestationFields } = mergedReport;
+
     return {
-      ...mergedReport,
       gateway_attestation: gatewayAttestation,
-      model_attestations: mergedReport.all_attestations,
+      model_attestations: all_attestations,
+      // keep the original attestation fields for backward compatibility
+      ...attestationFields,
+      all_attestations,
     };
   },
 });

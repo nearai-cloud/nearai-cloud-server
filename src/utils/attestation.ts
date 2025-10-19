@@ -16,16 +16,13 @@ export function parseNonce(nonce?: string): string {
     return crypto.randomBytes(32).toString('hex');
   }
 
-  let nonceBytes: Buffer;
-  try {
-    nonceBytes = Buffer.from(nonce, 'hex');
-  } catch (e) {
-    const message = e instanceof Error ? e.message : 'Unknown error';
-    throw new Error(`Failed to parse nonce: ${message}`);
-  }
-  if (nonceBytes.length === 0) {
+  // Validate hex format before parsing
+  if (!/^[0-9a-fA-F]+$/.test(nonce)) {
     throw new Error('Nonce must be hex-encoded');
   }
+
+  const nonceBytes = Buffer.from(nonce, 'hex');
+
   if (nonceBytes.length !== 32) {
     throw new Error('Nonce must be 32 bytes');
   }
@@ -41,20 +38,6 @@ function buildReportData(nonce: Buffer): Buffer {
   }
   // pad with zeros to 64 bytes
   return Buffer.concat([Buffer.alloc(32, 0), nonce]);
-}
-
-/**
- * Get quote from DstackClient with report data
- */
-export async function getQuote(
-  client: DstackClient,
-  reportData: string | Buffer | Uint8Array,
-): Promise<{ quote: string; event_log: string }> {
-  const quoteResult = await client.getQuote(reportData);
-  return {
-    quote: quoteResult.quote,
-    event_log: quoteResult.event_log,
-  };
 }
 
 export async function generateGatewayAttestation(
