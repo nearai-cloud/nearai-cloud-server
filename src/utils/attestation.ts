@@ -39,7 +39,8 @@ function buildReportData(nonce: Buffer): Buffer {
   if (nonce.length !== 32) {
     throw new Error('Nonce must be 32 bytes');
   }
-  return nonce;
+  // pad with zeros to 64 bytes
+  return Buffer.concat([Buffer.alloc(32, 0), nonce]);
 }
 
 /**
