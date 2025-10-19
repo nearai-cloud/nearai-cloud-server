@@ -4,7 +4,6 @@ import * as v from 'valibot';
 import { litellmDatabaseClient } from '../../../services/litellm-database-client';
 import { createOpenAiHttpError } from '../../../utils/error';
 import {
-  ATTESTATION_REPORT_TTL,
   FETCH_ATTESTATION_REPORT_TIMEOUT,
   STATUS_CODES,
 } from '../../../utils/consts';
@@ -13,32 +12,44 @@ import * as ctx from 'express-http-context';
 import { InternalModelParams } from '../../../types/litellm-database-client';
 import { AttestationReport } from '../../../types/privatellm-api-client';
 import { logger } from '../../../services/logger';
-import { InMemoryCache } from '../../../utils/InMemoryCache';
-import { getQuote } from '../../../utils/attestation';
-import { DstackClient } from '@phala/dstack-sdk';
+import {
+  GatewayAttestation,
+  generateGatewayAttestation,
+} from '../../../utils/attestation';
 import { config } from '../../../config';
-
-const cache = new InMemoryCache<AttestationReport>(ATTESTATION_REPORT_TTL);
 
 const inputSchema = v.object({
   model: v.string(),
+  signing_algo: v.optional(v.string()),
+  nonce: v.optional(v.string()),
+  signing_address: v.optional(v.string()),
 });
 
+const recordSchema = v.record(v.string(), v.unknown());
+
 const gatewayAttestationSchema = v.object({
-  quote: v.string(),
-  event_log: v.string(),
+  request_nonce: v.string(),
+  intel_quote: v.string(),
+  event_log: v.array(recordSchema),
+  info: recordSchema,
 });
 
 const modelAttestationSchema = v.object({
   signing_address: v.string(),
   intel_quote: v.string(),
   nvidia_payload: v.string(),
+  request_nonce: v.optional(v.string()),
+  event_log: v.optional(v.array(recordSchema)),
+  info: v.optional(recordSchema),
 });
 
-const outputSchema = v.object({
-  gateway_attestation: gatewayAttestationSchema,
-  model_attestations: v.array(modelAttestationSchema),
-});
+const outputSchema = v.intersect([
+  modelAttestationSchema,
+  v.object({
+    gateway_attestation: gatewayAttestationSchema,
+    model_attestations: v.array(modelAttestationSchema),
+  }),
+]);
 
 export const attestationReport = createRouteResolver({
   inputs: {
@@ -67,14 +78,26 @@ export const attestationReport = createRouteResolver({
     },
   ],
   resolve: async ({ inputs: { query } }) => {
-    const client = new DstackClient();
-    // TODO: add nonce from the request to the report data
-    const gatewayAttestation = !config.isDev
-      ? await getQuote(client, new Date().toISOString())
-      : {
-          quote: 'quote not available for development environment',
-          event_log: 'event log not available for development environment',
-        };
+    // Generate gateway attestation
+    let gatewayAttestation: GatewayAttestation | undefined;
+    try {
+      gatewayAttestation = !config.isDev
+        ? await generateGatewayAttestation(query.nonce)
+        : {
+            request_nonce:
+              'request nonce not available for development environment',
+            intel_quote:
+              'intel quote not available for development environment',
+            event_log: [],
+            info: {},
+          };
+    } catch (e) {
+      const message = e instanceof Error ? e.message : 'Unknown error';
+      throw createOpenAiHttpError({
+        status: STATUS_CODES.INTERNAL_SERVER_ERROR,
+        message: `Failed to get gateway attestation: ${message}`,
+      });
+    }
 
     if (!gatewayAttestation) {
       throw createOpenAiHttpError({
@@ -83,17 +106,10 @@ export const attestationReport = createRouteResolver({
       });
     }
 
-    const report = cache.get(query.model);
-    if (report) {
-      return {
-        gateway_attestation: gatewayAttestation,
-        model_attestations: report.all_attestations,
-      };
-    }
-
     const modelParamsList: InternalModelParams[] = ctx.get('modelParamsList');
 
-    const reportPromises = modelParamsList.map((modelParams) => {
+    // Get model attestations via model API calls
+    const modelAttestationPromises = modelParamsList.map((modelParams) => {
       const client = createPrivateLlmApiClient(
         modelParams.apiKey,
         modelParams.apiUrl,
@@ -104,6 +120,9 @@ export const attestationReport = createRouteResolver({
           return await client.attestationReport(
             {
               model: modelParams.model,
+              signing_algo: query.signing_algo,
+              nonce: query.nonce,
+              signing_address: query.signing_address,
             },
             FETCH_ATTESTATION_REPORT_TIMEOUT,
           );
@@ -118,18 +137,20 @@ export const attestationReport = createRouteResolver({
       return f();
     });
 
-    const reports = await Promise.all(reportPromises);
+    const modelAttestations = await Promise.all(modelAttestationPromises);
 
     let mergedReport: AttestationReport | undefined;
 
-    // TODO: make sure all_attestations field of models are all included
-    reports.forEach((report) => {
+    modelAttestations.forEach((report) => {
       if (!report) {
         return;
       }
 
       if (!mergedReport) {
         mergedReport = report;
+        if (report.all_attestations.length === 0) {
+          mergedReport.all_attestations = [report];
+        }
       } else {
         if (report.all_attestations.length > 0) {
           mergedReport.all_attestations.push(...report.all_attestations);
@@ -146,9 +167,8 @@ export const attestationReport = createRouteResolver({
       });
     }
 
-    cache.set(query.model, mergedReport);
-
     return {
+      ...mergedReport,
       gateway_attestation: gatewayAttestation,
       model_attestations: mergedReport.all_attestations,
     };

@@ -35,6 +35,9 @@ services:
       SUPABASE_API_URL: ${SUPABASE_API_URL}
       SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
       SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL}
+    volumes:
+      - /var/run/dstack.sock:/var/run/dstack.sock
+      - /var/run/tappd.sock:/var/run/tappd.sock
     restart: unless-stopped
     depends_on:
       litellm-gateway:
