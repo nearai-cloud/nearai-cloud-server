@@ -11,9 +11,9 @@ export type GatewayAttestation = {
 /**
  * Parse nonce from string or generate random 32-byte nonce if not provided
  */
-function parseNonce(nonce?: string): Buffer {
+export function parseNonce(nonce?: string): string {
   if (!nonce) {
-    return crypto.randomBytes(32);
+    return crypto.randomBytes(32).toString('hex');
   }
 
   let nonceBytes: Buffer;
@@ -29,7 +29,7 @@ function parseNonce(nonce?: string): Buffer {
   if (nonceBytes.length !== 32) {
     throw new Error('Nonce must be 32 bytes');
   }
-  return nonceBytes;
+  return nonce;
 }
 
 /**
@@ -57,10 +57,9 @@ export async function getQuote(
 }
 
 export async function generateGatewayAttestation(
-  nonce?: string,
+  nonce: string,
 ): Promise<GatewayAttestation> {
-  const nonceBytes = parseNonce(nonce);
-  const requestNonceHex = nonceBytes.toString('hex');
+  const nonceBytes = Buffer.from(nonce, 'hex');
 
   const client = new DstackClient();
   const reportData = buildReportData(nonceBytes);
@@ -68,7 +67,7 @@ export async function generateGatewayAttestation(
   const info = await client.info();
 
   return {
-    request_nonce: requestNonceHex,
+    request_nonce: nonce,
     intel_quote: quoteResult.quote,
     event_log: JSON.parse(quoteResult.event_log),
     info: info as unknown as Record<string, unknown>,

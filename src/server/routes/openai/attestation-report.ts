@@ -15,6 +15,7 @@ import { logger } from '../../../services/logger';
 import {
   GatewayAttestation,
   generateGatewayAttestation,
+  parseNonce,
 } from '../../../utils/attestation';
 import { config } from '../../../config';
 
@@ -78,14 +79,33 @@ export const attestationReport = createRouteResolver({
     },
   ],
   resolve: async ({ inputs: { query } }) => {
+    // Parse nonce. Generate random nonce if not provided.
+    let nonce: string;
+    try {
+      nonce = parseNonce(query.nonce);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : 'Unknown error';
+      throw createOpenAiHttpError({
+        status: STATUS_CODES.BAD_REQUEST,
+        message: `Invalid nonce: ${message}`,
+        cause: e,
+      });
+    }
+
+    if (!nonce) {
+      throw createOpenAiHttpError({
+        status: STATUS_CODES.BAD_REQUEST,
+        message: 'Invalid nonce',
+      });
+    }
+
     // Generate gateway attestation
     let gatewayAttestation: GatewayAttestation | undefined;
     try {
       gatewayAttestation = !config.isDev
-        ? await generateGatewayAttestation(query.nonce)
+        ? await generateGatewayAttestation(nonce)
         : {
-            request_nonce:
-              'request nonce not available for development environment',
+            request_nonce: nonce,
             intel_quote:
               'intel quote not available for development environment',
             event_log: [],
@@ -96,6 +116,7 @@ export const attestationReport = createRouteResolver({
       throw createOpenAiHttpError({
         status: STATUS_CODES.INTERNAL_SERVER_ERROR,
         message: `Failed to get gateway attestation: ${message}`,
+        cause: e,
       });
     }
 
@@ -121,7 +142,7 @@ export const attestationReport = createRouteResolver({
             {
               model: modelParams.model,
               signing_algo: query.signing_algo,
-              nonce: query.nonce,
+              nonce,
               signing_address: query.signing_address,
             },
             FETCH_ATTESTATION_REPORT_TIMEOUT,
