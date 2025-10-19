@@ -49,6 +49,7 @@ const outputSchema = v.intersect([
   v.object({
     gateway_attestation: gatewayAttestationSchema,
     model_attestations: v.array(modelAttestationSchema),
+    all_attestations: v.array(modelAttestationSchema),
   }),
 ]);
 
