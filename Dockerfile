@@ -1,11 +1,11 @@
 # Stage 1: Development with Dependencies
-FROM node:22-slim AS dev
+FROM node:22-slim@sha256:b21fe589dfbe5cc39365d0544b9be3f1f33f55f3c86c87a76ff65a02f8f5848e AS dev
 
 # Install Python, build-essential, and OpenSSL for node-gyp dependencies
 RUN apt-get update && \
     apt-get install -y python3 build-essential openssl && \
     ln -s /usr/bin/python3 /usr/bin/python && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* /var/log/* /var/cache/ldconfig/aux-cache
 
 WORKDIR /app
 
@@ -21,10 +21,11 @@ COPY . .
 RUN pnpm run build
 
 # Prune dev dependencies for production (skip prepare script)
-RUN pnpm prune --prod --ignore-scripts
+RUN pnpm prune --prod --ignore-scripts && \
+    rm -f /app/node_modules/.modules.yaml /app/node_modules/.pnpm-workspace-state*.json
 
 # Stage 2: Runtime Lightweight Image
-FROM node:22-slim AS runtime
+FROM node:22-slim@sha256:b21fe589dfbe5cc39365d0544b9be3f1f33f55f3c86c87a76ff65a02f8f5848e AS runtime
 
 WORKDIR /app
 ENV NODE_ENV=production
@@ -32,7 +33,7 @@ ENV NODE_ENV=production
 # Install OpenSSL for runtime
 RUN apt-get update && \
     apt-get install -y openssl && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* /var/log/* /var/cache/ldconfig/aux-cache
 
 # Set up a non-root user
 RUN groupmod -g 1001 node \
