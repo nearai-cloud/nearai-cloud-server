@@ -3,6 +3,7 @@ import { notFoundMiddleware } from '../middlewares/not-found';
 import { openaiRouter } from './openai';
 import { ping } from './ping';
 import { userRouter } from './user';
+import { teamRouter } from './team';
 import { keyRouter } from './key';
 import { modelRouter } from './model';
 import { credentialRouter } from './credential';
@@ -16,6 +17,7 @@ router.use('/v1', openaiRouter);
 
 router.get('/', ping);
 router.use('/user', userRouter);
+router.use('/team', teamRouter);
 router.use('/key', keyRouter);
 router.use('/model', modelRouter);
 router.use('/credential', credentialRouter);
